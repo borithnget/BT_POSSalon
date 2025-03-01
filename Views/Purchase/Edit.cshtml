@@ -1,0 +1,672 @@
+﻿@model jotun.Models.tblPurchaseBySupplierViewModel
+@{
+    /**/
+
+    ViewBag.Title = "Edit";
+}
+@using (Html.BeginForm("Edit", "Purchase", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Edit Purchase </h4>
+        <hr />
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary("", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.ID)
+
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-8" style="background-color:transparent">
+                        <div class="form-group">
+                            <div class="row">
+                                <div hidden class="col-md-6" style="background-color:transparent">
+                                    <div class="form-group ">
+                                        @Html.Label("ID", new { @class = "col-md-12 control-label" })
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.ID, new { id = "orderNo", @class = " form-control", @readonly = "readonly" })
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="col-md-6" style="background-color:transparent">
+                                    <div class="form-group ">
+                                        @Html.Label("Date", new { @class = "col-md-12 control-label" })
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.CreatedDate, new { id = "orderDate", @class = " form-control", @readonly = "readonly" })
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Supplier Name", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+                                        <span style="color:red; float:left; font-size:20px">*</span>
+                                        <div class="col-md-12">
+                                            @Html.DropDownList("SupplierName", (SelectList)ViewBag.SupplierNames, "--- Select ---", new { id = "suppid", @class = "form-control", onchange = "Check()" })
+                                            <input type="hidden" id="suppid" />
+                                            <span class="error" id="st">The SupplierName field is required.</span>
+                                            @* @Html.TextBoxFor(m => m.SupplierId, new { id = "suppid", @class = "form-control " })*@
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                            <div class="row">
+                                <div class="col-md-6" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Shipper Name", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+                                        <span style="color:red; float:left; font-size:20px">*</span>
+                                        <div class="col-md-12">
+                                            @Html.DropDownList("ShipperName", (SelectList)ViewBag.ShipperNames, "--- Select ---", new { id = "shippid", @class = "form-control", onchange = "Check()" })
+
+                                            <input type="hidden" id="shippid" />
+                                            <span class="error" id="st1">The ShipperName field is required.</span>
+                                            @*@Html.TextBoxFor(m => m.ShipperId, new { id = "shippid", @class = "form-control " })*@
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Description", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+                                        <div class="col-md-12">
+                                            @Html.TextAreaFor(m => m.Description, new { id = "description", @class = "form-control " })
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="row table-responsive" style="padding:0 0 0 20px">
+                            <table id="clientlist" class="table table-bordered" width="100%">
+                                <thead>
+                                    <tr>
+                                        <td>Item Name</td>
+                                        <td>Unit Type</td>
+                                        <td>Quantity</td>
+                                        <td>Price</td>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+
+                                        <td>
+                                            <input class="form-control" type="text" id="itemName" onchange="Check()" />
+                                            <input type="hidden" id="itemid" />
+                                            <span class="error" id="st2">ItemName required</span>
+                                        </td>
+                                        <td>
+                                            @*@Html.DropDownList("UnitName", (SelectList)ViewBag.UnitNamesEng, "--- Select Unit ---", new { @id = "unitname", @class = "form-control uniteng" })*@
+
+                                            @* @Html.TextBoxFor(m => m.unittype, new { @id = "testtest", @class = "form-control testtest" })*@
+                                            @*  @Html.DropDownListFor(m => m.unittype, Model.unittypes, "select unit", new { @id = "testtest", @class = "form-control testtest"})*@
+
+                                            @Html.DropDownList("UnitNameEng", new SelectList(" "), "select unit", new { @id = "StateId", @class = "form-control stateclass" })
+                                            <input type="hidden" id="StateId" />
+                                            <span class="error">UnitName required</span>
+
+                                        </td>
+                                        <td hidden>
+                                            <input readonly class="form-control" type="text" id="unitid" />
+
+                                        </td>
+
+
+                                        <td hidden>
+                                            <input class="form-control" type="text" id="itempid" />
+
+                                        </td>
+
+                                        <td>
+                                            <input class="form-control" type="text" id="quantity" autocomplete="off" onchange="Check()" name='quantity' size=20 maxlength=8 onkeypress="return isNumberKey(event)" />
+                                            <span class="error">Quantity required.</span>
+                                        </td>
+                                        <td>
+                                            <input readonly class="form-control" type="text" id="rate" />
+
+                                        </td>
+
+
+
+                                        <td>
+                                            <input type="button" id="add" value="Add" class="btn btn-success addd" disabled />
+                                        </td>
+
+                                    </tr>
+
+
+                                    @foreach (var item in Model.GetDetail)
+                                    {
+
+
+                                        <tr>
+                                            <td>
+                                                <input hidden type="text" class='form-control contect-person' value="@item.ProductIdN" />
+
+                                                <input readonly type="text" class='form-control ' value="@item.ProductId" />
+                                            </td>
+                                            <td>
+                                                <input readonly type="text" class='form-control UnitEng' value="@item.UnitTypeId" />
+                                            </td>
+
+                                            <td>
+                                                <input type="text" class='form-control phone' value="@item.Quantity" />
+                                            </td>
+                                            <td>
+                                                <input readonly type="text" class='form-control position' value="@item.Cost" />
+
+                                            </td>
+                                            <td><input type="button" value="Remove" class="btn btn-danger" onclick="deleteRow(this)" /></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <div id="orderItems" class="tablecontainer">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-9">
+                    <input id="submit" class="btn btn-primary savee" type="button" value="Save" />
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Purchase';" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+    @section Scripts{
+        <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+        <link href="~/Content/vendor/jquery/jquery-ui.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-1.12.4.js"></script>
+        <script src="~/Scripts/jquery-ui.js"></script>
+        <script src="~/Scripts/datatables.min.js"></script>
+
+        @*<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+            <link rel="stylesheet" href="/resources/demos/style.css">
+            <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+            <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+            <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">*@
+
+        <script>
+        //Date Picker
+        $(function () {
+           $('#orderDate').datepicker({
+               dateFormat: 'mm-dd-yy'
+           });
+        });
+          function isNumberKey(evt) {
+                 var charCode = (evt.which) ? evt.which : event.keyCode
+                 if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46)
+                     return false;
+                 else {
+                     var len = document.getElementById("quantity").value.length;
+                     var index = document.getElementById("quantity").value.indexOf('.');
+
+                     if (index > 0 && charCode == 46) {
+                         return false;
+                     }
+                     if (index > 0) {
+                         var CharAfterdot = (len + 1) - index;
+                         if (CharAfterdot > 3) {
+                             return false;
+                         }
+                     }
+
+                 }
+                 return true;
+              }
+
+            // call to init once
+          $(function () {
+              $('#itemName').autocomplete({
+                  source: '@Url.Action("getpro", "Purchase")',
+                  select: function (event, ui) {
+                      var selectedObj = ui.item;
+                      var id = selectedObj.id;
+                      var pr = selectedObj.pr;
+                      var pid = selectedObj.pid;
+                      var pn = selectedObj.pn;
+                      console.log(selectedObj);
+                      $('#itemName').change(function () {
+                          $('#itemName').val(pn);
+                          var isAllValid = true;
+                          $.get("/Purchase/GetStateList", { UnId: $('#itemid').val().trim() }, function (data) {
+                              $("#StateId").empty();
+                              // $("#StateId").remove.index[0];
+
+                              $.each(data, function (index, row) {
+                                  // $("#StateId").val("-- please select -- ")
+                                  $("#StateId").append("<option value='" + pn + '^' + row.Id + "'>" + row.UnitNameEng + "</option>");
+                                  if ($('.stateclass').val().trim() != '') {
+                                      $.ajax({
+                                          url: '/Purchase/GetUnit/',
+                                          type: "get",
+                                          dataType: "json",
+                                          async: false,
+                                          data: { id: $(".stateclass").val() },
+                                          //data: JSON.stringify(model),
+                                          success: function (data) {
+                                              console.log(data);
+                                              if (data.result = "success") {
+                                                  $('#rate').val(data.data);
+                                                  $('#unitid').val(data.data1);
+                                              }
+                                          },
+                                          error: function (e) { }
+                                      });
+                                  }
+
+                              });
+                          });
+
+                      });
+                      $('#itemid').val(pn);
+                      $('#itempid').val(pid);
+                      $('#rate').val(pr);
+                  }
+              });
+
+              $("#itemName").click(function (e) {
+
+                  $("#StateId").text();
+                  // $("#StateId").append("<option value='" + pn + '^' + row.Id + "'>" + "" + "</option>");
+
+                  $('#rate').val('');
+              });
+
+
+              $(".stateclass").click(function (e) {
+                  //alert($(".stateclass").val());
+                  $.ajax({
+                      url: '/Purchase/GetUnit/',
+                      type: "get",
+                      dataType: "json",
+                      async: false,
+                      data: { id: $(".stateclass").val() },
+                      //data: JSON.stringify(model),
+                      success: function (data) {
+                          console.log(data);
+                          if (data.result = "success") {
+                              $('#rate').val(data.data);
+                              $('#unitid').val(data.data1);
+                          }
+                      },
+                      error: function (e) { }
+                  });
+
+              });
+
+
+         });
+
+
+        $(document).ready(function () {
+            var orderItems = [];
+            //Add button click function
+            $('#add').click(function () {
+                //Check validation of order item
+                var isValidItem = true;
+                if ($('#itemName').val().trim() == '') {
+                    isValidItem = false;
+                    $('#itemName').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#itemName').siblings('span.error').css('visibility', 'hidden');
+                }
+                if ($('#StateId').val().trim() == '') {
+                    isValidItem = false;
+                    $('#StateId').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#StateId').siblings('span.error').css('visibility', 'hidden');
+                }
+
+                if (!($('#quantity').val().trim() != '' && !isNaN($('#quantity').val().trim()))) {
+                    isValidItem = false;
+                    $('#quantity').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#quantity').siblings('span.error').css('visibility', 'hidden');
+                }
+
+                if (!($('#rate').val().trim() != '' && !isNaN($('#rate').val().trim()))) {
+                    isValidItem = false;
+                    $('#rate').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#rate').siblings('span.error').css('visibility', 'hidden');
+                }
+
+                //Add item to list if valid
+                if (isValidItem) {
+                    orderItems.push({
+                        //PurchaseBySupplierId: $('#orderNo').val().trim(),
+                        ProductId: $('#itempid').val().trim(),
+                        ProductName: $('#itemid').val().trim(),
+                        UnitTypeId: $('#unitid').val().trim(),
+                        Quantity: $('#quantity').val().trim(),
+                        //Quantity: parseInt($('#quantity').val().trim()),
+                        // Cost: parseFloat($('#rate').val().trim()),
+                        Cost: $('#rate').val().trim(),
+                        //TotalAmount: parseInt($('#quantity').val().trim()) * parseFloat($('#rate').val().trim())
+                    });
+                    //Clear fields
+                    $('#itemName').val('').focus();
+                    $('#quantity,#rate,#UnitNameEng').val('');
+                    $('#StateId').text('');
+                    $('.addd').attr('disabled', 'disabled');
+                    $('.savee').removeAttr('disabled');
+
+                }
+                //populate order items
+                GeneratedItemsTable();
+
+            });
+            //Save button click function
+
+            $('#submit').click(function () {
+                //alert("hello");
+                //validation of order
+                var isAllValid = true;
+                //if (orderItems.length == 0) {
+                //    $('#orderItems').html('<span style="color:red;">Please add order items</span>');
+                //    isAllValid = false;
+                //}
+
+                //if ($('#orderNo').val().trim() == '') {
+                //    $('#orderNo').siblings('span.error').css('visibility', 'visible');
+                //    isAllValid = false;
+                //}
+                //else {
+                //    $('#orderNo').siblings('span.error').css('visibility', 'hidden');
+                //}
+                if ($('#suppid').val().trim() == '') {
+                    $('#suppid').siblings('span.error').css('visibility', 'visible');
+                    isAllValid = false;
+                }
+                else {
+                    $('#suppid').siblings('span.error').css('visibility', 'hidden');
+                }
+                if ($('#shippid').val().trim() == '') {
+                    $('#shippid').siblings('span.error').css('visibility', 'visible');
+                    isAllValid = false;
+                }
+                else {
+                    $('#shipper').siblings('span.error').css('visibility', 'hidden');
+                }
+
+
+
+
+                var GetDetail = [];
+                var contactpersons = $('.contect-person');
+                var contactphones = $('.phone');
+                var contactpositions = $('.position');
+                var UnitEng = $('.UnitEng');
+
+                if (contactpersons.length > 0) {
+                    for (var i = 0; i < contactpersons.length; i++) {
+                        item_element = {};
+                        item_element.ProductId = contactpersons[i].value;
+                        item_element.UnitTypeId = UnitEng[i].value;
+                        item_element.Quantity = contactphones[i].value;
+                        item_element.Cost = contactpositions[i].value;
+                        GetDetail.push(item_element);
+                    }
+                }
+
+
+
+                //Save if valid
+                if (isAllValid) {
+                    var data = {
+                        ID: $('#orderNo').val().trim(),
+                        CreatedDate: $('#orderDate').val().trim(),
+
+                        SupplierId: $('#suppid').val().trim(),
+                        ShipperId: $('#shippid').val().trim(),
+                        Description: $('#description').val().trim(),
+                        GetDetail: GetDetail
+
+                    }
+                    console.log(data);
+                    $(this).val('Please wait...');
+
+                    $.ajax({
+                        url: '/Purchase/Edit',
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        dataType: "JSON",
+                        contentType: "application/json",
+                        success: successFunc,
+                        error: errorFunc
+                    });
+                    function successFunc(data, status) {
+                        // alert(data);
+                        window.location = '/Purchase'
+
+                    }
+                    function errorFunc() {
+                        window.location = '/Purchase'
+                    }
+                }
+
+            });
+
+
+
+
+
+            //function for show added items in table
+            function GeneratedItemsTable() {
+
+                    console.log(orderItems[orderItems.length - 1]);
+                    $('#clientlist tbody').append("" +
+                        "<tr>" +
+                        '<td><input readonly type="text"  class="form-control " value="' + orderItems[orderItems.length - 1].ProductName + '" /></td>' +
+                        '<td hidden><input type="text"  class="form-control contect-person" value="' + orderItems[orderItems.length - 1].ProductId + '" /></td>' +
+                        '<td ><input readonly type="text"  class="form-control UnitEng"  value="' + orderItems[orderItems.length - 1].UnitTypeId + '" /></td>' +
+                        '<td><input type="text"  class="form-control phone"  id="quantity" name="quantity" size=20 maxlength=8 onkeypress="return isNumberKey(event)" value="' + orderItems[orderItems.length - 1].Quantity + '" /></td>' +
+                        '<td><input readonly type="text"  class="form-control position" value="' + orderItems[orderItems.length - 1].Cost + '" /></td>' +
+                        '<td><input type="button" id="remove" value="Remove" class="btn btn-danger" onclick="deleteRow(this)"/></td>' +
+                        "</tr>"
+
+
+                        //"<tr>" +
+                        //'<td><input type="text"  class="form-control contect-person" value="' + orderItems[orderItems.length - 1].ProductId + '" /></td>' +
+                        //'<td><input type="text"  class="form-control contect-person"  value="' + orderItems[orderItems.length - 1].Quantity + '" /></td>' +
+                        //'<td><input type="text"  class="form-control position" value="' + orderItems[orderItems.length - 1].Price + '" /></td>' +
+                        //'<td><input type="button" id="remove" value="Move" class="btn btn-danger" onclick="deleteRow(this)"/></td>' +
+                        //"</tr>"
+
+
+
+                );
+
+
+            }
+        });
+        function deleteRow(r) {
+            var i = r.parentNode.parentNode.rowIndex;
+            document.getElementById("clientlist").deleteRow(i);
+            if (i == 2) {
+                $('.savee').attr('disabled', 'disabled');
+            }
+        }
+        </script>
+        <script>
+            $(document).ready(function () {
+                $('#quantity').keyup(function () {
+                    if ($('#itemName').val().trim() && $('#quantity').val().trim() && $('#StateId').val().trim() != '') {
+                        $('.addd').prop('disabled', false);
+                        $("#rate").css("border-color", "Green");
+
+                    } else {
+
+                        $('.addd').prop('disabled', true);
+                    }
+                });
+            });
+            $(document).ready(function () {
+                $('#itemName').keyup(function () {
+                    if ($('#itemName').val().trim() && $('#quantity').val().trim() != '') {
+                        $('.addd').prop('disabled', false);
+                        $("#rate").css("border-color", "Green");
+                    } else {
+                        $('.addd').prop('disabled', true);
+                    }
+                });
+            });
+
+            function Check() {
+                if ($('#suppid').val().trim() != '') {
+                    $("#suppid").css("border-color", "Green");
+                    $("#st").html('');
+                }
+                else {
+                    $("#st").html('<font color="Red">The SupplierName field is required.</font>');
+                    $("#suppid").css("border-color", "Red");
+
+                }
+                if ($('#shippid').val().trim() != '') {
+                    $("#shippid").css("border-color", "Green");
+                    $("#st1").html('');
+                }
+                else {
+                    $("#st1").html('<font color="Red">The ShipperName field is required.</font>');
+                    $("#shippid").css("border-color", "Red");
+
+                }
+                if ($('#itemName').val().trim() != '') {
+                    $("#itemName").css("border-color", "Green");
+                    $("#st2").html('');
+                }
+                else {
+                    $("#st2").html('<font color="Red">Item name required</font>');
+                    $("#itemName").css("border-color", "Red");
+
+                }
+                if ($('#itemName').val().trim() != '') {
+                    $("#itemName").css("border-color", "Green");
+                    $("#st2").html('');
+                }
+                else {
+                    $("#st2").html('<font color="Red">Item name required</font>');
+                    $("#itemName").css("border-color", "Red");
+
+                }
+                if ($('#StateId').val().trim() != '') {
+                    $("#StateId").css("border-color", "Green");
+
+                    $("#st3").html('');
+                }
+                else {
+                    $("#st3").html('<font color="Red">Unit required</font>');
+                    $("#StateId").css("border-color", "Red");
+
+                }
+                if ($('#quantity').val().trim() != '') {
+                    $("#quantity").css("border-color", "Green");
+                    $("#st4").html('');
+
+                }
+                else {
+                    $("#st4").html('<font color="Red">Quantity required</font>');
+                    $("#quantity").css("border-color", "Red");
+
+                }
+                if ($('#rate').val().trim() != '') {
+                    $("#rate").css("border-color", "Green");
+                    $("#st5").html('');
+                }
+                else {
+                    $("#st5").html('<font color="Red">Price required</font>');
+                    $("#rate").css("border-color", "Red");
+
+                }
+
+                if ($('#itemName').val().trim() && $('#quantity').val().trim() && $('#rate').val().trim() != '') {
+
+                    $('.bbb').removeAttr('disabled');
+
+
+                }
+
+            }
+        </script>
+        <script>
+            $(document).ready(function () {
+                var possible2 = "123456789";
+                var possible1 = "abcdefghijklmnopqrstuvwxyz";
+                var possible3 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                var possible = "zyxwvutsrqpnmlkjihgfedcba";
+
+                $('.getAutoCustomerId').val('' + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + possible2.charAt(Math.floor(Math.random() * possible2.length))
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + possible2.charAt(Math.floor(Math.random() * possible2.length))
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 1000) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 10000) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 10000) + 1));
+
+            });
+        </script>
+    }
+
+}
+<style>
+    /*Adding some css for looks good*/
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+
+
+    /*css for table*/
+    .container td {
+        vertical-align: top;
+    }
+
+    .tablecontainer table {
+        width: 100%;
+        border-collapse: collapse;
+        border-top: 1px solid #BFAEAE;
+        border-right: 1px solid #BFAEAE;
+    }
+
+    .tablecontainer th {
+        border-bottom: 2px solid #BFAEAE !important;
+    }
+
+    .tablecontainer th, .tablecontainer td {
+        text-align: left;
+        border-left: 1px solid #BFAEAE;
+        padding: 5px;
+        border-bottom: 1px solid #BFAEAE;
+    }
+
+    .ui-widget {
+        font-size: 12px !important;
+    }
+</style>

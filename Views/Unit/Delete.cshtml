@@ -1,0 +1,85 @@
+﻿@model jotun.Models.UnitViewModels
+@{
+    ViewBag.Title = "Delete";
+}
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+@using (Html.BeginForm("Delete", "Unit", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Detial Customer</h4>
+        <hr />
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary("", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.CreatedDate)
+            @Html.HiddenFor(model => model.Status)
+            @Html.HiddenFor(model => model.UnitNameEng)
+            @Html.HiddenFor(model => model.UnitNameKh)
+            @Html.HiddenFor(model => model.Quantity)
+            @Html.HiddenFor(model => model.UpdatedDate)
+            @Html.HiddenFor(model => model.Description)
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-9">
+                    <input type="submit" class="btn btn-success" value="OK" />
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Unit';" />
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    @section Scripts {
+        <script>
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

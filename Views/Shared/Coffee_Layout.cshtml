@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS.com</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Your custom styles */
+        #productGridWrapper {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 15px;
+        }
+
+        #productGrid {
+            flex-wrap: wrap;
+        }
+
+        .product-card {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+            .product-card:hover {
+                transform: scale(1.05);
+            }
+
+        .card-body h5 {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+
+        .payment-form-container {
+            margin-top: auto;
+            padding-top: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-card {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .category-card:hover {
+                transform: scale(1.05);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+
+        .search-item {
+            background-color: #fff;
+            border-radius: 4px;
+            padding: 10px;
+            width: 240px;
+            border: 1px solid #ccc;
+            padding-left: 35px;
+            padding-right: 35px;
+        }
+
+        .icon-item .fa-magnifying-glass {
+            position: absolute;
+            top: 50%;
+            left: 23px;
+            transform: translateY(-50%);
+            color: gray;
+        }
+
+        .icon-item .fa-barcode {
+            position: absolute;
+            top: 50%;
+            right: 22px;
+            transform: translateY(-50%);
+            color: gray;
+        }
+
+        .text-align-center {
+            text-align: center;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+        <div class="col-md-8">
+            <div>
+                <ul class="d-flex text-decoration-none list-unstyled custom-gap bg-success rounded">
+                    <li class="icon-item bg-danger text-white px-3 py-2 d-flex align-items-center rounded" style="gap: 4px;">
+                        <i class="fa-solid fa-fire"></i> ទីតាំង
+                    </li>
+                    <li class="icon-item p-2">UthNarin</li>
+                    <li class="icon-item p-2"><i class="fa-solid fa-plus"></i></li>
+                    <li class="icon-item p-2" onclick="window.location.href='/Report/Sale';">
+                        <i class="fa-solid fa-list"></i>
+                    </li>
+                    <li class="icon-item p-2"><i class="fa-solid fa-rotate-right"></i></li>
+                    <li class="icon-item p-2"><i class="fa-solid fa-database"></i></li>
+                    <li class="icon-item p-2"><i class="fa-solid fa-icons"></i></li>
+                    <li class="icon-item p-2"><i class="fa-solid fa-user-circle"></i></li>
+
+                    <!-- No hover effect on this item -->
+                    <li class="icon-item p-2 no-hover">
+                        <input type="text" class="search-item" placeholder="ស្វែងរកកូដ...">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <i class="fa-solid fa-barcode"></i>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    <div class="container">
+        @RenderBody() 
+    </div>
+    @RenderSection("Scripts", required: false)
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

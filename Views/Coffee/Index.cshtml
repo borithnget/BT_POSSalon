@@ -1,0 +1,1768 @@
+﻿@model jotun.Models.SaleViewModels
+@using Microsoft.AspNet.Identity;
+@{
+    ViewBag.Title = "Index";
+    ViewBag.productactive = "aactive";
+    string appointmentId = ViewBag.AppointmentId;
+}
+@section style{
+    <style type="text/css">
+        .content-wrapper {
+            padding-top: 0px !important;
+        }
+        .payment-form-container input, .payment-form-container select {
+            width: 200px;
+            margin-left: auto;
+        }
+    </style>
+}
+
+<input type="hidden" id="appointmentId" name="appointmentId" value="@appointmentId" />
+<div class="row">
+    <div class="col-md-8">
+        <div style="margin-left:-15px">
+            <ul class="d-flex text-decoration-none list-unstyled custom-gap bg-success rounded-right">
+                <li id="customerTypeDisplay" class="icon-item bg-danger text-white px-3 py-2 d-flex align-items-center " style="gap: 4px;" lang="km">
+                    <i class="fa-solid fa-fire"></i> ទីតាំង
+                </li>
+                <li><img src="~/Images/Logo02.jpeg" alt="Icon" width="60" height="60"></li>
+
+                <li class="icon-item p-2">
+                    <a href="@Url.Action("IndexSale","Sale")" style="color:white;" target="_blank"><i class="fa-solid fa-list"></i></a>
+                </li>
+                @if (User.IsInRole("SuperAdmin") || User.IsInRole("Administrator"))
+                {
+                    <li class="icon-item p-2"><a href="@Url.Action("Index","Home")" style="color:white;" target="_blank"><i class="fa-solid fa-database"></i></a></li>
+                }
+
+                @*<li class="icon-item p-2"><i class="fa-solid fa-icons"></i></li>*@
+                <li class="icon-item p-2"><i class="fa-solid fa-user-circle"></i> Hello, @User.Identity.GetUserName()</li>
+
+                @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right", @style = "margin:0px !important;" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <li class="icon-item p-2" style="height:100% !important;"><a href="javascript:document.getElementById('logoutForm').submit()" style="color:white;vertical-align:middle !important;"> <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
+                }
+
+
+
+                <li class="icon-item p-2 no-hover" lang="km">
+                    <input type="text" class="search-item" placeholder="ស្វែងរកកូដ...">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <i class="fa-solid fa-barcode"></i>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-4 d-flex flex-column" style="height: 100%;">
+        <div>
+            <ul class="d-flex text-decoration-none list-unstyled"
+                style="justify-content: space-between; align-items: center; width: 100%; height: 40px; padding-left: 2px; padding-right: 2px; font-size: medium; color: gray; white-space: nowrap;">
+                <li>
+                    <div class="dropdown">
+                        <button class="btn dropdown-toggle" type="button" id="orderTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Walk In :
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="orderTypeDropdown">
+                            <li><a class="dropdown-item" href="#" data-value="walkin">Walk In</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="takeaway">Take Away</a></li>
+                        </ul>
+                    </div>
+                    <input type="hidden" id="orderTypeValue" value="walkin">
+                </li>
+                <li class="ml-2"><i class="fa-solid fa-rotate-right"></i></li>
+                <li class="text-align-center">Est,Leave : @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")</li>
+                <li class="text-align-right">Issued : @DateTime.Now.ToString("HH:mm")</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+@using (Html.BeginForm("Index", "Coffee", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <div style="background-color:#e9ecef; padding:15px;margin-top:-15px;">
+        <!-- Row containing two columns: products and payment card -->
+        <div class="row">
+            <!-- Product section: Takes 50% of the screen width -->
+            <div class="col-md-8">
+
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-home-tab" data-toggle="tab" data-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Product</button>
+                        <button class="nav-link" id="nav-profile-tab" data-toggle="tab" data-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Service</button>
+                        
+                    </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <div id="categoryGridWrapper" class="mt-3">
+                            <div class="row" id="categoryGrid">
+                            </div>
+                        </div>
+
+                        <div id="productGridWrapper" style="min-height:500px; overflow-y: auto;">
+                            <div class="row" id="productGrids"></div>
+                            <div class="row" id="productGrid"></div>
+                            <div id="serviceList" class="row"></div>
+                            <div id="selectedServices" class="mt-3"></div>
+                            <div id="actionButtons" style="display:none;">
+                                <button id="cancelSelection" class="btn btn-secondary" onclick="cancelSelection()">Cancel</button>
+                                <button id="confirmSelection" class="btn btn-primary" onclick="confirmSelectionAndDisplayProducts()">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Service Panel -->
+                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                        <div id="serviceTypeGridWrapper" class="mt-3">
+                            <div class="row" id="serviceTypeGrid">
+                            </div>
+                        </div>
+                        <div id="productGridWrapper" style="min-height:500px; overflow-y: auto;">
+                            <div class="row" id="serviceGrids"></div>
+                            <div class="row" id="serviceGrid"></div>
+                            <div id="serviceList" class="row"></div>
+                            <div id="selectedServices" class="mt-3"></div>
+                            <div id="actionButtons" style="display:none;">
+                                <button id="cancelSelection" class="btn btn-secondary" onclick="cancelSelection()">Cancel</button>
+                                <button id="confirmSelection" class="btn btn-primary" onclick="confirmSelectionAndDisplayProducts()">Confirm</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+
+                
+
+            </div>
+            <div class="col-md-4 d-flex flex-column" style="height: 100%;">
+                <div style="height: 300px; overflow-y: auto; margin-bottom: 15px;">
+                    <div id="paymentSection" class="flex-grow-1">
+                        <div id="selectedProductsList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                    </div>
+                </div>
+                <div class="payment-form-container" style="margin-top: auto; padding-top: 15px;">
+                    <h6 class="mt-5" lang="km">តុដែលបានជ្រើសរើស: <span id="selectedTable"></span></h6>
+                    <a href="javascript:void(0);" class="btn btn-primary my-1" style="width:155px;" id="selectTableBtn">
+                        <i class="fas fa-chair"></i>Table
+                    </a>
+                    <!-- Button Group to mimic select with icons -->
+                    <div class="dropdown mt-2" style="display:none;">
+                        <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-cogs"></i> Option
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                            <li><a class="dropdown-item" href="#" data-value="service"><i class="fa fa-cogs"></i> Service</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="product"><i class="fa fa-cube"></i> Product</a></li>
+                        </ul>
+                    </div>
+                    <div class="d-flex align-items-center w-100 gap-3 mt-2">
+                        <div class="dropdown" style="display:none;">
+                            <button class="btn btn-light dropdown-toggle" type="button" id="salerDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="salerDropdown">
+                                <li><a class="dropdown-item" href="#" data-value="1" data-name="John Doe"><i class="bi bi-person-fill"></i> John Doe</a></li>
+                                <li><a class="dropdown-item" href="#" data-value="2" data-name="Jane Smith"><i class="bi bi-person-fill"></i> Jane Smith</a></li>
+                            </ul>
+                        </div>
+                        <select id="customerTypeDropdown" class="form-control ms-0" style="width: 250px !important;" lang="km">
+                            <option value="">ប្រភេទអតិថិជន</option>
+                        </select>
+
+                        <div class="form-group mt-4">
+                            <label for="DiscountPercentage" id="discountLabel" style="display:none; margin-right: 5px;" lang="km">
+                                បានបញ្ចុះតម្លៃសម្រាប់អតិថិជនចំនួន:
+                            </label>
+                            <span id="DiscountField" style="display: inline-block; width: auto; padding: 0;"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center w-100 gap-3">
+                        <label class="control-label">Customer:</label>
+                        <input type="hidden" id="customer_id" name="customer_id" />
+                        <input type="text" class="form-control" id="customer_name" name="customer_name" style="width:200px !important; margin-left:30px !important;" value="" />
+                        <label class="control-label" id="lbl_customer_point">Point:</label>
+                    </div>
+
+                    <div class="d-flex align-items-center mb-2">
+                        <label for="cashReceived" class="me-2" lang="km">ប្រាក់ទទួល :</label>
+                        <input type="number" class="form-control text-end" id="cashReceived" value="0.00" style="width: 120px;" min="0">
+
+                        <select id="currencyType" class="form-select ms-2" style="width: 80px;">
+                            <option value="KHR">KHR</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <label for="discountAmount" class="me-2" ​ lang="km">បញ្ចុះតម្លៃ :</label>
+                        <select class="form-control text-end" id="discountAmount" style="width: 120px;">
+                            <option value="0">0%</option>  <!-- No discount -->
+                            <option value="20">20%</option>
+                            <option value="30">30%</option>
+                            <option value="40">40%</option>
+                        </select>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <label for="taxAmount" class="me-2" lang="km">ពន្ធ(%) :</label>
+                        <input type="number" class="form-control text-end" id="taxAmount" style="width: 120px;" placeholder="0.00">
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <label for="totalAmount" class="me-2" ​ lang="km">តម្លៃសរុប:</label>
+                        <input type="text" id="totalAmount" class="form-control text-end" style="width: 120px;" readonly value="$0.00">
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <label for="depositKHR" class="me-2" lang="km">ប្រាក់អាប់ជាខ្មែរ:</label>
+                        <input type="text" class="form-control text-end" id="depositKHR" value="0.00" style="width: 120px;" readonly>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <label for="depositUSD" class="me-2" ​​ lang="km">ប្រាក់អាប់ជាដុល្លា:</label>
+                        <input type="text" class="form-control text-end" id="depositUSD" value="0.00" style="width: 120px;" readonly>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <div class="d-flex align-items-center mb-1">
+                            <div class="dropdown">
+                                <button id="paymentMethod" class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" lang="km">
+                                    ជ្រើសរើសការទូទាត់
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="paymentMethod">
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center" href="#" data-value="creditCard">
+                                            <i class="fas fa-credit-card me-2 text-primary"></i> Credit Card
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center" href="#" data-value="cash">
+                                            <i class="fas fa-money-bill-wave me-2 text-success"></i> Cash
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center" href="#" data-value="aba">
+                                            <i class="fas fa-university me-2 text-primary"></i> ABA
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-success  mt-1 w-50" id="savePaymentBtn" lang="km" style="font-size:20px;">
+                        ទូទាត់​ប្រាក់
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0V4zm0 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6H0zm2 4a1 1 0 1 1 0 2h4a1 1 0 1 1 0-2H2z" />
+                        </svg>
+                    </button>
+                    <div class="d-flex align-items-center mb-2" style="visibility: hidden;">
+                        <label for="totalAmount" class="me-2">Amount :</label>
+                        <input type="text" id="AllAmount" class="form-control text-end" readonly value="$0.00">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="sugarModal" tabindex="-1" aria-labelledby="sugarModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sugarModalLabel">Product Attributes</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="productId">
+                        <h6 id="productName"></h6>
+                        <p id="productPrice"></p>
+
+                        <label for="sugarAmount"></label>
+                        <select id="sugarAmount" class="form-control"></select>
+
+                        <label for="size"></label>
+                        <select id="size" class="form-control"></select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="confirmSugar">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal Structure -->
+        <div class="modal fade" id="tableModal" tabindex="-1" aria-labelledby="tableModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="tableModalLabel">Select Table</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="tableList" class="row">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="~/Content/jquery-ui.css" />
+    @section Scripts {
+        <!-- Bootstrap 5 Modal -->
+        <link rel="stylesheet" href="~/Content/css/site.css">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/Scripts/jquery-ui.js"></script>
+        <script type="text/javascript">
+            let selectedProducts = [];
+
+
+            function adjustResponsiveFontSize() {
+                const productNames = document.querySelectorAll('.product-name');
+                const productPrices = document.querySelectorAll('.product-price');
+                const productQty = document.querySelectorAll('.product-qty');
+                const buttons = document.querySelectorAll('.responsive-btn');
+                const icons = document.querySelectorAll('.responsive-icon');
+                if (window.innerWidth <= 576) {
+                    // Small screens: reduce font size
+                    productNames.forEach(item => item.style.fontSize = '0.3em');
+                    productPrices.forEach(item => item.style.fontSize = '0.4em');
+                    productQty.forEach(item => item.style.fontSize = '0.4em');
+                    buttons.forEach(btn => btn.style.fontSize = '0.5em');
+                    icons.forEach(icon => icon.style.fontSize = '0.5em');
+                } else if (window.innerWidth < 1024) {
+                    // Medium screens: slightly larger font size
+                    productNames.forEach(item => item.style.fontSize = '0.7em');
+                    productPrices.forEach(item => item.style.fontSize = '0.8em');
+                    productQty.forEach(item => item.style.fontSize = '0.8em');
+                    buttons.forEach(btn => btn.style.fontSize = '0.8em');
+                    icons.forEach(icon => icon.style.fontSize = '0.8em');
+                } else {
+                    // Large screens: default font size
+                    productNames.forEach(item => item.style.fontSize = '0.9em');
+                    productPrices.forEach(item => item.style.fontSize = '1em');
+                    productQty.forEach(item => item.style.fontSize = '1em');
+                    buttons.forEach(btn => btn.style.fontSize = '1em');
+                    icons.forEach(icon => icon.style.fontSize = '1em');
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+
+        const totalAmountInput = document.getElementById('totalAmount');
+        const discountInput = document.getElementById('discountAmount');
+        const Amount = document.getElementById('AllAmount');
+        const taxInput = document.getElementById('taxAmount');
+        const cashReceivedInput = document.getElementById('cashReceived');
+        const currencyTypeSelect = document.getElementById('currencyType');
+        const depositKHRInput = document.getElementById('depositKHR');
+        const depositUSDInput = document.getElementById('depositUSD');
+        const cashReceivedHidden = document.getElementById("cashReceivedHidden");
+        const exchangeRate = 4100;
+
+
+        function handleProductSelection(card) {
+            const productId = card.getAttribute('data-id');
+            const productName = card.getAttribute('data-name');
+            const productDescription = card.getAttribute('data-description');
+            const categoryName = card.getAttribute('data-category-name');
+            const rawPrice = card.getAttribute('data-price');
+            const productPrice = rawPrice.replace(/[^0-9.-]+/g, '');
+
+            document.getElementById('productId').value = productId;
+            document.getElementById('productName').textContent = productName;
+            document.getElementById('productPrice').textContent = `$${productPrice.toFixed(2)}`
+            if (categoryName.toLowerCase() === 'bread' || categoryName.toLowerCase() === 'food') {
+                addProductToCart(productId, productName, productPrice);
+            } else {
+                getProductAttributes(productId);
+                const sugarModal = new bootstrap.Modal(document.getElementById('sugarModal'));
+                sugarModal.show();
+            }
+                }
+
+        document.getElementById('confirmSugar').addEventListener('click', function () {
+            const productId = document.getElementById('productId').value;
+            const productName = document.getElementById('productName').textContent;
+            const rawProductPrice = document.getElementById('productPrice').textContent.replace('$', '');
+            const productPrice = rawProductPrice.replace(/[^0-9.-]+/g, '');
+            const sugarAmount = document.getElementById('sugarAmount').value;
+            const size = document.getElementById('size').value;
+            let existingProduct = selectedProducts.find(product => product.id === productId && product.sugarAmount === sugarAmount && product.size === size);
+            if (existingProduct) {
+                existingProduct.quantity += 1;
+                existingProduct.sugarAmount = sugarAmount;
+            } else {
+                const selectedProduct = {
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    quantity: 1,
+                    sugarAmount: sugarAmount,
+                    size: size,
+                };
+                selectedProducts.push(selectedProduct);
+            }
+            updateTotalAmount();
+            updateAllAmount();
+            updatePaymentSection();
+            const sugarModal = bootstrap.Modal.getInstance(document.getElementById('sugarModal'));
+            sugarModal.hide();
+        });
+        function addProductToCart(productId, productName, productPrice) {
+            let existingProduct = selectedProducts.find(product => product.id === productId);
+
+            if (existingProduct) {
+                existingProduct.quantity += 1;
+            } else {
+                selectedProducts.push({
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    quantity: 1
+                });
+            }
+            updateAllAmount();
+            updateTotalAmount();
+            updatePaymentSection();
+
+        }
+        cashReceivedInput.addEventListener('dblclick', function () {
+            cashReceivedInput.value = '';
+            updateDeposit();
+        });
+        function updateAllAmount() {
+            if (!totalAmountInput) {
+                return;
+            }
+            const subtotal = (selectedProducts && selectedProducts.length > 0)
+                ? selectedProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0)
+                : 0;
+            Amount.value = `$${subtotal.toFixed(2)}`;
+        }
+        function updateTotalAmount() {
+            if (!totalAmountInput || !discountInput || !taxInput) {
+                console.error('One or more input fields (Total, Discount, Tax) not found!');
+                return;
+            }
+            const discount = parseFloat(discountInput.value) / 100 || 0;
+            const taxRate = parseFloat(taxInput.value) / 100 || 0;
+
+
+            const subtotal = (selectedProducts && selectedProducts.length > 0)
+                ? selectedProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0)
+                : 0;
+
+            const discountAmount = subtotal * discount;
+            const taxAmount = subtotal * taxRate;
+            const totalAmount = subtotal + taxAmount - discountAmount;
+
+            totalAmountInput.value = `$${totalAmount.toFixed(2)}`;
+        }
+        function updateDeposit() {
+            const totalAmountUSD = parseFloat(totalAmountInput.value.replace('$', '')) || 0;
+            const totalAmountKHR = totalAmountUSD * exchangeRate;
+
+            let cashReceived = parseFloat(cashReceivedInput.value) || 0;
+            const selectedCurrency = currencyTypeSelect.value;
+
+            let totalCashKHR = selectedCurrency === "USD" ? cashReceived * exchangeRate : cashReceived;
+
+            const depositKHR = totalCashKHR - totalAmountKHR;
+            const depositUSD = depositKHR / exchangeRate;
+
+            depositKHRInput.value = `${depositKHR.toLocaleString()} KHR`;
+            depositUSDInput.value = `$${depositUSD.toFixed(2)} USD`;
+
+            depositKHRInput.style.color = depositKHR < 0 ? 'red' : 'green';
+            depositUSDInput.style.color = depositUSD < 0 ? 'red' : 'green';
+        }
+        discountInput.addEventListener('input', updateTotalAmount);
+        taxInput.addEventListener('input', updateTotalAmount);
+        cashReceivedInput.addEventListener('input', updateDeposit);
+                currencyTypeSelect.addEventListener('change', updateDeposit);
+
+        function updatePaymentSection() {
+            const paymentDetailsSection = document.getElementById('paymentSection');
+
+            if (paymentDetailsSection) {
+                paymentDetailsSection.innerHTML = '';
+
+                const flexContainer = document.createElement('div');
+                flexContainer.style.display = 'flex';
+                flexContainer.style.flexDirection = 'column';
+                flexContainer.style.gap = '10px';
+                selectedProducts.forEach(product => {
+                    const productDetails = document.createElement('div');
+                    productDetails.classList.add('selected-product');
+                    productDetails.style.display = 'flex';
+                    productDetails.style.alignItems = 'center';
+                    productDetails.style.justifyContent = 'space-between';
+                    productDetails.style.border = '1px solid #ccc';
+                    productDetails.style.padding = '10px';
+                    productDetails.style.margin = '5px';
+                    productDetails.style.borderRadius = '5px';
+                    productDetails.style.gap = '15px';
+                    productDetails.style.minHeight = '60px';
+                    productDetails.innerHTML = `
+                    <h6 class="product-name" style="flex: 2; margin: 0; font-weight: bold; font-size: 0.9em; color: #333;">
+                        ${product.name} ${product.sugarAmount !== undefined ? `(${product.sugarAmount}% Sugar)` : ''} ${product.size !== undefined ? `(${product.size})` : ''}
+                    </h6>
+                    <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+                        <button class="btn btn-sm btn-outline-secondary update-quantity-btn responsive-btn" data-id="${product.id}" data-sugar="${product.sugarAmount !== undefined ? product.sugarAmount : 0}" data-change="-1">-</button>
+                        <span class="product-qty" style="margin: 0 10px;">${product.quantity}</span>
+                        <button class="btn btn-sm btn-outline-secondary update-quantity-btn responsive-btn" data-id="${product.id}" data-sugar="${product.sugarAmount !== undefined ? product.sugarAmount : 0}" data-change="1">+</button>
+                    </div>
+                    <p class="product-price" style="flex: 3; text-align: right; margin: 0; font-size: 1em; font-weight: bold; color: #007bff;">
+                        $${(product.price * product.quantity).toFixed(2)}
+                    </p>
+                    <button class="btn btn-danger btn-sm remove-btn" style="flex: 0;" data-id="${product.id}" data-sugar="${product.sugarAmount !== undefined ? product.sugarAmount : 0}">
+                        <i class="fas fa-trash responsive-icon"></i>
+                    </button>
+                `;
+                    flexContainer.appendChild(productDetails);
+                });
+                paymentDetailsSection.appendChild(flexContainer);
+                adjustResponsiveFontSize();
+
+                document.querySelectorAll('.remove-btn').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const productId = this.getAttribute('data-id');
+                        let sugarAmount = this.getAttribute('data-sugar') || 0;
+                        removeAllProduct(productId, sugarAmount);
+                    });
+                });
+                document.querySelectorAll('.update-quantity-btn').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const productId = this.getAttribute('data-id');
+                        const change = parseInt(this.getAttribute('data-change'));
+                        const sugarAmount = this.getAttribute('data-sugar') || 0;
+                        updateQuantity(productId, sugarAmount,change);
+                    });
+                });
+            } else {
+                console.error('Payment section not found!');
+            }
+        }
+
+        window.addEventListener('resize', adjustResponsiveFontSize);
+        adjustResponsiveFontSize();
+        function updateQuantity(productId, sugarAmount, change) {
+            sugarAmount = (sugarAmount === undefined || sugarAmount === "undefined" || sugarAmount === null) ? 0 : sugarAmount;
+            let product = selectedProducts.find(product =>
+                product.id === productId && (product.sugarAmount ?? 0) == sugarAmount
+            );
+            if (product) {
+                product.quantity += change;
+                if (product.quantity <= 0) {
+                    removeProduct(productId, sugarAmount);
+                }
+                updateAllAmount();
+                updateTotalAmount();
+                updatePaymentSection();
+                renderProductDetails(product);
+            }
+        }
+        function removeAllProduct(productId, sugarAmount) {
+            sugarAmount = (sugarAmount === undefined || sugarAmount === "undefined" || sugarAmount === null) ? 0 : sugarAmount;
+            selectedProducts = selectedProducts.filter(product =>
+                !(product.id === productId && (product.sugarAmount ?? 0) == sugarAmount)
+            );
+            updateTotalAmount();
+            updatePaymentSection();
+            updateAllAmount();
+        }
+
+        function removeProduct(productId, sugarAmount) {
+            sugarAmount = (sugarAmount === undefined || sugarAmount === "undefined" || sugarAmount === null) ? 0 : sugarAmount;
+            let productIndex = selectedProducts.findIndex(product => product.id === productId && (product.sugarAmount ?? 0) == sugarAmount);
+
+            if (productIndex !== -1) {
+                selectedProducts.splice(productIndex, 1);
+            }
+            updateAllAmount();
+            updateTotalAmount();
+            updatePaymentSection();
+        }
+        function renderProductDetails(product) {
+            const productCard = document.querySelector(`[data-id='${product.id}']`);
+            if (productCard) {
+                productCard.querySelector(".quantity").textContent = product.quantity;
+                productCard.querySelector(".total-price").textContent = `$${(product.price * product.quantity).toFixed(2)}`;
+            }
+        }
+        function addProductCardEventListeners() {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    handleProductSelection(card);
+                });
+            });
+        }
+        addProductCardEventListeners();
+      $(document).ready(function () {
+    var categoryMap = {};
+          //console.log("Window width:", window.innerWidth);
+
+          $('#customer_name').autocomplete({
+            source: '@Url.Action("getCust", "Sale")',
+            select: function (event, ui) {
+                var selectedObj = ui.item;
+
+                var id = selectedObj.id;
+                var pn = selectedObj.label;
+                var status = selectedObj.status;
+                //console.log(selectedObj);
+                $('#customer_id').val(id);
+            }
+        });
+
+
+          var appointmentId = $('#appointmentId').val();
+            if (appointmentId != "") {
+                //alert(appointmentId);
+                $.ajax({
+                    url: '@Url.Action("GetAppointmentAJAX", "Appointment")',
+                    type: 'POST',
+                    data: { id: appointmentId },
+                    success: function (response) {
+                        console.log(response);
+                        var data = response.data;
+                        var customer_id = data.CustomerId != "" ? data.CustomerId : "";
+                        $('#customer_id').val(customer_id);
+                        $('#customer_name').val(data.CustomerName);
+                        console.log(data.serviceBookeds);
+                        $.each(data.serviceBookeds, function (index, item) {
+                            console.log(item);
+                            addProductToCart(item.ServiceId, item.ServiceName, item.Price);
+                            //$('#paymentSection').append("" +
+                            //    '<div class="selected-product" style="display: flex; align-items: center; justify-content: space-between; border: 1px solid rgb(204, 204, 204); padding: 10px; margin: 5px; border-radius: 5px; gap: 15px; min-height: 60px;">'+
+                            //    '<h6 class="product-name" style="flex: 2; margin: 0; font-weight: bold; font-size: 0.9em; color: #333;">' +item.Id+'</h6>'+
+                            //        '<div style="flex: 1; display: flex; justify-content: center; align-items: center;">'+
+                            //            '<button class="btn btn-sm btn-outline-secondary update-quantity-btn responsive-btn" data-id="b889d7ee-a077-44aa-9bae-d0d2bad740af" data-sugar="0" data-change="-1" style="font-size: 1em;">-</button>'+
+                            //            '<span class="product-qty" style="margin: 0px 10px; font-size: 1em;">1</span>'+
+                            //            '<button class="btn btn-sm btn-outline-secondary update-quantity-btn responsive-btn" data-id="b889d7ee-a077-44aa-9bae-d0d2bad740af" data-sugar="0" data-change="1" style="font-size: 1em;">+</button>'+
+                            //        '</div>'+
+                            //        '<p class="product-price" style="flex: 3; text-align: right; margin: 0; font-size: 1em; font-weight: bold; color: #007bff;">$15.00</p>'+
+                            //        '<button class="btn btn-danger btn-sm remove-btn" style="flex: 0;" data-id="b889d7ee-a077-44aa-9bae-d0d2bad740af" data-sugar="0"><i class="fas fa-trash responsive-icon" style="font-size: 1em;"></i></button>'+
+                            //    '</div>'
+                            //);
+                        });
+
+                        //adjustResponsiveFontSize();
+
+                        //document.querySelectorAll('.remove-btn').forEach(button => {
+                        //    button.addEventListener('click', function () {
+                        //        const productId = this.getAttribute('data-id');
+                        //        let sugarAmount = this.getAttribute('data-sugar') || 0;
+                        //        removeAllProduct(productId, sugarAmount);
+                        //    });
+                        //});
+                        //document.querySelectorAll('.update-quantity-btn').forEach(button => {
+                        //    button.addEventListener('click', function () {
+                        //        const productId = this.getAttribute('data-id');
+                        //        const change = parseInt(this.getAttribute('data-change'));
+                        //        const sugarAmount = this.getAttribute('data-sugar') || 0;
+                        //        updateQuantity(productId, sugarAmount, change);
+                        //    });
+                        //});
+
+                    },
+                    error: function () {
+                        alert("Error loading appointment data.");
+                    }
+                });
+            }
+
+          function adjustCategoryCardStyles() {
+              const categoryCards = document.querySelectorAll('.category-card h6');
+              const categoryCols = document.querySelectorAll('.category-col');
+
+              const screenWidth = window.innerWidth;
+
+              if (screenWidth <= 576) {
+                  categoryCols.forEach(col => {
+                      col.style.maxWidth = '100%';
+                  });
+
+                  // Adjust font size for mobile
+                  categoryCards.forEach(card => {
+                      card.style.fontSize = '10px';
+                  });
+                  $(".category-col").removeClass("col-sm-3 col-md-2 col-lg-2").addClass("col-12");
+              } else if (screenWidth <= 768) {
+                  categoryCols.forEach(col => {
+                      col.style.maxWidth = '25%';
+                  });
+                  categoryCards.forEach(card => {
+                      card.style.fontSize = '12px';
+                  });
+
+
+                  $(".category-col").removeClass("col-12 col-sm-3 col-md-2 col-lg-2").addClass("col-sm-3");
+              } else if (screenWidth <= 1024) {
+                  categoryCols.forEach(col => {
+                      col.style.maxWidth = '33.33%';
+                  });
+                  categoryCards.forEach(card => {
+                      card.style.fontSize = '14px';
+                  });
+                  $(".category-col").removeClass("col-12 col-sm-3 col-md-2 col-lg-2").addClass("col-md-4");
+              } else {
+                  categoryCols.forEach(col => {
+                      col.style.maxWidth = '20%';
+                  });
+                  categoryCards.forEach(card => {
+                      card.style.fontSize = '16px';
+                  });
+                  $(".category-col").removeClass("col-12 col-sm-3 col-md-4 col-lg-2").addClass("col-lg-2.4");
+              }
+          }
+
+          window.addEventListener('resize', adjustCategoryCardStyles);
+          adjustCategoryCardStyles();
+
+        $.ajax({
+            url: '@Url.Action("GetCategories", "Coffee")',
+            type: 'GET',
+            data: { isService: false },
+            success: function (categories) {
+                var allButton = `
+                <div class="col-6 col-sm-3 col-md-2 col-lg-2 mb-2 category-col">
+                    <div class="card p-2 text-center category-card bg-primary text-white" data-category-id="all">
+                        <h6 class="m-0">All</h6>
+                    </div>
+                </div>
+                `;
+                $('#categoryGrid').append(allButton);
+                categories.forEach(function (category) {
+                    categoryMap[category.Id] = category;
+                    var categoryName = category.CategoryNameEng || category.CategoryNameKh;
+                    var categoryButton = `
+                    <div class="col-6 col-sm-3 col-md-2 col-lg-2 mb-2 category-col">
+                        <div class="card p-2 text-center category-card" data-category-id="${category.Id}">
+                            <h6 class="m-0">${categoryName}</h6>
+                        </div>
+                    </div>
+                    `;
+                    $('#categoryGrid').append(categoryButton);
+                });
+
+                $(".category-card").on("click", function () {
+                    var selectedCategoryId = $(this).data("category-id");
+
+                    if (selectedCategoryId === "all") {
+                        loadProducts(1, "");
+                    } else {
+                        var selectedCategoryIds = [selectedCategoryId];
+                        var categoryFilter = selectedCategoryIds.join(',');
+                        loadProducts(1, categoryFilter);
+                    }
+                });
+            },
+            error: function () {
+                alert("Error loading categories.");
+            }
+        });
+
+          loadProducts(1, "");
+
+          /** Load Service Type Pill*/
+          $.ajax({
+                url: '@Url.Action("GetCategories", "Coffee")',
+              type: 'GET',
+              data: { isService: true },
+                success: function (categories) {
+                    var allButton = `
+                    <div class="col-6 col-sm-3 col-md-2 col-lg-2 mb-2 category-col">
+                        <div class="card p-2 text-center category-card bg-primary text-white" data-category-id="all">
+                            <h6 class="m-0">All</h6>
+                        </div>
+                    </div>
+                    `;
+                    $('#serviceTypeGrid').append(allButton);
+                    categories.forEach(function (category) {
+                        categoryMap[category.Id] = category;
+                        var categoryName = category.CategoryNameEng || category.CategoryNameKh;
+                        var categoryButton = `
+                        <div class="col-6 col-sm-3 col-md-2 col-lg-2 mb-2 category-col">
+                            <div class="card p-2 text-center category-card" data-category-id="${category.Id}">
+                                <h6 class="m-0">${categoryName}</h6>
+                            </div>
+                        </div>
+                        `;
+                        $('#serviceTypeGrid').append(categoryButton);
+                    });
+
+                    $(".category-card").on("click", function () {
+                        var selectedCategoryId = $(this).data("category-id");
+
+                        if (selectedCategoryId === "all") {
+                            loadService(1, "");
+                        } else {
+                            var selectedCategoryIds = [selectedCategoryId];
+                            var categoryFilter = selectedCategoryIds.join(',');
+                            loadService(1, categoryFilter);
+                        }
+                    });
+                },
+                error: function () {
+                    alert("Error loading categories.");
+                }
+            });
+          loadService(1, "");
+      });
+        $(document).ready(function () {
+        var customerTypeMap = {};
+        $.ajax({
+            url: '@Url.Action("GetCustomerTypes", "Coffee")',
+            type: 'GET',
+            success: function (customerTypes) {
+                customerTypes.forEach(function (customerType) {
+                    customerTypeMap[customerType.Id] = customerType;
+                    var customerTypeName = customerType.customer_type;
+                    var option = `<option value="${customerType.Id}">${customerTypeName}</option>`;
+                    $('#customerTypeDropdown').append(option);
+                });
+                $("#customerTypeDropdown").on("change", function () {
+                    var selectedCustomerTypeId = $(this).val();
+                    var liElement = $('#customerTypeDisplay');
+                    if (selectedCustomerTypeId) {
+                        var selectedCustomerType = customerTypeMap[selectedCustomerTypeId];
+                        liElement.html(`<i class="fa-solid fa-fire"></i> ${selectedCustomerType.customer_type}`);
+                        liElement.css("background-color", "#ff5733");
+                        loadProducts(1, "", selectedCustomerTypeId);
+                    } else {
+                        liElement.html('<i class="fa-solid fa-fire"></i> ទីតាំង');
+                        liElement.css("background-color", "#dc3545");
+                        loadProducts(1, "");
+                    }
+                });
+            },
+            error: function () {
+                alert("Error loading customer types.");
+            }
+        });
+        loadProducts(1, "");
+        });
+
+        function loadProducts(pageNumber, categoryFilter, selectedCustomerTypeId) {
+            $.ajax({
+                url: '@Url.Action("GetProductData", "Coffee")',
+                type: 'GET',
+                data: {
+                    pageNumber: pageNumber,
+                    pageSize: 100,
+                    categoryFilter: categoryFilter,
+                    selectedCustomerTypeId: selectedCustomerTypeId,
+                    isService: false,
+                },
+                success: function (response) {
+                    console.log(response);
+                    var products = response;
+                    var productGrid = $('#productGrid');
+                    productGrid.empty();
+                    if (products.length === 0) {
+                        productGrid.append('<p>No products found.</p>');
+                    }
+                    products.forEach(function (product) {
+                        var productImage = product.ProductImage ? product.ProductImage : '/Images/default-product.jpg';
+                        var productCard = `
+                        <div class="col-lg-3 col-md-4 col-sm-6 col-12 product-card mb-4"
+                            data-id="${product.Id}"
+                            data-name="${product.ProductName}"
+                            data-price="${product.PriceInStock}"
+                            data-description="${product.Description}"
+                            data-category-name="${product.CategoryName}">
+
+                            <div class="card h-100 position-relative shadow-sm">
+                                <div class="position-absolute top-0 end-0 m-2 bg-success text-white p-2 rounded price-tag">
+                                    $${product.PriceInStock}
+                                </div>
+                                <img src="${productImage}" class="card-img-top product-image" alt="${product.ProductName}">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title product-title">${product.ProductName}</h5>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                $("#productGrid").append(productCard);
+            });
+            $('.product-card').off('click').on('click', function () {
+                var productId = $(this).data('id');
+                $('#selectedProductId').val(productId);
+                getProductAttributes(productId);
+            });
+            updateAllAmount();
+            updateTotalAmount();
+            updatePaymentSection();
+            adjustResponsiveStyles();
+        },
+        error: function () {
+            alert('Error loading product data');
+        }
+    });
+                }
+
+                    function loadService(pageNumber, categoryFilter, selectedCustomerTypeId) {
+                        $.ajax({
+                            url: '@Url.Action("GetProductData", "Coffee")',
+                            type: 'GET',
+                            data: {
+                                pageNumber: pageNumber,
+                                pageSize: 100,
+                                categoryFilter: categoryFilter,
+                                selectedCustomerTypeId: selectedCustomerTypeId,
+                                isService: true,
+                            },
+                            success: function (response) {
+                                console.log(response);
+                                var products = response;
+                                var productGrid = $('#serviceGrid');
+                                productGrid.empty();
+                                if (products.length === 0) {
+                                    productGrid.append('<p>No products found.</p>');
+                                }
+                                products.forEach(function (product) {
+                                    var productImage = product.ProductImage ? product.ProductImage : '/Images/default-product.jpg';
+                                    var productCard = `
+                                    <div class="col-lg-3 col-md-4 col-sm-6 col-12 product-card mb-4"
+                                        data-id="${product.Id}"
+                                        data-name="${product.ProductName}"
+                                        data-price="${product.PriceInStock}"
+                                        data-description="${product.Description}"
+                                        data-category-name="${product.CategoryName}">
+
+                                        <div class="card h-100 position-relative shadow-sm">
+                                            <div class="position-absolute top-0 end-0 m-2 bg-success text-white p-2 rounded price-tag">
+                                                $${product.PriceInStock}
+                                            </div>
+                                            <img src="${productImage}" class="card-img-top product-image" alt="${product.ProductName}">
+                                            <div class="card-body text-center">
+                                                <h5 class="card-title product-title">${product.ProductName}</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    `;
+                            $("#serviceGrid").append(productCard);
+                        });
+                        $('.product-card').off('click').on('click', function () {
+                            var productId = $(this).data('id');
+                            $('#selectedProductId').val(productId);
+                            getProductAttributes(productId);
+                        });
+                        updateAllAmount();
+                        updateTotalAmount();
+                        updatePaymentSection();
+                        adjustResponsiveStyles();
+                    },
+                            error: function () {
+                                alert('Error loading product data');
+                            }
+                        });
+                    }
+
+                function getProductAttributes(productId) {
+    $.ajax({
+        url: '@Url.Action("GetProductAttributes", "Coffee")',
+        type: 'GET',
+        data: { productId: productId },
+        success: function (attributes) {
+            $('#productId').val(productId);
+            var selectedCard = $(`.product-card[data-id="${productId}"]`);
+            $('#productName').text(selectedCard.data('name') || "Unnamed Product");
+            $('#productPrice').text(`Price: $${selectedCard.data('price') || "N/A"}`);
+            $('#sugarAmount').empty().append('<option value="">Select Sugar Amount</option>');
+            $('#size').empty().append('<option value="">Select Size</option>');
+            if (!attributes || attributes.length === 0) {
+                addProductToCart(productId, selectedCard.data('name'), selectedCard.data('price'));
+                return;
+            }
+            const groupedAttributes = attributes.reduce((acc, attr) => {
+                acc[attr.AttributeName] = acc[attr.AttributeName] || [];
+                acc[attr.AttributeName].push(attr.AttributeValue);
+                return acc;
+            }, {});
+            if (groupedAttributes.Sugar) {
+                groupedAttributes.Sugar.forEach(value => {
+                    $('#sugarAmount').append(`<option value="${value}">${value}</option>`);
+                });
+            }
+            if (groupedAttributes.Size) {
+                groupedAttributes.Size.forEach(value => {
+                    $('#size').append(`<option value="${value}">${value}</option>`);
+                });
+            }
+            $('#sugarModal').modal('show');
+        },
+        error: function () {
+            alert('Failed to load product attributes.');
+        }
+    });
+        }
+function adjustResponsiveStyles() {
+    const productCards = document.querySelectorAll('.product-card');
+    const productImages = document.querySelectorAll('.product-image');
+    const cardTitles = document.querySelectorAll('.product-title');
+    const priceTags = document.querySelectorAll('.price-tag');
+
+    const screenWidth = window.innerWidth;
+
+    if (screenWidth <= 576) {
+        productCards.forEach(card => {
+            card.style.height = '180px';
+        });
+        productImages.forEach(img => img.style.height = '150px');
+        cardTitles.forEach(title => title.style.fontSize = '10px');
+        priceTags.forEach(tag => tag.style.fontSize = '10px');
+    } else if (screenWidth <= 1024) {
+        productCards.forEach(card => {
+            card.style.height = '230px';
+        });
+        productImages.forEach(img => img.style.height = '150px');
+        cardTitles.forEach(title => title.style.fontSize = '12px');
+        priceTags.forEach(tag => tag.style.fontSize = '12px');
+    } else {
+        productCards.forEach(card => {
+            card.style.height = '320px'; // Default height for larger screens
+        });
+        productImages.forEach(img => img.style.height = '200px');
+        cardTitles.forEach(title => title.style.fontSize = '16px');
+        priceTags.forEach(tag => tag.style.fontSize = '16px');
+    }
+}
+
+// Trigger resize event to adjust styles immediately after page load
+window.addEventListener('resize', adjustResponsiveStyles);
+adjustResponsiveStyles();  // Initial style adjustment
+
+        loadProducts(1);
+        function savePaymentToDatabase() {
+            if (selectedProducts.length === 0) {
+                alert("No products selected!");
+                return;
+            }
+            let Payment = 0;
+            const orderType = document.getElementById("orderTypeValue").value ?? "walkin";
+            const salerName = document.querySelector('#salerDropdown').closest('.dropdown')?.querySelector('.dropdown-item.active')?.getAttribute('data-name') ?? null;
+            const paymentMethod = document.querySelector('#paymentMethod').closest('.dropdown')?.querySelector('.dropdown-item.active')?.getAttribute('data-value') ?? null;
+            const discountPercent = parseFloat(document.getElementById("discountAmount").value) || 0;
+            const amount = parseFloat(document.getElementById("AllAmount").value.replace(/[^0-9.]/g, "")) || 0;
+            let discountAmount = (discountPercent / 100) * amount;
+            const taxAmount = parseFloat(document.getElementById("taxAmount").value) || 0;
+            const totalAmount = parseFloat(document.getElementById("totalAmount").value.replace('$', '')) || 0;
+            const customerTypeDropdown = document.getElementById("customerTypeDropdown");
+            const customerType = customerTypeDropdown?.value || null;
+            let cashReceived = parseFloat(document.getElementById("cashReceived").value) || 0;
+            const currencyType = document.getElementById("currencyType").value;
+            let tableNumber = document.getElementById("selectedTable").textContent;
+            if (currencyType === "KHR") {
+                cashReceived = cashReceived / exchangeRate;
+            }
+            if (cashReceived == 0) {
+                Payment = totalAmount;
+            } else {
+                Payment = 0;
+            }
+            const client = {
+                SaleDate: new Date().toISOString(),
+                Amount: totalAmount || 0,
+                Discount: discountAmount || 0,
+                TaxAmount: taxAmount || 0,
+                ReceivedByABA: Payment || 0,
+                OrderType: orderType,
+                CustomerId: customerType,
+                CreatedDate: new Date().toISOString(),
+                UpdatedDate: new Date().toISOString(),
+                SaleCode: salerName,
+                OrderType: orderType ?? null,
+                PaymentType: paymentMethod || null,
+                tableNumber: tableNumber
+            };
+            const cliented = {
+                UnitTypeId: orderType ?? null,
+                actual_price:null,
+                GetDetail: selectedProducts.map(product => ({
+                    ProductId: product.id ?? null,
+                    Quantity: product.quantity ?? 0,
+                    Price: product.price ?? 0,
+                    Unit: product.unitId ?? null,
+                    ActualPrice: product.actualPrice ?? 0,
+                    color_code: product.colorCode ?? null,
+                }))
+            }
+            const model = {
+                Amount: totalAmount || 0,
+                RevicedFromCustomer: cashReceived || 0,
+                Discount: discountAmount || 0,
+                ReceivedByABA: Payment || 0,
+                Description: "",
+                GetDetail: selectedProducts.map(product => ({
+                    ProductId: product.id ?? null,
+                    Quantity: product.quantity ?? 0,
+                    Price: product.price ?? 0,
+                    Unit: product.unitId ?? null,
+                    ActualPrice: product.actualPrice ?? 0,
+                    ColorCode: product.colorCode ?? null,
+                    UnitTypeId: orderType ?? null,
+                    Sugar: product.sugarAmount ?? null,  // Capture sugar amount
+                    size: product.size ?? null,  // Capture size
+                })),
+                CustomerId: $('#customer_id').val(),
+                CustomerName: $('#customer_name').val(),
+            };
+            const requestData = {
+                client: client,
+                cliented: cliented,
+                model: model,
+                pmodel: {}
+            };
+            fetch('/Coffee/CreateSale', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        console.error(`HTTP error! Status: ${response.status}`);
+                        return response.text().then(errorText => {
+                            throw new Error(errorText);  // Log the error text if the response is not OK
+                        });
+                    }
+                    return response.json(); // Parse the response body as JSON
+                })
+                .then(data => {
+                    console.log("Response Data:", data); // Log the full response to verify its contents
+                    if (data.success) {
+                        alert("Payment saved successfully!");
+                        if (data.redirectUrl) {
+                            console.log("Redirecting to URL:", data.redirectUrl); // Log the URL to check if it's valid
+                            window.location.href = data.redirectUrl; // Perform the redirect to the invoice
+                        } else {
+                            console.error("Redirect URL is missing from response.");
+                            alert("Redirect URL is missing in the response.");
+                        }
+                    } else {
+                        alert(data.message || "An error occurred.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error occurred:", error);  // Log the error details
+                    //alert("An unexpected error occurred. Please try again.");
+                });
+        }
+        document.getElementById("savePaymentBtn").addEventListener("click", savePaymentToDatabase);
+
+        const customerDropdown = document.querySelector('#customerTypeDropdown');
+
+        if (customerDropdown) {
+            customerDropdown.addEventListener('change', function () {
+                console.log("Selected Customer Type:", this.value);
+            });
+        }
+            function loadTables() {
+                $.ajax({
+                    url: '/Coffee/GetAllTables',
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success) {
+                            $('#tableList').empty();
+                            response.data.forEach(function (table) {
+                                let cardClass = table.IsAvailable ? "card-background" : "card-background unavailable";
+                                let releaseButton = !table.IsAvailable
+                                    ? `<button type="button" class="btn btn-success" id="releaseButton-${table.TableNumber}">Release Table</button>`
+                                    : '';
+
+                                let tableCard = `
+                    <div class="col-md-4 d-flex justify-content-center mb-3">
+                        <div id="table-card-${table.TableNumber}" class="${cardClass}">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">Table ${table.TableNumber}</h5>
+                                <p class="card-text">Description: ${table.Decription}</p>
+                                <p class="card-text">Seats: ${table.People}</p>
+                                ${releaseButton}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                                $('#tableList').append(tableCard);
+                                $(`#table-card-${table.TableNumber}`).on('click', function (event) {
+                                    selectTable(table.TableNumber, event);
+                                });
+                                if (!table.IsAvailable) {
+                                    $(`#releaseButton-${table.TableNumber}`).on('click', function (event) {
+                                        event.stopPropagation();
+                                        customerLeaves(table.TableNumber);
+                                    });
+                                }
+                            });
+                            $('#tableModal').modal('show');
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('An error occurred: ' + error);
+                    }
+                });
+        }
+        document.getElementById('selectTableBtn').addEventListener('click', function () {
+            loadTables();
+        });
+            function selectTable(tableNumber, event) {
+                if (event) event.preventDefault();
+                document.querySelectorAll('.card').forEach(card => card.classList.remove('selected'));
+                const cardElement = document.getElementById(`table-card-${tableNumber}`);
+                if (cardElement) {
+                    cardElement.classList.add('selected');
+                }
+                document.getElementById("selectedTable").textContent = tableNumber;
+                $.ajax({
+                    url: '/Coffee/SelectTable',
+                    type: 'POST',
+                    data: { TableNumber: tableNumber },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#selectedTable').text(tableNumber);
+                            let cardElement = $(`#table-card-${tableNumber}`);
+                            cardElement.addClass('selected');
+                            cardElement.removeClass('card-background unavailable');
+                            $('#tableModal').modal('hide');
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('An error occurred: ' + error);
+                    }
+                });
+            }
+            function customerLeaves(tableNumber, event) {
+                if (event) event.preventDefault();
+
+                $.ajax({
+                    url: '/Coffee/CustomerLeaves',
+                    type: 'POST',
+                    data: { tableNumber: tableNumber },
+                    success: function (response) {
+                        console.log("Response from server:", response);
+
+                        if (response.success) {
+                            alert(response.message);
+
+                            if (response.table) {
+                                const { Decription, People } = response.table;
+                                console.log("Updating card for table:", tableNumber);
+                                let cardElement = $(`#table-card-${tableNumber}`);
+                                console.log("Found element?", cardElement.length);
+
+                                if (cardElement.length > 0) {
+                                    cardElement.find('.card-body').html(`
+                            <h5 class="card-title">Table ${tableNumber}</h5>
+                            <p class="card-text">Description: ${Decription}</p>
+                            <p class="card-text">Seats: ${People}</p>
+                        `);
+                                    cardElement.removeClass('selected unavailable').addClass('card-background');
+                                } else {
+                                    console.error("No table card found to update.");
+                                }
+
+                                $('#selectedTable').text('');
+                                $('.card').removeClass('selected');
+                            } else {
+                                console.error("No table data found in response.");
+                            }
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('An error occurred: ' + error);
+                    }
+                });
+        }
+        $(document).ready(function () {
+            // Event listener for dropdown item selection
+            $('.dropdown-item').click(function () {
+                var selectedValue = $(this).data('value');
+                var selectedText = $(this).text().trim();
+                var selectedIcon = $(this).find('i').attr('class');
+                $('#dropdownMenuButton').html('<i class="' + selectedIcon + '"></i> ' + selectedText);
+                toggleDisplay(selectedValue);
+            });
+            function toggleDisplay(selection) {
+                var productGrid = $('#productGrid');
+                var selectedServices = $('#selectedServices');
+                if (selection === 'service') {
+                    loadServiceType();
+                    selectedServices.show();
+                    productGrid.hide();
+                } else if (selection === 'product') {
+                    productGrid.show();
+                    selectedServices.hide();
+                } else {
+                    productGrid.hide();
+                    selectedServices.hide();
+                }
+            }
+        });
+            function loadServiceType() {
+                $.ajax({
+                    url: '/Coffee/GetAllService',
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.success) {
+                            $('#serviceList').empty();
+                            response.data.forEach(function (serviceType) {
+                                let cardClass = serviceType.IsActive ? "card-background" : "card-background inactive";
+
+                                let serviceCard = `
+                                     <div class="col-md-4 d-flex justify-content-center mb-3">
+                                     <div id="service-card-${serviceType.ServiceTypeId}" class="${cardClass}">
+                                     <div class="card-body text-center" data-service-type-id="${serviceType.ServiceTypeId}">
+                                        <h5 class="card-title">${serviceType.Name}</h5>
+                                        <p class="card-text">${serviceType.Description}</p>
+                                         <p class="card-text">${serviceType.IsActive ? 'Active' : 'Inactive'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            `;
+                                $('#serviceList').append(serviceCard);
+                            });
+                            $('#serviceList').on('click', '.card-body', function () {
+                                const serviceTypeId = $(this).data('service-type-id');
+                                console.log("id:", serviceTypeId);
+                                selectServiceType(serviceTypeId);
+                            });
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert('An error occurred: ' + error);
+                    }
+                });
+            }
+        let selectedServices = [];
+        let allServices = [];
+        function selectServiceType(serviceTypeId) {
+            console.log("ID:", serviceTypeId);
+            $.ajax({
+                url: '/Coffee/GetServicesByServiceType',
+                type: 'GET',
+                data: { serviceTypeId: serviceTypeId },
+                success: function (response) {
+                    if (response.success) {
+                        allServices = response.data;
+                        $('#serviceList').empty();
+
+                        allServices.forEach(function (service) {
+                            let cardClass = service.IsActive ? "card-background" : "card-background inactive";
+                            if (selectedServices.includes(service.ServiceId)) {
+                                cardClass += " selected";  // Retain highlight for selected services
+                            }
+                            const serviceCard = `
+                                <div class="col-lg-3 col-md-4 col-sm-6 col-12 d-flex justify-content-center mb-3">
+                                <div id="service-card-${service.ServiceId}" class="${cardClass} product-card" style="width: 100%; max-width: 300px;">
+                                <div class="card-body d-flex flex-column" data-service-id="${service.ServiceId}">
+                                    <h5 class="card-title text-center mb-3">${service.Name}</h5>
+                                    <p class="card-text text-start mb-2">${service.Description}</p>
+                                    <p class="card-text text-start">Price: $${service.Price}</p>
+                                </div>
+                             </div>
+                        </div>`;
+                            $('#serviceList').append(serviceCard);
+                        });
+                        $('#serviceList').off('click', '.card-body').on('click', '.card-body', function () {
+                            const serviceId = $(this).data('service-id');
+                            const card = $(this).closest('.product-card');
+                            const name = card.find('.card-title').text();
+                            const price = card.find('.card-text').last().text().replace('Price: $', '');
+                            const description = card.find('.card-text').first().text();
+                            selectService(serviceId, name, price, description);
+                        });
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    alert('An error occurred: ' + error);
+                }
+            });
+        }
+        $(document).ready(function () {
+            $('#confirmSelection').off('click').on('click', confirmSelectionAndDisplayProducts);
+            $('#cancelSelection').off('click').on('click', cancelSelection);
+        });
+        function selectService(serviceId, name, price, description) {
+            const serviceIndex = selectedServices.indexOf(serviceId);
+
+            if (serviceIndex === -1) {
+                selectedServices.push(serviceId);
+                $(`#service-card-${serviceId}`).addClass('selected');
+                addProductToCart(serviceId, name, price, description);
+            } else {
+                selectedServices.splice(serviceIndex, 1);
+                $(`#service-card-${serviceId}`).removeClass('selected');
+                console.log(`Service ${name} removed.`);
+            }
+            displayActionButtons();
+        }
+        function displayActionButtons() {
+            selectedServices.length > 0 ? $('#actionButtons').show() : $('#actionButtons').hide();
+        }
+        function cancelSelection() {
+            selectedServices = [];
+            $('#serviceList .product-card').removeClass('selected');
+            $('#actionButtons').hide();
+        }
+        function confirmSelectionAndDisplayProducts(event) {
+            if (event) event.preventDefault();
+            if (selectedServices.length === 0) {
+                alert('Please select at least one service.');
+                return;
+            }
+            $.ajax({
+                url: '/Coffee/GetProductsForSelectedServices',
+                type: 'POST',
+                data: JSON.stringify({ serviceIds: selectedServices }),
+                contentType: 'application/json',
+                success: function (response) {
+                    if (response.success && response.data && response.data.length > 0) {
+                        loadProductsForSelectedServices(response.data);
+                        $('#serviceModal').modal('hide');
+                        $('#serviceList').hide();
+                        $('#actionButtons').hide();
+                    } else {
+                        alert(response.message || 'No products found.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", error);
+                    alert('An error occurred: ' + error);
+                }
+            });
+        }
+        function loadProductsForSelectedServices(products) {
+            const productGrids = $('#productGrids').empty();
+
+            if (!products.length) {
+                productGrids.append('<p>No products found.</p>');
+                return;
+            }
+            products.forEach(product => {
+                const productImage = product.ProductImage || '/Images/default-product.jpg';
+                const serviceNameClass = "text-primary";
+                const productNameClass = "text-success";
+
+                const productCard = `
+                    <div class="col-lg-3 col-md-4 col-sm-6 col-12 product-card mb-4"
+                        data-id="${product.Id}"
+                        data-name="${product.ProductName}"
+                        data-price="${product.PriceInStock}">
+                    <div class="card h-100 shadow-sm">
+                    <div class="position-absolute top-0 end-0 m-2 bg-success text-white p-2 rounded">
+                            $${product.PriceInStock}
+                    </div>
+                    <div class="ratio ratio-4x3">
+                            <img src="${productImage}" class="img-fluid rounded-top" alt="${product.ProductName}">
+                    </div>
+                    <div class="card-body d-flex flex-column justify-content-start">
+                        <h5 class="card-title ${serviceNameClass}">${product.ServiceName}</h5>
+                        <h6 class="card-title ${productNameClass}">${product.ProductName}</h6>
+                        <p class="mb-1"><strong>Quantity:</strong> ${product.Quantity}</p>
+                        <p class="mb-1"><strong>Quality:</strong> ${product.Quality}</p>
+                    </div>
+                </div>
+            </div>`;
+
+                productGrids.append(productCard);
+            });
+            $('#productGrids').show();
+        }
+            function adjustProductGridSize() {
+                const productGridWrapper = document.getElementById('productGridWrapper');
+                if (window.innerWidth >= 1440) {
+                    productGridWrapper.style.minHeight = '750px';
+                } else if (window.innerWidth >= 1280) {
+                    productGridWrapper.style.minHeight = '650px';
+                } else if (window.innerWidth <= 1025) {
+                    productGridWrapper.style.minHeight = '500px';
+                } else {
+                    productGridWrapper.style.minHeight = '500px';
+                }
+            }
+            window.addEventListener('resize', adjustProductGridSize);
+            adjustProductGridSize();
+
+            const searchWrapper = document.querySelector(".search-wrapper");
+            const searchIcon = document.querySelector(".fa-magnifying-glass");
+            const searchInput = document.querySelector(".search-item");
+            const barcodeIcon = document.querySelector(".fa-barcode");
+
+            function toggleSearchBox() {
+                if (window.innerWidth <= 1024) {
+                    if (searchInput.classList.contains("active")) {
+                        hideSearchBox();
+                    } else {
+                        showSearchBox();
+                    }
+                }
+            }
+            function showSearchBox() {
+                searchInput.classList.add("active");
+                searchInput.style.display = "block";
+                searchInput.style.position = "absolute";
+                searchInput.style.top = "80%";
+                searchInput.style.left = "0";
+                searchInput.style.transition = "all 0.3s ease";
+                searchInput.style.maxHeight = "200px";
+                searchInput.style.opacity = "1";
+                searchIcon.style.visibility = "hidden";
+                barcodeIcon.style.display = "none";
+                searchIcon.addEventListener("mouseover", function () {
+                    searchIcon.style.color = "#007bff";
+                    searchIcon.style.transform = "scale(1.1)";
+                    searchIcon.style.transition = "all 0.3s ease";
+                });
+                searchIcon.addEventListener("mouseout", function () {
+                    searchIcon.style.color = "";
+                    searchIcon.style.transform = "scale(1)";
+                });
+                searchInput.focus();
+                document.addEventListener("click", hideSearchBoxOnClickOutside);
+            }
+            function hideSearchBox() {
+                searchInput.classList.remove("active");
+                searchInput.style.display = "none";
+                searchIcon.style.visibility = "visible";
+                searchIcon.style.position = "relative";
+
+                barcodeIcon.style.display = "none";
+                document.removeEventListener("click", hideSearchBoxOnClickOutside);
+            }
+            function hideSearchBoxOnClickOutside(event) {
+                if (!searchWrapper.contains(event.target) && event.target !== searchIcon) {
+                    hideSearchBox();
+                }
+            }
+            function adjustSearchVisibility() {
+                if (window.innerWidth > 1024) {
+                    searchInput.style.display = "block";
+                    searchIcon.classList.remove("icon-hidden");
+                    barcodeIcon.style.display = "block";
+                } else {
+                    searchInput.style.display = "none";
+                    searchIcon.classList.add("icon-hidden");
+                    barcodeIcon.style.display = "none";
+                }
+            }
+            searchIcon.addEventListener("click", function (event) {
+                event.stopPropagation();
+                toggleSearchBox();
+            });
+            window.addEventListener("resize", adjustSearchVisibility);
+            adjustSearchVisibility();
+
+            function adjustResponsivePaymentStyles() {
+                const formElements = document.querySelectorAll('.payment-form-container input, .payment-form-container select, .payment-form-container button');
+                const labels = document.querySelectorAll('.payment-form-container label');
+                const dropdowns = document.querySelectorAll('.payment-form-container .dropdown-toggle');
+                const orderTypeDropdown = document.getElementById('orderTypeDropdown'); // Order type dropdown button
+                const estLeaveText = document.querySelector('.text-align-center'); // Est, Leave text element
+                const issuedText = document.querySelector('.text-align-right'); // Issued text element
+                const toggleEstIssuedBtn = document.getElementById('toggleEstIssuedBtn');
+                // Function to toggle visibility for Est and Issued text
+                const toggleEstAndIssuedVisibility = (shouldShow) => {
+                    if (estLeaveText) {
+                        estLeaveText.style.display = shouldShow ? 'block' : 'none';
+                    }
+                    if (issuedText) {
+                        issuedText.style.display = shouldShow ? 'block' : 'none';
+                    }
+                };
+                if (window.innerWidth <= 576) {
+                    // Adjust form elements for small screens
+                    formElements.forEach(el => el.style.width = '100%');
+                    dropdowns.forEach(dropdown => dropdown.style.fontSize = '10px');
+                    labels.forEach(label => label.style.fontSize = '12px');
+
+                    // Modify the "Walk In" dropdown font size
+                    if (orderTypeDropdown) orderTypeDropdown.style.fontSize = '12px';
+
+                    // Adjust button size for small screens
+                    document.getElementById('savePaymentBtn').style.fontSize = '16px';
+                    document.getElementById('savePaymentBtn').style.width = '100%';
+
+                    // Adjust font size for Est, Leave and Issued text
+                    if (estLeaveText) estLeaveText.style.fontSize = '12px';
+                    if (issuedText) issuedText.style.fontSize = '12px';
+
+                    // Initially hide Est and Issued on small screens
+                    toggleEstAndIssuedVisibility(false);
+
+                    // Adjust spacing for small screens
+                    if (estLeaveText) estLeaveText.style.marginLeft = '8px';
+                    if (issuedText) issuedText.style.marginLeft = '8px';
+
+                } else if (window.innerWidth >= 768 && window.innerWidth < 1024) {
+                    // For screen widths between 768px and 1024px (tablets and smaller devices)
+                    toggleEstAndIssuedVisibility(false);  // Hide Est and Issued on tablets
+
+                    // Show the ellipsis button to toggle visibility
+                    if (toggleEstIssuedBtn) {
+                        toggleEstIssuedBtn.style.display = 'inline-block'; // Show button
+                    }
+                } else if (window.innerWidth >= 1024) {
+                    // For larger screens (>= 1024px), show the Est and Issued elements
+                    formElements.forEach(el => el.style.width = '');
+                    dropdowns.forEach(dropdown => dropdown.style.fontSize = '');
+                    labels.forEach(label => label.style.fontSize = '');
+
+                    // Modify the "Walk In" dropdown font size
+                    if (orderTypeDropdown) orderTypeDropdown.style.fontSize = '16px';
+
+                    // Keep the button size the same as in the original HTML
+                    document.getElementById('savePaymentBtn').style.fontSize = '20px';
+                    document.getElementById('savePaymentBtn').style.width = '';
+
+                    // Adjust font size for Est, Leave and Issued text
+                    if (estLeaveText) estLeaveText.style.fontSize = '16px';
+                    if (issuedText) issuedText.style.fontSize = '16px';
+
+                    // Adjust spacing for large screens
+                    if (estLeaveText) estLeaveText.style.marginLeft = '16px';
+                    if (issuedText) issuedText.style.marginLeft = '16px';
+
+                    // Ensure Est and Issued are visible on large screens
+                    toggleEstAndIssuedVisibility(true);
+                }
+            }
+            const toggleEstIssuedBtn = document.getElementById('toggleEstIssuedBtn');
+            const dropdownContainer = document.querySelector('ul');
+            if (toggleEstIssuedBtn) {
+                toggleEstIssuedBtn.addEventListener('click', function () {
+                    // Get the computed style for the dropdown container
+                    const computedStyle = window.getComputedStyle(dropdownContainer);
+                    const isVisible = computedStyle.display !== 'none'; // Check if it's currently visible
+                    if (isVisible) {
+                        dropdownContainer.style.display = 'none';
+                    } else {
+                        dropdownContainer.style.display = 'block';
+                    }
+                });
+            }
+
+            // Initially hide the dropdown container
+            dropdownContainer.style.display = 'none'; // Hide on load
+
+
+            // Add event listener for resizing
+            window.addEventListener('resize', function () {
+                adjustResponsivePaymentStyles();
+            });
+
+            // Call the function initially to set the styles based on the current screen size
+            adjustResponsivePaymentStyles();
+            function setupDropdown(buttonId, inputId = null) {
+                const button = document.getElementById(buttonId);
+                const dropdownItems = button.closest('.dropdown').querySelectorAll('.dropdown-menu .dropdown-item');
+
+                dropdownItems.forEach(item => {
+                    item.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        dropdownItems.forEach(i => i.classList.remove('active'));
+                        this.classList.add('active');
+                        button.textContent = this.textContent.trim();
+                        if (inputId) {
+                            document.getElementById(inputId).value = this.getAttribute('data-value') ?? "";
+                        }
+                        const selectedName = this.getAttribute('data-name') ?? null;
+                        const selectedPayment = this.getAttribute('data-value') ?? null;
+                        console.log('Selected Payment:', selectedPayment);
+                    });
+                });
+            }
+            setupDropdown('orderTypeDropdown', 'orderTypeValue');
+            setupDropdown('salerDropdown');
+            setupDropdown('paymentMethod');
+
+            $(document).ready(function () {
+                $('#discountLabel').hide();
+                $('#DiscountField').hide();
+                $('#customerTypeDropdown').change(function () {
+                    var selectedCustomerTypeId = $(this).val();
+                    if (selectedCustomerTypeId) {
+                        $.ajax({
+                            type: "GET",
+                            url: '@Url.Action("GetDiscount", "Coffee")',
+                            data: { selectedCustomerTypeId: selectedCustomerTypeId },
+                            success: function (response) {
+                                if (response.success) {
+                                    if (response.discount !== null && response.discount > 0) {
+                                        var discount = response.discount * 100;
+                                        $('#discountLabel').show();
+                                        $('#DiscountField').show().text(discount + '%');
+                                    }
+                                    else if (response.storeDiscount !== null && response.storeDiscount > 0) {
+                                        $('#discountLabel').show();
+                                        $('#DiscountField').show().text('$' + response.storeDiscount);
+                                    }
+                                    else {
+                                        $('#discountLabel').hide();
+                                        $('#DiscountField').hide();
+                                    }
+                                } else {
+                                    $('#discountLabel').hide();
+                                    $('#DiscountField').hide();
+                                }
+                            },
+                            error: function () {
+                                $('#discountLabel').hide();
+                                $('#DiscountField').hide();
+                            }
+                        });
+                    } else {
+                        $('#discountLabel').hide();
+                        $('#DiscountField').hide();
+                    }
+                });
+
+            });
+    });
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}
+
+
+<style>
+    .card-background {
+        background-color: lightblue;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+    }
+
+        .card-background.selected {
+            background-color: #c8e6c9;
+        }
+
+        .card-background.unavailable {
+            background-color: lightseagreen;
+        }
+
+    #productList {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .product-card {
+        width: 100%;
+        max-width: 300px; /* or any width you want */
+        /*margin: 0 auto;*/ /* Centers the card if the content is smaller */
+    }
+</style>

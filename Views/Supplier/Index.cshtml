@@ -1,0 +1,159 @@
+﻿@model jotun.Models.SupplierViewModels
+@{
+    ViewBag.Title = "Index";
+    ViewBag.supplieractive = "aactive";
+
+}
+
+
+@*<script src="~/Content/vendor/bootstrap/js/bootstrap.min.js"></script>*@
+
+@using (Html.BeginForm("Index", "Supplier", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Supplier Operation</h4>
+        <hr />
+
+        <a href="/Supplier/Create/" class="btn btn-primary">Add New</a>
+        @*<a class="btn btn-default" data-toggle="modal" data-target="#myModal">Add New</a>*@
+        <br />
+        <br />
+
+
+        <table style="background-color:white;" id="userstable" class="table table-striped table-bordered" cellspacing="0">
+            <thead>
+                <tr>
+                    @*<th>Id</th>*@
+                    <th>Id</th>
+                    <th>Supplier Name</th>
+                    <th>Contact Name</th>
+                    <th>Contact Phone</th>
+                    <th>Gender</th>
+                    <th>Address</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+
+
+
+
+    @*<link href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet" />
+        <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />*@
+    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.css" />*@
+    <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+    @section Scripts {
+
+        @*<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+        <link href="~/Content/vendor/jquery/jquery-ui.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-1.12.4.js"></script>
+        <script src="~/Scripts/jquery-ui.js"></script>*@
+        <script src="~/Scripts/datatables.min.js"></script>
+
+
+
+        <script>
+
+            $(document).ready(function () {
+                var t = $("#userstable").DataTable({
+                    //"bLengthChange": false,
+                    //"scrollX": true, //Do Not Use This (Remove This Line)
+                    //"scrollXInner": true,
+                    //"dom": 'frtp',
+
+                    //responsive: true,
+                    //"scrollY": 500,
+                    //"scrollCollapse": true,
+                    //"jQueryUI": true,
+                    //"aaSorting": [],
+
+
+                    "autoWidth": false,
+                    "scrollX": true,
+                    "initComplete": function (settings, json) {
+                        $('#userstable thead tr').css({ visibility: 'collapse' });
+                    },
+                    "ajax": {
+                        "url": "/Supplier/GetSupplierData",
+                        "type": "GET",
+                        "datatype": "json",
+
+                    },
+
+                    "columns": [
+                        { "data": "Id" },
+                        //{
+                        //    "render": function (data, type, full, meta) {
+                        //        return '<a href="/Unit/Detial/' + full.Id + '">' + full + '</a>';
+                        //    }
+                        //},
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Supplier/Detail/' + full.Id + '">' + full.SupplierName + '</a>';
+                            }
+                        },
+
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Supplier/Detail/' + full.Id + '">' + full.ContactName + '</a>';
+                            }
+                        },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Supplier/Detail/' + full.Id + '">' + full.ContactPhone + '</a>';
+                            }
+                        },
+
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Supplier/Detail/' + full.Id + '">' + full.Gender + '</a>';
+                            }
+                        },
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Supplier/Detail/' + full.Id + '">' + full.Address + '</a>';
+                            }
+                        },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Supplier/Detail/' + full.Id + '">' + full.Description + '</a>';
+                            }
+                        },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Supplier/Detail/' + full.Id + '">' + full.CreatedDate + '</a>';
+                            }
+                        },
+
+
+
+                    ],
+                    "columnDefs": [{
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": 0
+                    }],
+                    "order": [[1, 'asc']]
+                });
+
+
+                t.on('order.dt search.dt', function () {
+                    t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+                }).draw();
+            });
+                             //$.fn.dataTable.ext.errMode = 'throw';
+
+        </script>
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}

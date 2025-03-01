@@ -1,0 +1,171 @@
+﻿@model jotun.Models.SaleViewModels
+@using ReportViewerForMvc;
+
+@{
+    ViewBag.Title = "Sale Reporter";
+    ViewBag.reportsaleactive = "aactive";
+
+}
+<style>
+    #printerDiv iframe {
+        position: absolute;
+        top: -1000px;
+    }
+</style>
+
+@using (Html.BeginForm("Sale", "Report", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Sale Report</h4>
+        <hr />
+        <div id="divPDF">
+            <div id="printerDiv"><iframe id="frmPDF"></iframe></div>
+        </div>
+        <div class="container-fluid">
+            <div class="col-md-12" style="background-color:transparent;">
+                <div class="col-md-12" style="background-color:transparent">
+                    <div class="row">
+                        <div class="col-md-2 ">
+                            <span>From Date:</span>
+                            @Html.TextBoxFor(m => m.FromDate, htmlAttributes: new { @class = "form-control", @id = "orderDate1", autocomplete = "off", @placeholder = "DD-MMM-YY" })
+                        </div>
+
+                        <div class="col-md-2">
+                            <span>To Date:</span>
+                            @Html.TextBoxFor(m => m.ToDate, htmlAttributes: new { @class = "form-control", id = "orderDate", autocomplete = "off", @placeholder = "DD-MMM-YY" })
+                        </div>
+
+                        <div class="col-md-2">
+                            <span>Customer:</span>
+                            @Html.TextBoxFor(m => m.CustomerName, new { id = "cust", @class = "form-control CustomerName", autocomplete = "off", @placeholder = "All" })
+                            @Html.TextBoxFor(m => m.CustomerId, new { id = "custid", @class = "form-control", @type = "hidden" })
+                        </div>
+
+                        <div class="col-md-2">
+                            <span>Phone:</span>
+                            @Html.TextBoxFor(m => m.PhoneNumber, new { id = "custphone", @class = "form-control CustomerName", autocomplete = "off", @placeholder = "All" })
+                        </div>
+
+                        <div class="col-md-4">
+                            <input style="margin-top:25px" type="submit" class="btn btn-success" value="Generate" />
+                            <input style="margin-top:25px" class="btn btn-danger" type="button" value="Back" onclick="window.location='/Coffee/Index';" />
+                            <input style="margin-top:25px" class="btn btn-success" type="button" value="Print" onclick="funExportToPDF()" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="panel-body" style="background-color:white">
+            <div class="text-center">
+                @Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer@*, new {@class="rp-width"}*@)
+            </div>
+        </div>
+    </div>
+
+
+
+}
+
+@section Scripts{
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui.js"></script>
+
+    <script  type="text/javascript">
+        $(function () {
+            $('#orderDate').datepicker({
+                dateFormat: 'dd-MM-yy'
+            });
+        });
+        $(function () {
+            $('#orderDate1').datepicker({
+                dateFormat: 'dd-MM-yy'
+            });
+        });
+        $(function () {
+                    $('#cust').autocomplete({
+                        source: '@Url.Action("getCust", "Sale")',
+                        select: function (event, ui) {
+                            var selectedObj = ui.item;
+                            var id = selectedObj.id;
+                            var pn = selectedObj.label;
+                            var p = selectedObj.label2;
+                            var status = selectedObj.status;
+                            $('#custid').val(pn);
+                            $('#custid').val(id);
+                            $('#custphone').val(p);
+                        }
+                    })
+        });
+        $(function () {
+                    $('#custphone').autocomplete({
+                        source: '@Url.Action("getCustPhone", "Sale")',
+                        select: function (event, ui) {
+                            var selectedObj = ui.item;
+                            var id = selectedObj.id;
+                            var pn = selectedObj.label;
+                            var p = selectedObj.label2;
+                            var status = selectedObj.status;
+                            $('#custid').val(pn);
+                            $('#custid').val(id);
+                            $('#cust').val(p);
+                        }
+                    })
+        });
+
+        $('#cust').mouseout(function (e) {
+            if ($('#cust').val() == "") {
+                $('#custid').val("");
+                $('#custphone').val("");
+            }
+        });
+        $('#custphone').mouseout(function (e) {
+            if ($('#custphone').val() == "") {
+                $('#custid').val("");
+                $('#cust').val("");
+            }
+        });
+
+
+         function funExportToPDF() {
+        //alert(document.getElementById("getfram").getElementsByTagName("iframe"));
+            $.ajax({
+                url: '@Url.Action("ExportTOPDFSale", "Report")',
+                type: 'GET',
+                data: { datefrom: $('#orderDate1').val(), dateto: $('#orderDate').val(), customerid: $('#custid').val(),  },
+                contentType: 'application/json; charset=utf-8',
+                success: function (result) {
+                    $('#frmPDF').attr('src', '@Url.Content("~/")' + result);
+                    setTimeout(function () {
+                        frame = document.getElementById("frmPDF");
+                        frameframedoc = frame.contentWindow;
+                        console.log(frameframedoc);
+                        console.log(frame);
+                        frameframedoc.focus();
+                        frameframedoc.print();
+
+                        $.ajax({
+                            url: '@Url.Action("ExportToPDFRemove", "Report")',
+                            data: { id: '@Url.Content("~/")' + result },
+                            type: 'GET',
+                        });
+                    }, 3000);
+
+                },
+                error: function (xhr, status, err) {
+                    alert(err);
+                    $.ajax({
+                         url: '@Url.Action("ExportToPDFRemove", "Report")',
+                         data: { id: '@Url.Content("~/")' + result },
+                         type: 'GET',
+                     });
+                }
+            });
+            return false;
+        }
+
+    </script>
+
+}

@@ -1,0 +1,139 @@
+﻿@model jotun.Models.ProductViewModels
+@using ReportViewerForMvc;
+@{
+    ViewBag.Title = "ItemsInStock";
+    ViewBag.reportitemsinstockactive = "aactive";
+}
+<style>
+    #printerDiv iframe {
+        position: absolute;
+        top: -1000px;
+    }
+</style>
+@using (Html.BeginForm("ItemsInStock", "Report", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
+
+<div style="background-color:#e9ecef; padding:15px;">
+        <h4> Items In Stock Report</h4>
+        <hr />
+        <div id="divPDF">
+            <div id="printerDiv"><iframe id="frmPDF"></iframe></div>
+        </div>
+        <div class="container-fluid">
+            <div class="col-md-12" style="background-color:transparent;">
+                <div class="col-md-12" style="background-color:transparent">
+                    <div class="row">
+                        <label class="col-md-2">Category:</label>
+                     <div class="col-md-3">
+                         <select class="form-control" id="CategoryId" name="CategoryId">
+                             @if (Model == null)
+                             {
+
+                                 <option value="0" selected>All Category</option>
+                                 foreach (var cat in ViewBag.CategoryNamesEng)
+                                 {
+                                     <option value="@cat.Id">@cat.CategoryNameEng</option>
+
+                                 }
+                             }
+                             else
+                             {
+                                 //if (string.Compare(Model.CategoryId, "0") == 0)
+                                 //{
+
+                                 //}
+                                 <option value="0">All Category</option>
+                                 foreach (var cat in ViewBag.CategoryNamesEng)
+                                 {
+                                     if (string.Compare(cat.Id, Model.CategoryId) == 0)
+                                     {
+                                         <option value="@cat.Id" selected>@cat.CategoryNameEng</option>
+                                     }
+                                     else
+                                     {
+                                         <option value="@cat.Id">@cat.CategoryNameEng</option>
+                                     }
+
+                                 }
+                             }
+
+
+                         </select>
+                         
+                     </div>
+                     <div class="col-md-3">
+                         <input type="hidden" />
+                         <button type="submit" class="btn btn-primary">Filter</button>
+                         <input class="btn btn-success" type="button" value="Print" onclick="funExportToPDF()" />
+                         <input class="btn btn-danger" type="button" value="Back" onclick="window.location='/Home';" />
+
+                     </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="panel-body" style="background-color:white">
+            <div class="text-center">
+                @Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer@*, new {@class="rp-width"}*@)
+            </div>
+        </div>
+    </div>
+
+
+
+}
+
+@section Scripts{
+    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $('#orderDate').datepicker({
+                dateFormat: 'dd-MM-yy'
+            });
+        });
+        $(function () {
+            $('#orderDate1').datepicker({
+                dateFormat: 'dd-MM-yy'
+            });
+        });
+        function funExportToPDF() {
+            $.ajax({
+                url: '@Url.Action("ExportToPDFItemsInStock", "Report")',
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',
+                success: function (result) {
+                    $('#frmPDF').attr('src', '@Url.Content("~/")' + result);
+                    setTimeout(function () {
+                        frame = document.getElementById("frmPDF");
+                        frameframedoc = frame.contentWindow;
+                        console.log(frameframedoc);
+                        console.log(frame);
+                        frameframedoc.focus();
+                        frameframedoc.print();
+                        $.ajax({
+                            url: '@Url.Action("ExportToPDFRemove", "Report")',
+                            data: { id: '@Url.Content("~/")' + result },
+                            type: 'GET',
+                        });
+                    }, 3000);
+                },
+                error: function (xhr, status, err) {
+                    alert(err);
+                    $.ajax({
+                         url: '@Url.Action("ExportToPDFRemove", "Report")',
+                         data: { id: '@Url.Content("~/")' + result },
+                         type: 'GET',
+                     });
+                }
+            });
+            return false;
+        }
+
+    </script>
+
+}

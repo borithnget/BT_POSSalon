@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="6fca08336f0a46b4ac153958d2190f0d" Name="Diagram1">
+        <EntityTypeShape EntityType="CoffeePOSDataModel.C__MigrationHistory" Width="1.5" PointX="14.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.AspNetRole" Width="1.5" PointX="7.75" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.AspNetUserClaim" Width="1.5" PointX="12.25" PointY="7" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.AspNetUserLogin" Width="1.5" PointX="12.25" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.AspNetUser" Width="1.5" PointX="10" PointY="7.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblAppointment" Width="1.5" PointX="0.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblAttribute" Width="1.5" PointX="2.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblCategory" Width="1.5" PointX="15.75" PointY="14.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblCategoryAttribute" Width="1.5" PointX="16.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblCustomer_location" Width="1.5" PointX="4.75" PointY="17.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblCustomerPointHistory" Width="1.5" PointX="6.75" PointY="17.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblCustomer" Width="1.5" PointX="5.75" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblCustomerType" Width="1.5" PointX="10.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblInvoice" Width="1.5" PointX="3" PointY="1.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblJeweler" Width="1.5" PointX="5.75" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblProductAttribute" Width="1.5" PointX="17.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblProductByUnit" Width="1.5" PointX="13" PointY="15" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblProduct" Width="1.5" PointX="15" PointY="8.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblPurchaseBySupplier" Width="1.5" PointX="5.75" PointY="13" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblPurchaseBySupplierDetail" Width="1.5" PointX="8" PointY="13.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblSaleLabour" Width="1.5" PointX="8" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblSaleLabourDetail" Width="1.5" PointX="10.25" PointY="2.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblSale" Width="1.5" PointX="0.75" PointY="3" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblSalesDetail" Width="1.5" PointX="3" PointY="4.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblService" Width="1.5" PointX="15" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblServiceBooked" Width="1.5" PointX="17.75" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblServiceProduct" Width="1.5" PointX="17.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblServiceProvided" Width="1.5" PointX="17.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblServiceType" Width="1.5" PointX="12.75" PointY="1.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblShipper" Width="1.5" PointX="18.75" PointY="4.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblStaff" Width="1.5" PointX="8.75" PointY="18.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblSupplier" Width="1.5" PointX="15.75" PointY="18.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblTable" Width="1.5" PointX="17.75" PointY="18.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblUnit" Width="1.5" PointX="19.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tbSalePayment" Width="1.5" PointX="3" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.UserProfile" Width="1.5" PointX="3" PointY="12.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.webpages_Membership" Width="1.5" PointX="19.75" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.webpages_OAuthMembership" Width="1.5" PointX="10.75" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.webpages_Roles" Width="1.5" PointX="0.75" PointY="12.875" IsExpanded="true" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_tblSaleLabour_Customers" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK__tblProduc__Custo__02FC7413" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_tblInvoices_tblSales" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_tblSaleLabour_tblJeweler" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_ServiceProduct_Product" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_tblPurchaseBySupplierDetail_tblPurchaseBySupplier1" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_tblSaleLabourDetail_tblSaleLabour" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_tblSalesDetail_tblSales2" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_tbSalePayment_tblSales" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_Service_ServiceType" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_ServiceProduct_Service" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.AspNetUserRoles" ManuallyRouted="false" />
+        <AssociationConnector Association="CoffeePOSDataModel.webpages_UsersInRoles" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

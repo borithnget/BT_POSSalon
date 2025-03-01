@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="DSItemNearOutOfStock" targetNamespace="http://tempuri.org/DSItemNearOutOfStock.xsd" xmlns:mstns="http://tempuri.org/DSItemNearOutOfStock.xsd" xmlns="http://tempuri.org/DSItemNearOutOfStock.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="DSItemNearOutOfStock" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="DSItemNearOutOfStock" msprop:Generator_UserDSName="DSItemNearOutOfStock">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="DSItemNearOutOfStock" msprop:Generator_TableClassName="DSItemNearOutOfStockDataTable" msprop:Generator_TableVarName="tableDSItemNearOutOfStock" msprop:Generator_TablePropName="_DSItemNearOutOfStock" msprop:Generator_RowDeletingName="DSItemNearOutOfStockRowDeleting" msprop:Generator_RowChangingName="DSItemNearOutOfStockRowChanging" msprop:Generator_RowEvHandlerName="DSItemNearOutOfStockRowChangeEventHandler" msprop:Generator_RowDeletedName="DSItemNearOutOfStockRowDeleted" msprop:Generator_UserTableName="DSItemNearOutOfStock" msprop:Generator_RowChangedName="DSItemNearOutOfStockRowChanged" msprop:Generator_RowEvArgName="DSItemNearOutOfStockRowChangeEvent" msprop:Generator_RowClassName="DSItemNearOutOfStockRow">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="id" msprop:Generator_ColumnVarNameInTable="columnid" msprop:Generator_ColumnPropNameInRow="id" msprop:Generator_ColumnPropNameInTable="idColumn" msprop:Generator_UserColumnName="id" type="xs:string" minOccurs="0" />
+              <xs:element name="item_id" msprop:Generator_ColumnVarNameInTable="columnitem_id" msprop:Generator_ColumnPropNameInRow="item_id" msprop:Generator_ColumnPropNameInTable="item_idColumn" msprop:Generator_UserColumnName="item_id" type="xs:string" minOccurs="0" />
+              <xs:element name="qty_in_stock" msprop:Generator_ColumnVarNameInTable="columnqty_in_stock" msprop:Generator_ColumnPropNameInRow="qty_in_stock" msprop:Generator_ColumnPropNameInTable="qty_in_stockColumn" msprop:Generator_UserColumnName="qty_in_stock" type="xs:string" minOccurs="0" />
+              <xs:element name="qty_alert" msprop:Generator_ColumnVarNameInTable="columnqty_alert" msprop:Generator_ColumnPropNameInRow="qty_alert" msprop:Generator_ColumnPropNameInTable="qty_alertColumn" msprop:Generator_UserColumnName="qty_alert" type="xs:string" minOccurs="0" />
+              <xs:element name="supply_by" msprop:Generator_ColumnVarNameInTable="columnsupply_by" msprop:Generator_ColumnPropNameInRow="supply_by" msprop:Generator_ColumnPropNameInTable="supply_byColumn" msprop:Generator_UserColumnName="supply_by" type="xs:string" minOccurs="0" />
+              <xs:element name="phone" msprop:Generator_ColumnVarNameInTable="columnphone" msprop:Generator_ColumnPropNameInRow="phone" msprop:Generator_ColumnPropNameInTable="phoneColumn" msprop:Generator_UserColumnName="phone" type="xs:string" minOccurs="0" />
+              <xs:element name="category_id" msprop:Generator_ColumnVarNameInTable="columncategory_id" msprop:Generator_ColumnPropNameInRow="category_id" msprop:Generator_ColumnPropNameInTable="category_idColumn" msprop:Generator_UserColumnName="category_id" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

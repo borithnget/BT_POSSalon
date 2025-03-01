@@ -1,0 +1,771 @@
+@model jotun.Models.tblPurchaseBySupplierViewModel
+@{
+    ViewBag.Title = "Create";
+}
+
+@using (Html.BeginForm("Create", "Purchase", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Create Purchase </h4>
+        <hr />
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.ID)
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-8" style="background-color:transparent">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6" style="background-color:transparent" hidden>
+                                    <div class="form-group ">
+                                        @Html.Label("ID", new { @class = "col-md-12 control-label" })
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.ID, new { id = "orderNo", @class = " form-control getAutoCustomerId", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" style="background-color:transparent">
+                                    <div class="form-group ">
+                                        @Html.Label("Date", new { @class = "col-md-12 control-label" })
+                                        <div class="col-md-12">
+                                            @Html.LabelFor(m => m.CreatedDate, DateTime.Now.ToString("dd-MMM-yyyy"), new { id = "orderDate", @class = " form-control CreatedDate", @readonly = "readonly" })
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Supplier", new { @class = "col-md-12 control-label" })
+                                        </span>
+                                        <span style="color:red; float:left; font-size:20px">*</span>
+                                        <div class="col-md-12">
+                                            @Html.DropDownList("SupplierName", (SelectList)ViewBag.SupplierNames, "--- Select ---", new { id = "suppid", @class = "form-control", onchange = "Check()" })
+                                            <input type="hidden" id="suppid" />
+                                            <span class="error" id="st">The SupplierName field is required.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                            <div class="row">
+                                <div class="col-md-6" style="background-color:transparent;">
+                                    <div class="form-group">
+
+
+                                        <span style=" float:left">
+                                            @Html.Label("Shipper", new { @class = "col-md-12 control-label" })
+                                        </span>
+                                        <span style="color:red; float:left; font-size:20px">*</span>
+                                        <div class="col-md-12">
+                                            @Html.DropDownList("ShipperName", (SelectList)ViewBag.ShipperNames, "--- Select ---", new { id = "shippid", @class = "form-control", onchange = "Check()" })
+
+                                            <input type="hidden" id="shippid" />
+                                            <span class="error" id="st1">The ShipperName field is required.</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Shipper Amount($)", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.ShipperAmount, new { id = "Shipper", @class = "form-control ", autocomplete = "off", onkeypress = "return isNumberKey(event)" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                            <div class="row">
+                                <div class="col-md-12" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Description", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+                                        <div class="col-md-12">
+                                            @Html.TextAreaFor(m => m.Description, new { id = "description", @class = "form-control " })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="row table-responsive col-md-12" style="padding:0 0 0 20px">
+                        <table id="clientlist" class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <td>Item Name</td>
+                                    <td>Unit Type</td>
+                                    <td>Quantity</td>
+                                    <td>Price</td>
+                                    <td>Discount(%)</td>
+                                    <td>Discount($)</td>
+                                    <td>Total</td>
+                                    <td>&nbsp;</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="margin-top:100px">
+                                    <td>
+                                        <input class="form-control" type="text" id="itemName" onchange="Check()" />
+                                        <input type="hidden" id="itemid" />
+                                        <span class="error" id="st2">Item name required</span>
+                                    </td>
+                                    <td>
+                                        @Html.DropDownList("UnitNameEng", new SelectList(" "), "select unit", new { @id = "StateId", @class = "form-control stateclass", onchange = "Check()" })
+                                        <input type="hidden" id="StateId" />
+                                        <span class="error" id="st3">Unit required</span>
+                                    </td>
+                                    <td hidden>
+                                        <input readonly class="form-control" type="text" id="unitid" />
+                                        <span class="error">Price required</span>
+                                    </td>
+                                    <td hidden>
+                                        <input class="form-control" type="text" id="itempid" />
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="text" id="quantity" autocomplete="off" onchange="Check()" name='quantity' size=20 maxlength=8 onkeypress="return isNumberKey(event)" />
+                                        <input type="hidden" id="quantity" />
+                                        <span class="error" id="st4">Valid quantity required</span>
+                                    </td>
+                                    <td>
+                                        <input  class="form-control" type="text" id="rate" onchange="Check()" />
+                                        <input type="hidden" id="rate" />
+                                        <span class="error" id="st5">Price required</span>
+                                    </td>
+                                    <td>
+                                        <input class="form-control" type="text" id="discount1" autocomplete="off" />
+                                        <input type="hidden" id="quantity" />
+                                        <span class="error" id="st4">Valid quantity required</span>
+                                    </td>
+                                    <td>
+                                        <label readonly class="form-control" type="text" id="discount" autocomplete="off" />
+                                        <input type="hidden" id="quantity" />
+                                        <span class="error" id="st4">Valid quantity required</span>
+                                    </td>
+                                    <td>
+                                        <label readonly id="totalss" class="form-control" type="text" />
+                                    </td>
+                                    <td>
+                                        <input type="button" id="add" value="Add" class="btn btn-success bbb" disabled />
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="5" style="text-align:right !important;">Sub Total($): </th>
+                                    <th colspan="2">
+                                        @Html.LabelFor(m => m.PurchaseAmount, "0", new { id = "subTotal", @class = "form-control", autocomplete = "off" })
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" style="text-align:right !important;">Sub Discount Amount($):</th>
+                                    <th colspan="2">
+                                        @Html.LabelFor(m => m.Discount, new { id = "Discount", @class = "form-control", autocomplete = "off" })
+                                    </th>
+                                </tr>
+
+                                <tr>
+                                    <th colspan="5" style="text-align:right !important;">Deposit($):</th>
+                                    <th colspan="2">
+                                        @Html.TextBoxFor(m => m.Deposit, new { id = "Deposit", @class = "form-control", autocomplete = "off", onkeypress = "return isNumberKey(event)" })
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th colspan="5" style="text-align:right !important;">Grand Total($):</th>
+                                    <th colspan="2">
+                                        <label class="grandtotal" id="grandtotal">0</label>
+                                    </th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        <div id="orderItems" class="tablecontainer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-9">
+                    <input id="submit" class="btn btn-primary dd" type="button" value="Save" />
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Purchase';" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+    @section Scripts{
+        <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+        <script src="~/Scripts/jquery-1.12.4.js"></script>
+        <script src="~/Content/vendor/jquery/jquery-ui.js"></script>
+        <link rel="stylesheet" href="~/Content/vendor/jquery/jquery-ui.css" />
+        <script src="~/Scripts/datatables.min.js"></script>
+        <script>
+         $(function () {
+             $('#itemName').autocomplete({
+                 source: '@Url.Action("getpro", "Purchase")',
+                 select: function (event, ui) {
+                     var selectedObj = ui.item;
+                     var id = selectedObj.id;
+                     var pr = selectedObj.pr;
+                     var pid = selectedObj.pid;
+                     var pn = selectedObj.pn;
+                     console.log(selectedObj);
+                     $('#itemName').change(function () {
+                         $('#itemName').val(pn);
+
+                         var isAllValid = true;
+                         $.get("/Purchase/GetStateList", { UnId: $('#itemid').val().trim() }, function (data) {
+                              $("#StateId").empty();
+                            // $("#StateId").remove.index[0];
+
+                             $.each(data, function (index, row) {
+                                 // $("#StateId").val("-- please select -- ")
+                                 $("#StateId").append("<option value='" + $('#itemName').val() + '^' + row.Id + "'>" + row.UnitNameEng + "</option>");
+                                 if ($('.stateclass').val().trim() != '') {
+                                     $.ajax({
+                                         url: '/Purchase/GetUnit/',
+                                         type: "get",
+                                         dataType: "json",
+                                         async: false,
+                                         data: { id: $(".stateclass").val() },
+                                         success: function (data) {
+                                             console.log(data);
+                                             if (data.result = "success") {
+                                                 $('#rate').val(data.data);
+                                                 $('#unitid').val(data.data1);
+                                             }
+                                         },
+                                         error: function (e) { }
+                                     });
+                                 }
+
+                             });
+                         });
+
+                     });
+                     $('#itemid').val(pn);
+                     $('#itempid').val(pid);
+                 }
+             });
+             $("#itemName").click(function (e) {
+                 $("#StateId").text();
+                 $('#rate').val('');
+             });
+             $(".stateclass").click(function (e) {
+                 $.ajax({
+                     url: '/Purchase/GetUnit/',
+                     type: "get",
+                     dataType: "json",
+                     async: false,
+                     data: { id: $(".stateclass").val() },
+                     success: function (data) {
+                         console.log(data);
+                         if (data.result = "success") {
+                            // alert(data.data);
+                             $('#rate').val(data.data);
+                             $('#unitid').val(data.data1);
+                         }
+                     },
+                     error: function (e) { }
+                 });
+
+             });
+         });
+        var orderItems = [];
+
+        $(document).ready(function () {
+            //Add button click function
+            $('#add').click(function () {
+                //Check validation of order item
+                    var isValidItem = true;
+                if ($('#itemName').val().trim() == '') {
+                    isValidItem = false;
+                    $('#itemName').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#itemName').siblings('span.error').css('visibility', 'hidden');
+                }
+                if ($('#StateId').val().trim() == '') {
+                    isValidItem = false;
+                    $('#StateId').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#StateId').siblings('span.error').css('visibility', 'hidden');
+                }
+
+                if (!($('#quantity').val().trim() != '' && !isNaN($('#quantity').val().trim()))) {
+                    isValidItem = false;
+                    $('#quantity').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#quantity').siblings('span.error').css('visibility', 'hidden');
+                }
+
+                if (!($('#rate').val().trim() != '' && !isNaN($('#rate').val().trim()))) {
+                    isValidItem = false;
+                    $('#rate').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#rate').siblings('span.error').css('visibility', 'hidden');
+                }
+                //Add item to list if valid
+                if (isValidItem) {
+                    orderItems.push({
+                        ProductId: $('#itempid').val().trim(),
+                        ProductName: $('#itemid').val().trim(),
+                        UnitTypeId: $('#unitid').val().trim(),
+                        Quantity: $('#quantity').val().trim(),
+                        Cost: $('#rate').val().trim(),
+                        Discount: $('#discount1').val().trim()
+                    });
+                    //Clear fields
+                    $('#itemName').val('').focus();
+                    $('#quantity,#rate,#UnitNameEng').val('');
+                    $('#StateId').text('');
+                    $('#discount1').val('');
+                    $('#discount').text('');
+                    $('#totalss').text('');
+                    $('.bbb').attr('disabled', 'disabled');
+                    $('.dd').removeAttr('disabled');
+                }
+                //populate order items
+                GeneratedItemsTable();
+            });
+            function GeneratedItemsTable() {
+                var subTotal = 0;
+                var Discount = 0;
+                console.log(orderItems[orderItems.length - 1]);
+                $('#clientlist tbody').append("" +
+                    "<tr>" +
+                    '<td ><input readonly type="text"  class="form-control " value="' + orderItems[orderItems.length - 1].ProductName + '" /></td>' +
+                    '<td hidden><input type="text"  class="form-control contect-person" value="' + orderItems[orderItems.length - 1].ProductId + '" /></td>' +
+                    '<td ><input readonly type="text"  class="form-control UnitEng"  value="' + orderItems[orderItems.length - 1].UnitTypeId + '" /></td>' +
+                    '<td><input readonly type="text" class="form-control phone" value="' + orderItems[orderItems.length - 1].Quantity + '" /></td>' +
+                    '<td><input readonly type="text"  class="form-control position" value="' + parseFloat(orderItems[orderItems.length - 1].Cost).toFixed(2) + '" /></td>' +
+                    '<td><input readonly type="text"  class="form-control Discount" value="' + orderItems[orderItems.length - 1].Discount + '" /></td>' +
+                    '<td><input readonly type="text"  class="form-control DiscountAmount" value="' + parseFloat(((orderItems[orderItems.length - 1].Cost * orderItems[orderItems.length - 1].Quantity) * orderItems[orderItems.length - 1].Discount) / 100).toFixed(2) + '" /></td>' +
+                    '<td><input readonly type="text"  class="form-control totals" value="' + parseFloat(((orderItems[orderItems.length - 1].Cost * orderItems[orderItems.length - 1].Quantity) - ((orderItems[orderItems.length - 1].Cost * orderItems[orderItems.length - 1].Quantity) * orderItems[orderItems.length - 1].Discount) / 100)).toFixed(2) + '" /></td>' +
+                    '<td ><input  type="button" id="remove" value="Remove" class="btn btn-danger" onclick="deleteRow(this)"/></td>' +
+                    "</tr>"
+                );
+                var gtl = 0;
+                var totals = $('.totals');
+                for (var i = 0; i < totals.length; i++) {
+                        var total = totals[i].value;
+                    subTotal = (subTotal + Number(total));
+                    if ($('#Shipper').val() == '') {
+                        if ($('#Deposit').val() == '') {
+                            gtl = parseFloat(subTotal);
+                        }
+                        else {
+                            gtl = parseFloat(subTotal) - parseFloat($('#Deposit').val().trim());
+                        }
+                    } else {
+                        if ($('#Deposit').val() == '') {
+                             gtl = parseFloat(subTotal) + parseFloat($('#Shipper').val().trim());
+                        }
+                        else {
+                            gtl = (parseFloat(subTotal) - parseFloat($('#Deposit').val().trim()))  + parseFloat($('#Shipper').val().trim());
+                        }
+                    }
+                }
+                $('#subTotal').text(subTotal.toFixed(2));
+                $('#grandtotal').text(gtl.toFixed(2));
+                 var DiscountAmount = $('.DiscountAmount');
+                    for (var i = 0; i < DiscountAmount.length; i++) {
+                        var total = DiscountAmount[i].value;
+                        Discount = Discount + Number(total);
+                }
+                $('#Discount').text(Discount.toFixed(2));
+            }
+        });
+
+            function deleteRow(r) {
+                var i = r.parentNode.parentNode.rowIndex;
+                var subTotal = 0;
+                var gtl = 0;
+                var Discount = 0;
+                var Discountt = $('#Discount').text();
+                var totalll = $('#subTotal').text();
+                var gtlll = $('#grandtotal').text();
+                var totals = $('.totals');
+                var DiscountAmount = $('.DiscountAmount');
+                var distotal = DiscountAmount[i-2].value;
+                var total = totals[i-2].value;
+                subTotal = (totalll - Number(total));
+                gtl = (gtlll - Number(total));
+                Discount = Discountt - Number(distotal);
+                $('#subTotal').text(subTotal);
+                $('#grandtotal').text(gtl);
+                $('#Discount').text(Discount);
+                        document.getElementById("clientlist").deleteRow(i);
+                         delete orderItems[i - 2];
+                        (orderItems.length)--;
+            }
+            //Save button click function
+            $('#submit').click(function () {
+                //validation of order
+                var isAllValid = true;
+                if (orderItems.length == 0) {
+                    alert('Please add order item!');
+                   isAllValid = false;
+                }
+                if ($('#suppid').val().trim() == '') {
+                    $('#suppid').siblings('span.error').css('visibility', 'visible');
+                    isAllValid = false;
+                }
+                else {
+                    $('#suppid').siblings('span.error').css('visibility', 'hidden');
+                }
+                if ($('#shippid').val().trim() == '') {
+                    $('#shippid').siblings('span.error').css('visibility', 'visible');
+                    isAllValid = false;
+                }
+                else {
+                    $('#shipper').siblings('span.error').css('visibility', 'hidden');
+                }
+                var GetDetail = [];
+                var contactpersons = $('.contect-person');
+                var contactphones = $('.phone');
+                var contactpositions = $('.position');
+                var UnitEng = $('.UnitEng');
+                var Discount = $('.Discount');
+
+                if (contactpersons.length > 0) {
+                    for (var i = 0; i < contactpersons.length; i++) {
+                        item_element = {};
+                        item_element.ProductId = contactpersons[i].value;
+                        item_element.UnitTypeId = UnitEng[i].value;
+                        item_element.Quantity = contactphones[i].value;
+                        item_element.Cost = contactpositions[i].value;
+                        item_element.Discount = Discount[i].value;
+                        GetDetail.push(item_element);
+                    }
+                }
+                //Save if valid
+                if (isAllValid) {
+                    var data = {
+                        ID: $('#orderNo').val().trim(),
+                        SupplierId: $('#suppid').val().trim(),
+                        ShipperId: $('#shippid').val().trim(),
+                        Description: $('#description').val().trim(),
+                        ShipperAmount: $('#Shipper').val().trim(),
+                        PurchaseAmount: $('#subTotal').text().trim(),
+                        Deposit: $('#Deposit').val().trim(),
+                        Discount: $('#Discount').text().trim(),
+                        GetDetail: GetDetail
+                    }
+                    console.log(data);
+                    $(this).val('Please wait...');
+                    $.ajax({
+                        url: '/Purchase/Create',
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        dataType: "JSON",
+                        contentType: "application/json",
+                        success: successFunc,
+                        error: errorFunc
+                    });
+                    function successFunc(data, status) {
+                        window.location = '/Purchase'
+                    }
+                    function errorFunc() {
+                        window.location = '/Purchase'
+                    }
+                }
+
+            });
+            $('#Deposit').keyup(function () {
+                if ($('#Deposit').val() == "") {
+                    $('#Deposit').val('0');
+                }
+                var txtVal2 = this.value;
+                if (parseFloat($('#Deposit').val().trim()) > ((parseFloat($('#subTotal').text().trim())) + (parseFloat($('#Shipper').val().trim())))) {
+                    alert("Deposit must less than sub total");
+                    $('#Deposit').val('0');
+                    if ($('#Shipper').val() == '') {
+                        var txtVal = this.value;
+                       var gtl1 = parseFloat($('#subTotal').text().trim()) - txtVal;
+
+                    }
+                    else {
+                        var txtVal = this.value;
+                        var gtl1 = (parseFloat($('#subTotal').text().trim()) + parseFloat($('#Shipper').val().trim())) - txtVal;
+                    }
+                    $('#grandtotal').text(gtl1.toFixed(2));
+                }
+                else {
+
+                     if ($('#Shipper').val() == '') {
+                        var txtVal = this.value;
+                       var gtl1 = parseFloat($('#subTotal').text().trim()) - txtVal;
+
+                    }
+                    else {
+                        var txtVal = this.value;
+                        var gtl1 = (parseFloat($('#subTotal').text().trim()) + parseFloat($('#Shipper').val().trim())) - txtVal;
+                    }
+                    $('#grandtotal').text(gtl1.toFixed(2));
+                }
+            });
+
+            $('#Shipper').keyup(function () {
+                if ($('#Shipper').val() == "") {
+                    $('#Shipper').val('0');
+                }
+                if ($('#Deposit').val() == '') {
+                   var txtVal2 = this.value;
+                   var gtl1 = parseFloat($('#subTotal').text().trim()) + parseFloat(txtVal2);
+                }
+                else {
+                    var txtVal2 = this.value;
+                    var gtl1 = (parseFloat($('#subTotal').text().trim()) - parseFloat($('#Deposit').val().trim())) + parseFloat(txtVal2);
+                }
+                $('#grandtotal').text(gtl1.toFixed(2));
+
+            });
+
+            $('#quantity').keyup(function () {
+                if ($('#quantity').val() == "") {
+                    $('#quantity').val('0');
+                }
+                if ($('#discount1').val() == '') {
+                    var txtVal2 = this.value;
+                    var gtl1 = 0;
+                    var ts = parseFloat($('#rate').val().trim()) * parseFloat(txtVal2);
+                }
+                else {
+                    var txtVal2 = this.value;
+                    var gtl1 = ((parseFloat($('#rate').val().trim()) * parseFloat(txtVal2)) * parseFloat($('#discount1').val().trim())) / 100;
+                    var ts = (parseFloat($('#rate').val().trim()) * parseFloat(txtVal2)) - gtl1;
+                }
+                $('#discount').text(gtl1.toFixed(2));
+                $('#totalss').text(ts.toFixed(2));
+            });
+
+            $('#rate').keyup(function () {
+                if ($('#rate').val() == "") {
+                    $('#rate').val('0');
+                }
+                if ($('#discount1').val() == '') {
+                    var txtVal2 = this.value;
+                    var gtl1 = 0;
+                    var ts = parseFloat($('#quantity').val().trim()) * parseFloat(txtVal2);
+                }
+                else {
+                    var txtVal2 = this.value;
+                    var gtl1 = ((parseFloat($('#quantity').val().trim()) * parseFloat(txtVal2)) * parseFloat($('#discount1').val().trim())) / 100;
+                    var ts = (parseFloat($('#quantity').val().trim()) * parseFloat(txtVal2)) - gtl1;
+                }
+                $('#discount').text(gtl1.toFixed(2));
+                $('#totalss').text(ts.toFixed(2));
+            });
+
+
+            $('#discount1').keyup(function () {
+                if ($('#quantity').val() == '') {
+                    var txtVal2 = this.value;
+                    var gtl1 = 0;
+                    var ts = 0;
+                }
+                else {
+                    var txtVal2 = this.value;
+                    var gtl1 = ((parseFloat($('#rate').val().trim()) * parseFloat(txtVal2)) * parseFloat($('#quantity').val().trim())) / 100;
+                    var ts = (parseFloat($('#rate').val().trim()) * parseFloat($('#quantity').val().trim())) - gtl1;
+                }
+                $('#discount').text(gtl1.toFixed(2));
+                $('#totalss').text(ts.toFixed(2));
+
+            });
+
+
+
+
+            function isNumberKey(evt) {
+                 var charCode = (evt.which) ? evt.which : event.keyCode
+                 if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46)
+                     return false;
+                 else {
+                     var len = document.getElementById("quantity").value.length;
+                     var index = document.getElementById("quantity").value.indexOf('.');
+
+                     if (index > 0 && charCode == 46) {
+                         return false;
+                     }
+                     if (index > 0) {
+                         var CharAfterdot = (len + 1) - index;
+                         if (CharAfterdot > 3) {
+                             return false;
+                         }
+                     }
+
+                 }
+                 return true;
+              }
+             $(document).ready(function () {
+                $('#quantity').keyup(function () {
+                    if ($('#itemName').val().trim() && $('#quantity').val().trim() && $('#StateId').val().trim() != '' ) {
+                        $('.bbb').prop('disabled', false);
+                        $("#rate").css("border-color", "Green");
+                          $("#st5").html('');
+                    } else {
+                        $("#st5").html('<font color="Red">Price required</font>');
+                        $('.bbb').prop('disabled', true);
+                    }
+                });
+             });
+            $(document).ready(function () {
+                $('#itemName').keyup(function () {
+                    if ($('#itemName').val().trim() && $('#quantity').val().trim() != '' ) {
+                        $('.bbb').prop('disabled', false);
+                          $("#rate").css("border-color", "Green");
+                    } else {
+                        $('.bbb').prop('disabled', true);
+                    }
+                });
+            });
+            function Check() {
+                  if ($('#suppid').val().trim() != '') {
+                    $("#suppid").css("border-color", "Green");
+                    $("#st").html('');
+                }
+                else {
+                    $("#st").html('<font color="Red">The SupplierName field is required.</font>');
+                    $("#suppid").css("border-color", "Red");
+
+                }
+               if ($('#shippid').val().trim() != '') {
+                    $("#shippid").css("border-color", "Green");
+                    $("#st1").html('');
+                }
+                else {
+                    $("#st1").html('<font color="Red">The ShipperName field is required.</font>');
+                    $("#shippid").css("border-color", "Red");
+
+                 }
+               if ($('#itemName').val().trim() != '') {
+                    $("#itemName").css("border-color", "Green");
+                    $("#st2").html('');
+                }
+                else {
+                    $("#st2").html('<font color="Red">Item name required</font>');
+                    $("#itemName").css("border-color", "Red");
+
+                 }
+                 if ($('#itemName').val().trim() != '') {
+                    $("#itemName").css("border-color", "Green");
+                    $("#st2").html('');
+                }
+                else {
+                    $("#st2").html('<font color="Red">Item name required</font>');
+                    $("#itemName").css("border-color", "Red");
+
+                 }
+                 if ($('#StateId').val().trim() != '') {
+                     $("#StateId").css("border-color", "Green");
+
+                     $("#st3").html('');
+                }
+                else {
+                    $("#st3").html('<font color="Red">Unit required</font>');
+                    $("#StateId").css("border-color", "Red");
+
+                 }
+                if ($('#quantity').val().trim() != '') {
+                    $("#quantity").css("border-color", "Green");
+                    $("#st4").html('');
+
+                }
+                else {
+                    $("#st4").html('<font color="Red">Quantity required</font>');
+                    $("#quantity").css("border-color", "Red");
+
+                 }
+                 if ($('#rate').val().trim() != '') {
+                    $("#rate").css("border-color", "Green");
+                    $("#st5").html('');
+                }
+                else {
+                    $("#st5").html('<font color="Red">Price required</font>');
+                    $("#rate").css("border-color", "Red");
+
+                }
+                if ($('#itemName').val().trim() && $('#quantity').val().trim() && $('#rate').val().trim() && $('#totalss').val().trim() != ''  ) {
+                    $('.bbb').removeAttr('disabled');
+                }
+
+            }
+        </script>
+        <script>
+            $(document).ready(function () {
+                var possible2 = "123456789";
+                var possible1 = "abcdefghijklmnopqrstuvwxyz";
+                var possible3 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                var possible = "zyxwvutsrqpnmlkjihgfedcba";
+
+                $('.getAutoCustomerId').val('' + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + possible2.charAt(Math.floor(Math.random() * possible2.length))
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + possible2.charAt(Math.floor(Math.random() * possible2.length))
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 1000) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 10000) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 10000) + 1));
+
+            });
+        </script>
+    }
+}
+
+<style>
+    /*Adding some css for looks good*/
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+
+    /*css for table*/
+    .container td {
+        vertical-align: top;
+    }
+
+    .tablecontainer table {
+        width: 100%;
+        border-collapse: collapse;
+        border-top: 1px solid #BFAEAE;
+        border-right: 1px solid #BFAEAE;
+    }
+
+    .tablecontainer th {
+        border-bottom: 2px solid #BFAEAE !important;
+    }
+
+    .tablecontainer th, .tablecontainer td {
+        text-align: left;
+        border-left: 1px solid #BFAEAE;
+        padding: 5px;
+        border-bottom: 1px solid #BFAEAE;
+    }
+
+    .ui-widget {
+        font-size: 12px !important;
+    }
+</style>

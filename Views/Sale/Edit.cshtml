@@ -1,0 +1,434 @@
+﻿@model jotun.Models.SaleViewModels
+@{
+    ViewBag.Title = "Edit";
+}
+
+@using (Html.BeginForm("Edit", "Sale", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Edit Sale </h4>
+        <hr />
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+            @*@Html.ValidationSummary("", new { @class = "text-danger" })*@
+            @Html.HiddenFor(model => model.Id)
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-8" style="background-color:transparent">
+                        <div class="form-group">
+                            <div class="row">
+                                <div hidden class="col-md-6" style="background-color:transparent">
+                                    <div class="form-group ">
+                                        @Html.Label("ID", new { @class = "col-md-12 control-label" })
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.Id, new { id = "orderNo", @class = " form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" style="background-color:transparent">
+                                    <div class="form-group ">
+                                        @Html.Label("Date", new { @class = "col-md-12 control-label" })
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.CreatedDate, new { id = "orderDate", @class = " form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Customer", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+                                        <div class="col-md-12">
+                                            @Html.DropDownList("CustomerName", (SelectList)ViewBag.Customers, "--- Select ---", new { id = "suppid", @class = "form-control" })
+                                            <input type="hidden" id="suppid" />
+                                            <span class="error">Reqiured CustomerName</span>
+                                            @* @Html.TextBoxFor(m => m.SupplierId, new { id = "suppid", @class = "form-control " })*@
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="background-color:transparent; margin-top:-30px">
+                            <div class="row">
+                                <div class="col-md-12" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Description", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+                                        <div class="col-md-12">
+                                            @Html.TextAreaFor(m => m.Description, new { id = "description", @class = "form-control " })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row table-responsive" style="padding:0 0 0 20px">
+                            <table id="clientlist" class="table table-bordered" width="100%">
+                                <thead>
+                                    <tr>
+                                        <td>Item Name</td>
+                                        <td>Quantity</td>
+                                        <td>Price</td>
+                                        <td>Total</td>
+                                        <td>Action</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+
+                                        <td>
+                                            <input class="form-control" type="text" id="itemName" />
+                                            <input type="hidden" id="itemid" />
+                                            <span class="error">Item name required</span>
+                                        </td>
+                                        <td hidden>
+                                            <input class="form-control" type="text" id="itempid" />
+
+                                        </td>
+
+                                        <td>
+                                            <input class="form-control" type="text" id="quantity" />
+                                            <span class="error">Valid quantity required</span>
+                                        </td>
+                                        <td>
+                                            <input readonly class="form-control" type="text" id="rate" />
+                                            <span class="error">Valid rate required</span>
+                                        </td>
+                                        <td>
+                                            <input readonly class="form-control" type="text" />
+                                            <span class="error">Valid rate required</span>
+                                        </td>
+
+                                        <td>
+                                            <input type="button" id="add" value="Add" class="btn btn-success" />
+                                        </td>
+
+                                    </tr>
+
+
+                                    @foreach (var item in Model.GetDetail)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input hidden type="text" class='form-control contect-person' value="@item.ProductIdn" />
+
+                                                <input readonly type="text" class='form-control ' value="@item.ProductId" />
+                                            </td>
+                                            <td>
+                                                <input readonly type="text" class='form-control phone' value="@item.Quantity" />
+                                            </td>
+                                            <td>
+                                                <input readonly type="text" class='form-control position' value="@item.Price" />
+
+                                            </td>
+                                            <td class="totals">
+                                                <input readonly type="text" class='form-control ' value="@item.Total" />
+                                            </td>
+
+                                            <td><input type="button" value="Remove" class="btn btn-danger" onclick="deleteRow(this)" /></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="3" style="text-align:right !important;">Sub Total: </th>
+                                        <th colspan="2">
+                                            <label id="subTotal">0</label>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="3" style="text-align:right !important;">Discount (%):</th>
+                                        <th colspan="2">
+                                            @Html.TextBoxFor(m => m.Discount, new { id = "Discount", @class = "form-control" })
+
+                                        </th>
+                                    </tr>
+
+                                    <tr>
+                                        <th colspan="3" style="text-align:right !important;">Received From Customer:</th>
+                                        <th colspan="2">
+                                            @Html.TextBoxFor(m => m.RevicedFromCustomer, new { id = "RevicedFromCustomer", @class = "form-control" })
+
+                                        </th>
+                                    </tr>
+
+
+
+                                </tfoot>
+                            </table>
+                            <div id="orderItems" class="tablecontainer">
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-9">
+                    <input id="submit" class="btn btn-success" type="button" value="Save" />
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Sale';" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+    @section Scripts{
+        <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+        <link href="~/Content/vendor/jquery/jquery-ui.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-1.12.4.js"></script>
+        <script src="~/Scripts/jquery-ui.js"></script>
+        <script src="~/Scripts/datatables.min.js"></script>
+
+        @*<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="/resources/demos/style.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">*@
+
+
+        <script>
+            $(function () {
+                $('#itemName').autocomplete({
+                        source: '@Url.Action("getpro", "Sale")',
+                        select: function (event, ui) {
+                            var selectedObj = ui.item;
+                            var id = selectedObj.id;
+                            var pr = selectedObj.pr;
+                            var pid = selectedObj.pid;
+                            var pn = selectedObj.pn;
+                            console.log(selectedObj);
+                            $('#itemName').change(function () {
+                                $('#itemName').val(pn);
+                            });
+                            $('#itemid').val(pn);
+                            $('#itempid').val(pid);
+                            $('#rate').val(pr);
+                        }
+                    })
+            });
+            $(document).ready(function () {
+            var orderItems = [];
+            //Add button click function
+            $('#add').click(function () {
+                //Check validation of order item
+                var isValidItem = true;
+                if ($('#itemName').val().trim() == '') {
+                    isValidItem = false;
+                    $('#itemName').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#itemName').siblings('span.error').css('visibility', 'hidden');
+                }
+
+                if (!($('#quantity').val().trim() != '' && !isNaN($('#quantity').val().trim()))) {
+                    isValidItem = false;
+                    $('#quantity').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#quantity').siblings('span.error').css('visibility', 'hidden');
+                }
+
+                if (!($('#rate').val().trim() != '' && !isNaN($('#rate').val().trim()))) {
+                    isValidItem = false;
+                    $('#rate').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#rate').siblings('span.error').css('visibility', 'hidden');
+                }
+                //Add item to list if valid
+                if (isValidItem) {
+                    orderItems.push({
+                        //PurchaseBySupplierId: $('#orderNo').val().trim(),
+                        ProductName: $('#itemid').val().trim(),
+                        ProductId: $('#itempid').val().trim(),
+                        Quantity: parseInt($('#quantity').val().trim()),
+                        Price: parseFloat($('#rate').val().trim()),
+                    });
+                    //Clear fields
+                    $('#itemName').val('').focus();
+                    $('#quantity,#rate').val('');
+
+                }
+                GeneratedItemsTable();
+
+
+            });
+            //Save button click function
+            $('#submit').click(function () {
+                //alert("hello");
+                //validation of order
+                var isAllValid = true;
+
+
+                if ($('#orderNo').val().trim() == '') {
+                    $('#orderNo').siblings('span.error').css('visibility', 'visible');
+                    isAllValid = false;
+                }
+                else {
+                    $('#orderNo').siblings('span.error').css('visibility', 'hidden');
+                }
+                if ($('#suppid').val().trim() == '') {
+                    $('#suppid').siblings('span.error').css('visibility', 'visible');
+                    isAllValid = false;
+                }
+                else {
+                    $('#suppid').siblings('span.error').css('visibility', 'hidden');
+                }
+
+                if ($('#orderDate').val().trim() == '') {
+                    $('#orderDate').siblings('span.error').css('visibility', 'visible');
+                    isAllValid = false;
+                }
+                else {
+                    $('#orderDate').siblings('span.error').css('visibility', 'hidden');
+                }
+
+
+                var GetDetail = [];
+                var contactpersons = $('.contect-person');
+                var contactphones = $('.phone');
+                var contactpositions = $('.position');
+
+                if (contactpersons.length > 0) {
+                    for (var i = 0; i < contactpersons.length; i++) {
+                        item_element = {};
+                        item_element.ProductId = contactpersons[i].value;
+                        item_element.Quantity = contactphones[i].value;
+                        item_element.Price = contactpositions[i].value;
+                        GetDetail.push(item_element);
+                    }
+                }
+
+
+
+                //Save if valid
+                if (isAllValid) {
+                    var data = {
+                        ID: $('#orderNo').val().trim(),
+                        CreatedDate: $('#orderDate').val().trim(),
+                        CustomerId: $('#suppid').val().trim(),
+                        RevicedFromCustomer: $('#RevicedFromCustomer').val().trim(),
+                        Discount: $('#Discount').val().trim(),
+                        Description: $('#description').val().trim(),
+                        GetDetail: GetDetail
+
+                    }
+                    console.log(data);
+                    $(this).val('Please wait...');
+
+                    $.ajax({
+                        url: '/Sale/Edit',
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        dataType: "JSON",
+                        contentType: "application/json",
+                        success: successFunc,
+                        error: errorFunc
+
+                    });
+                    function successFunc(data, status) {
+                        // alert(data);
+                        window.location = '/Sale'
+
+                    }
+                    function errorFunc() {
+                        window.location = '/Sale'
+                    }
+                }
+
+            });
+            //function for show added items in table
+            function GeneratedItemsTable() {
+
+                    console.log(orderItems[orderItems.length - 1]);
+                    $('#clientlist tbody').append("" +
+                        "<tr>" +
+                        '<td><input type="text"  class="form-control " value="' + orderItems[orderItems.length - 1].ProductName + '" /></td>' +
+
+                        '<td hidden><input type="text"  class="form-control contect-person" value="' + orderItems[orderItems.length - 1].ProductId + '" /></td>' +
+                        '<td><input type="text"  class="form-control phone"  value="' + orderItems[orderItems.length - 1].Quantity + '" /></td>' +
+                        '<td><input type="text"  class="form-control position" value="' + orderItems[orderItems.length - 1].Price + '" /></td>' +
+                        '<td><input type="button" id="remove" value="Remove" class="btn btn-danger" onclick="deleteRow(this)"/></td>' +
+                        "</tr>"
+
+
+                );
+
+
+            }
+        });
+        function deleteRow(r) {
+            var i = r.parentNode.parentNode.rowIndex;
+            document.getElementById("clientlist").deleteRow(i);
+        }
+        </script>
+        <script>
+            $(document).ready(function () {
+                var possible2 = "123456789";
+                var possible1 = "abcdefghijklmnopqrstuvwxyz";
+                var possible3 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                var possible = "zyxwvutsrqpnmlkjihgfedcba";
+
+                $('.getAutoCustomerId').val('' + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + possible2.charAt(Math.floor(Math.random() * possible2.length))
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + possible2.charAt(Math.floor(Math.random() * possible2.length))
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 1000) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 10000) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 10000) + 1));
+
+            });
+
+
+        </script>
+
+    }
+}
+
+<style>
+    /*Adding some css for looks good*/
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+
+
+    /*css for table*/
+    .container td {
+        vertical-align: top;
+    }
+
+    .tablecontainer table {
+        width: 100%;
+        border-collapse: collapse;
+        border-top: 1px solid #BFAEAE;
+        border-right: 1px solid #BFAEAE;
+    }
+
+    .tablecontainer th {
+        border-bottom: 2px solid #BFAEAE !important;
+    }
+
+    .tablecontainer th, .tablecontainer td {
+        text-align: left;
+        border-left: 1px solid #BFAEAE;
+        padding: 5px;
+        border-bottom: 1px solid #BFAEAE;
+    }
+
+    .ui-widget {
+        font-size: 12px !important;
+    }
+</style>

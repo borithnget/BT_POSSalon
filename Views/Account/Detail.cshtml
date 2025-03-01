@@ -1,0 +1,143 @@
+﻿﻿@model jotun.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Detail";
+}
+
+
+
+@using (Html.BeginForm("Detail", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+<div style="background-color:#e9ecef; padding:15px; margin-top:-20px">
+    <h4>Detail User Account</h4>
+    <hr />
+    @Html.AntiForgeryToken()
+
+    @Html.ValidationSummary(true)
+    @Html.HiddenFor(model => model.Id)
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    Are you sure you want to delete?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    <input type="reset" value="Delete" i class="btn btn-danger" onclick="window.location='/Account/Delete/@Html.ValueFor(model => model.Id)';" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-4" style="background-color:transparent">
+                <div class="form-group">
+                    <span style=" float:left">
+                        @Html.Label("Email", new { @class = "col-md-12 control-label" })
+                    </span>
+                    <span style="color:red; float:left; font-size:20px">*</span>
+                    <div class="col-md-12">
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @readonly = "readonly" })
+
+                        @Html.ValidationMessageFor(model => model.Email)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" style="background-color:transparent">
+                <div class="form-group">
+                    <span style=" float:left">
+                        @Html.Label("UserName", new { @class = "col-md-12 control-label" })
+                    </span>
+                    <span style="color:red; float:left; font-size:20px">*</span>
+                    <div class="col-md-12">
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @readonly = "readonly" })
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="form-group" style="background-color:transparent; margin-top:-15px">
+        <div class="row">
+            <div class="col-md-4" style="background-color:transparent">
+                <div class="form-group">
+
+                    @Html.Label("User Role", new { @class = "col-md-12 control-label" })
+                    <div class="col-md-12 ">
+                        @Html.TextBoxFor(m => m.UserRoles, new { @class = "form-control", @readonly = "readonly" })
+
+                        @*  @Html.DropDownList("UserRoles", (SelectList)ViewBag.Name, new { @class = "form-control", @readonly = "readonly" })*@
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4" style="background-color:transparent">
+                <div class="form-group">
+                    @Html.Label("Enabled", new { @class = "col-md-12 control-label" })
+                    <div class="col-md-12" style="background-color:transparent">
+                        @*    @Html.CheckBoxFor(m => m.LockoutEnabled, new { @class = "custom-control-input" })*@
+                        @Html.TextBoxFor(m => m.LockoutEnabled, new { @class = "form-control", @checked = "checked", @readonly = "readonly" })
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+
+            @*<input type="submit" value="Save" class="btn btn-primary" />*@
+            @* @if (@Html.ValueFor(model => model.Id).ToString() == "99981074-b6f5-452a-9837-46f562d7d4a1")*@
+            @if (@Html.ValueFor(model => model.UserRoles).ToString().Equals("SuperAdmin")) { }
+            else
+            {
+                <input type="reset" value="Edit" id="kosalid" class="btn btn-info" onclick="window.location='/Account/Edit/@Html.ValueFor(model => model.Id)';" />
+                <input type="reset" value="Delete" id="kosalid" class="btn btn-danger" data-toggle="modal" data-target="#myModal" />
+
+            }
+            <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Account';" />
+
+
+        </div>
+    </div>
+
+    @*<div id="dialog" title="Basic dialog" hidden>
+            <p>This is the default dialog which is useful for displaying information. The dialog window can be moved, resized and closed with the 'x' icon.</p>
+        </div>*@
+</div>
+
+    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.css" />*@
+    <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+    @section Scripts {
+        <link href="~/Content/vendor/jquery/jquery-ui.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-1.12.4.js"></script>
+        <script src="~/Content/vendor/jquery/jquery-ui.js"></script>
+        @*<link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">*@
+        @*<script src="https://code.jquery.com/jquery-1.12.4.js"></script>*@
+        @*<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+        @*<script type="text/javascript"></script>*@
+        @*<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.js"></script>*@
+        <script src="~/Scripts/datatables.min.js"></script>
+
+
+        <script>
+           //$(function () {
+           // $("#dialog").dialog();
+           //});
+        </script>
+
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}
+
+
+

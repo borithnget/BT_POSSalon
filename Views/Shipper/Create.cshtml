@@ -1,0 +1,275 @@
+﻿@model jotun.Models.ShipperViewModels
+@{
+    ViewBag.Title = "Create";
+}
+
+
+
+
+@using (Html.BeginForm("Create", "Shipper", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Add New Shipper</h4>
+        <hr />
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group" hidden>
+                @Html.Label("Id", new { @class = "col-md-3 control-label" })
+                <div class="col-md-9" readonly="readonly">
+                    @*@Html.TextBoxFor(m => m.Id, new { disabled = "disabled", @class = "form-control getAutoCustomerId " })*@
+                    @Html.TextBoxFor(m => m.Id, new { @class = "form-control getAutoCustomerId ", @readonly = "readonly" })
+
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group ">
+                            @Html.Label("Date", new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @Html.LabelFor(m => m.CreatedDate, DateTime.Now.ToString("dd-MMM-yyyy"), new { @class = " form-control", @readonly = "readonly" })
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent;">
+                        <div class="form-group">
+
+                            <span style=" float:left">
+                                @Html.Label("Shipper Name", new { @class = "col-md-12 control-label disabled" })
+                            </span>
+                            <span style="color:red; float:left; font-size:20px">*</span>
+
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.ShipperName, new { @class = "form-control ", @autocomplete = "off" })
+                                @Html.ValidationMessageFor(model => model.ShipperName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            <span style=" float:left">
+                                @Html.Label("Contact Name", new { @class = "col-md-12 control-label" })
+                            </span>
+                            <span style="color:red; float:left; font-size:20px">*</span>
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.ContactName, new { @class = "form-control", @autocomplete = "off" })
+                                @Html.ValidationMessageFor(model => model.ContactName, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            <span style=" float:left">
+                                @Html.Label("Contact Phone", new { @class = "col-md-12 control-label" })
+                            </span>
+                            <span style="color:red; float:left; font-size:20px">*</span>
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.ContactPhone, new { @class = "form-control", @autocomplete = "off" })
+                                @Html.ValidationMessageFor(model => model.ContactPhone, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            <span style=" float:left">
+                                @Html.Label("Gender", new { @class = "col-md-12 control-label" })
+                            </span>
+
+
+                            <div class="col-md-12">
+                                @Html.DropDownList("Gender", new List<SelectListItem>{
+
+                                     new SelectListItem{ Text="Male", Value="Male"},
+                                     new SelectListItem{ Text="Female", Value="Female"},
+                                     new SelectListItem{ Text="Other", Value="Other"},
+                                     }, "--- Select ---", new { @class = "form-control" }
+                                     )
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            <span style=" float:left">
+                                @Html.Label("Address", new { @class = "col-md-12 control-label" })
+                            </span>
+
+
+                            <div class="col-md-12">
+                                @Html.TextAreaFor(m => m.Address, new { @class = "form-control", @autocomplete = "off" })
+
+                                @*@Html.DropDownList("Address", new List<SelectListItem>{
+
+                                    new SelectListItem{ Text="Banteay Meanchey", Value="Banteay Meanchey"},
+                                    new SelectListItem{ Text="Battambang", Value="Battambang"},
+                                    new SelectListItem{ Text="Kampong Cham", Value="Kampong Cham"},
+                                    new SelectListItem{ Text="Kampong Chhnang", Value="Kampong Chhnang"},
+                                    new SelectListItem{ Text="Kampong Speu", Value="Kampong Speu"},
+                                    new SelectListItem{ Text="Kampong Thom", Value="Kampong Thom"},
+                                    new SelectListItem{ Text="Kampot", Value="Kampot"},
+                                    new SelectListItem{ Text="Kandal", Value="Kandal"},
+                                    new SelectListItem{ Text="Koh Kong", Value="Koh Kong"},
+                                    new SelectListItem{ Text="Kratie", Value="Kratie"},
+                                    new SelectListItem{ Text="Mondulkiri", Value="Mondulkiri"},
+                                    new SelectListItem{ Text="Phnom Penh", Value="Phnom Penh"},
+                                    new SelectListItem{ Text="Preah Vihear", Value="Preah Vihear"},
+                                    new SelectListItem{ Text="Prey Veng", Value="Prey Veng"},
+                                    new SelectListItem{ Text="Pursat", Value="Pursat"},
+                                    new SelectListItem{ Text="Ratanak Kiri", Value="Ratanak Kiri"},
+                                    new SelectListItem{ Text="Siem Reap", Value="Siem Reap"},
+                                    new SelectListItem{ Text="Preah Sihanouk", Value="Preah Sihanouk"},
+                                    new SelectListItem{ Text="Steung Treng", Value="Steung Treng"},
+                                    new SelectListItem{ Text="Svay Rieng", Value="Svay Rieng"},
+                                    new SelectListItem{ Text="Takeo", Value="Takeo"},
+                                    new SelectListItem{ Text="Oddar Meanchey", Value="Oddar Meanchey"},
+                                    new SelectListItem{ Text="Kep", Value="Kep"},
+                                    new SelectListItem{ Text="Pailin", Value="Pailin"},
+                                    new SelectListItem{ Text="Tboung Khmum", Value="Tboung Khmum"},
+                                    }, "--- Select ---",new { @class = "form-control" }
+                                    )*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                <div class="row">
+                    <div class="col-md-8" style="background-color:transparent">
+                        <div class="form-group">
+                            @Html.Label("Noted", new { @class = "col-md-3 control-label" })
+                            <div class="col-md-12">
+                                @Html.TextAreaFor(m => m.Noted, new { @class = "form-control", @autocomplete = "off" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-9">
+                    <input type="submit" class="btn btn-primary" value="Save" />
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Shipper';" />
+
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+    @section Scripts {
+        <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+        <link href="~/Content/vendor/jquery/jquery-ui.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-1.12.4.js"></script>
+        <script src="~/Scripts/jquery-ui.js"></script>
+        <script src="~/Scripts/datatables.min.js"></script>
+
+        @*<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="/resources/demos/style.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+        <script>
+
+            $(function () {
+                //$("#SelectedDate").datepicker({ dateFormat: 'dd/mm/yy' });
+                $("#SelectedDate").datepicker({ disabled: true, }).datepicker("setDate", new Date());
+
+                //$("#SelectedDate").datepicker({
+                //    dateFormat: 'dd/mm/yy', showButtonPanel: true,
+                //    currentText: "Today:" + $.datepicker.formatDate('MM dd, yy', new Date())
+                //});
+            });
+            $(document).ready(function () {
+                //  var rnd = new Random();
+                //  var randomNumbers = Enumerable.Range(1, 49).OrderBy(x => rnd.Next()).Take(6).ToList();
+                //$('.getCurrentDateUpdate').val("Cus-No-" + 1);
+                var possible2 = "123456789";
+                var possible1 = "abcdefghijklmnopqrstuvwxyz";
+                var possible = "zyxwvutsrqpnmlkjihgfedcba";
+                $('.getAutoCustomerNo').val('No-C'
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + (Math.floor(Math.random() * 100) + 1) + '-'
+                    + (Math.floor(Math.random() * 100) + 1)
+                    + (Math.floor(Math.random() * 100) + 1)
+                    + (Math.floor(Math.random() * 100) + 1));
+
+                $('.getAutoCustomerId').val('' + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + possible2.charAt(Math.floor(Math.random() * possible2.length))
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + possible2.charAt(Math.floor(Math.random() * possible2.length))
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 1000) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 10000) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 10000) + 1));
+
+
+            });
+
+                                                                                        //$.fn.dataTable.ext.errMode = 'throw';
+        </script>
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,106 @@
+﻿@model IEnumerable<jotun.Models.AppointmentModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+<link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+<style type="text/css">
+    .content-wrapper {
+        margin-top: 80px !important;
+        padding: 10px !important;
+        background-color: white !important;
+    }
+</style>
+
+<h2>Appointment List</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create", new { style = "btn btn-primary" })
+</p>
+<div class="table-responsive">
+    <table class="table table-bordered" id="table1">
+        <thead>
+            <tr>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.AppointmentDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CustomerName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CustomerContact)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StatTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.EndTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PriceFinal)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.AppointmentStatus)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        
+        <tbody>
+            @foreach (var item in Model)
+            {
+                string starttime = Convert.ToDateTime(item.StatTime).ToString("HH:mm");
+                <tr>
+
+                    <td>
+                        @Convert.ToDateTime(item.AppointmentDate).ToString("dd/MM/yyyy")
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CustomerName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CustomerContact)
+                    </td>
+                    <td>
+                        @starttime
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.EndTime)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PriceFinal)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.AppointmentStatus)
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Index", "Coffee", new {appointmentId=item.AppointmentId})">Invoice</a> |
+                        @Html.ActionLink("Edit", "Edit", new { id=item.AppointmentId }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.AppointmentId }) |
+                        @*@Html.ActionLink("Delete", "Delete", new { id = item.AppointmentId })*@
+                        <a href="javascript:void(0)" data-id="@item.AppointmentId" class="btn_cancel">Cancel</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        
+
+    </table>
+</div>
+
+
+@section scripts{
+    <script src="~/Content/vendor/jquery/jquery.min.js"></script>
+    <script src="~/Content/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script src="~/Scripts/datatables.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#table1').DataTable();
+        })
+    </script>
+}

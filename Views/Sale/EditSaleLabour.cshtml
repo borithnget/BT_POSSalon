@@ -1,0 +1,192 @@
+﻿@model List<jotun.Models.SaleLabourViewModel>
+
+@{
+    ViewBag.Title = "Edit Sale Labour";
+}
+<div class="container" style="width: 80%; margin: 0 auto;">
+    @using (Html.BeginForm("EditSaleLabour", "Sale", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <!-- Loop through each SaleLabour item in the model -->
+        for (int i = 0; i < Model.Count; i++)
+        {
+            <!-- Hidden Fields to Track IDs -->
+            @Html.HiddenFor(m => Model[i].JewelerId)
+            @Html.HiddenFor(m => Model[i].CustomerId)
+            @Html.HiddenFor(m => Model[i].SaleLabourId)
+
+            <div class="card mb-4 mt-4">
+                <div class="card-header bg-primary text-white">
+                    <strong>Sale Labour Edit</strong>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <!-- Left Column -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="CustomerName" class="form-label"><strong>Customer Name:</strong></label>
+                                @Html.TextBoxFor(m => Model[i].CustomerName, new { @class = "form-control", @required = "required" })
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="FinishWeight" class="form-label"><strong>Finish Weight:</strong></label>
+                                @Html.TextBoxFor(m => Model[i].FinishWeight, new { @class = "form-control", @required = "required" })
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="JewelerName" class="form-label"><strong>Jeweler Name:</strong></label>
+                                @Html.TextBoxFor(m => Model[i].JewelerName, new { @class = "form-control", @required = "required" })
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Category" class="form-label"><strong>Category:</strong></label>
+                                @Html.TextBoxFor(m => Model[i].Category, new { @class = "form-control", @required = "required" })
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="Color" class="form-label"><strong>Color:</strong></label>
+                                @Html.TextBoxFor(m => Model[i].Color, new { @class = "form-control", @required = "required" })
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="Weight" class="form-label"><strong>Weight:</strong></label>
+                                @Html.TextBoxFor(m => Model[i].Weight, new { @class = "form-control", @required = "required" })
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="LabourCost" class="form-label"><strong>Labour Cost:</strong></label>
+                                @Html.TextBoxFor(m => Model[i].LabourCost, new { @class = "form-control", @required = "required" })
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="LabourDesignCost" class="form-label"><strong>Labour Design Cost:</strong></label>
+                                @Html.TextBoxFor(m => Model[i].LabourDesignCost, new { @class = "form-control", @required = "required" })
+                            </div>
+
+                            <!-- Image Path Section -->
+                            <div class="mb-3 row">
+                                <div class="col-12">
+                                    <label for="ImagePath" class="form-label"><strong>Image Path:</strong></label>
+                                </div>
+                                <div class="col-12">
+                                    <!-- Image Container with Border -->
+                                    <div style="overflow: hidden; display: inline-block; border: 1px solid #ccc; border-radius: 5px;">
+                                        <img id="imagePreview_@i"
+                                             src="@Model[i].ImagePath"
+                                             alt="Image Preview"
+                                             style="max-width: 150px; max-height: 150px; cursor: pointer; transition: transform 0.2s ease-in-out;"
+                                             onclick="toggleZoom(this)" />
+                                    </div>
+                                </div>
+                                <div class="col-12 mt-2">
+                                    <!-- Image Path Textbox -->
+                                    @Html.TextBoxFor(m => Model[i].ImagePath, new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Details Section -->
+                    <div class="mt-4">
+                        <h5>Product Details</h5>
+                        <table class="table table-bordered">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Product Name (He)</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int j = 0; j < Model[i].ProductDetails.Count; j++)
+                                {
+                                    <!-- Hidden field for ProductDetailId -->
+                                    @Html.HiddenFor(m => Model[i].ProductDetails[j].SaleLabourDetailId)
+
+                                    <tr>
+                                        <td>
+                                            @Html.TextBoxFor(m => Model[i].ProductDetails[j].ProductName, new { @class = "form-control", @required = "required" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(m => Model[i].ProductDetails[j].ProductNameHe, new { @class = "form-control", @required = "required" })
+                                        </td>
+                                        <td>
+                                            @Html.TextBoxFor(m => Model[i].ProductDetails[j].Price, new { @class = "form-control", @required = "required" })
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <!-- Submit Button -->
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-success mr-2" id="saveButton">
+                                Save
+                            </button>
+                            <a href="@Url.Action("ListDataLD", "Sale")" class="btn btn-secondary">
+                                Back
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<script>
+    function toggleZoom(image) {
+        const isZoomed = image.style.transform === "scale(2)";
+        image.style.transform = isZoomed ? "scale(1)" : "scale(2)";
+    }
+
+    document.getElementById('saveButton').addEventListener('click', function (event) {
+        // Prevent form submission to inspect data
+        event.preventDefault();
+
+        // Collect all form data
+        const formData = new FormData(this.closest('form'));
+        const dataObject = {};
+
+        // Convert FormData to a readable object
+        formData.forEach((value, key) => {
+            if (!dataObject[key]) {
+                dataObject[key] = value; // If key is unique
+            } else {
+                // If key already exists, convert it to an array and push the value
+                if (!Array.isArray(dataObject[key])) {
+                    dataObject[key] = [dataObject[key]];
+                }
+                dataObject[key].push(value);
+            }
+        });
+
+        // Log the serialized data to the console
+        console.log('Form Data Submitted:', dataObject);
+
+        // Add validation for required fields
+        let isValid = true;
+        document.querySelectorAll('input[required]').forEach(input => {
+            if (!input.value.trim()) {
+                input.style.border = '1px solid red';
+                isValid = false;
+            } else {
+                input.style.border = '';
+            }
+        });
+
+        if (!isValid) {
+            alert('Please fill all required fields.');
+            return;
+        }
+
+        // Disable the button and submit the form
+        this.disabled = true;
+        this.textContent = 'Saving...';
+        this.closest('form').submit();
+    });
+</script>

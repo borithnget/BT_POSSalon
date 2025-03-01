@@ -1,0 +1,2328 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="CoffeePOSDataModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="__MigrationHistory">
+          <Key>
+            <PropertyRef Name="MigrationId" />
+            <PropertyRef Name="ContextKey" />
+          </Key>
+          <Property Name="MigrationId" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="ContextKey" Type="nvarchar" MaxLength="300" Nullable="false" />
+          <Property Name="Model" Type="varbinary(max)" Nullable="false" />
+          <Property Name="ProductVersion" Type="nvarchar" MaxLength="32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetRoles">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetUserClaims">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ClaimType" Type="nvarchar(max)" />
+          <Property Name="ClaimValue" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="AspNetUserLogins">
+          <Key>
+            <PropertyRef Name="LoginProvider" />
+            <PropertyRef Name="ProviderKey" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="LoginProvider" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ProviderKey" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetUserRoles">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="UserId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="RoleId" Type="nvarchar" MaxLength="128" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetUsers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="256" />
+          <Property Name="EmailConfirmed" Type="bit" Nullable="false" />
+          <Property Name="PasswordHash" Type="nvarchar(max)" />
+          <Property Name="SecurityStamp" Type="nvarchar(max)" />
+          <Property Name="PhoneNumber" Type="nvarchar(max)" />
+          <Property Name="PhoneNumberConfirmed" Type="bit" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="bit" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="datetime" />
+          <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblAppointment">
+          <Key>
+            <PropertyRef Name="AppointmentId" />
+          </Key>
+          <Property Name="AppointmentId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="AppointmentDate" Type="date" />
+          <Property Name="CustomerId" Type="nvarchar" MaxLength="50" />
+          <Property Name="CustomerName" Type="nvarchar" MaxLength="255" />
+          <Property Name="CustomerContact" Type="nvarchar" MaxLength="255" />
+          <Property Name="StatTime" Type="time" Precision="7" />
+          <Property Name="EndTime" Type="time" Precision="7" />
+          <Property Name="EndTimeExpected" Type="time" Precision="7" />
+          <Property Name="PriceExpected" Type="money" />
+          <Property Name="PriceFull" Type="money" />
+          <Property Name="DiscountAmount" Type="money" />
+          <Property Name="DiscountPercentage" Type="money" />
+          <Property Name="PriceFinal" Type="money" />
+          <Property Name="Canceled" Type="bit" />
+          <Property Name="CanceledReason" Type="nvarchar(max)" />
+          <Property Name="AppointmentStatus" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="tblAttribute">
+          <Key>
+            <PropertyRef Name="AttributeId" />
+          </Key>
+          <Property Name="AttributeId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="AttributeName" Type="nvarchar" MaxLength="255" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="tblCategories">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="CategoryNameEng" Type="nvarchar" MaxLength="128" />
+          <Property Name="CategoryNameKh" Type="nvarchar" MaxLength="128" />
+          <Property Name="Description" Type="nvarchar" MaxLength="4000" />
+          <Property Name="Status" Type="int" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedDate" Type="datetime" />
+          <Property Name="Service" Type="bit" />
+        </EntityType>
+        <EntityType Name="tblCategoryAttribute">
+          <Key>
+            <PropertyRef Name="CategoryAttributeId" />
+          </Key>
+          <Property Name="CategoryAttributeId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CategoryId" Type="nvarchar" MaxLength="50" />
+          <Property Name="AttributeId" Type="nvarchar" MaxLength="50" />
+          <Property Name="Value" Type="nvarchar" MaxLength="255" />
+          <Property Name="IsActive" Type="nvarchar" MaxLength="355" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="tblCustomer_location">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="customer_id" Type="nvarchar" MaxLength="128" />
+          <Property Name="location" Type="nvarchar(max)" />
+          <Property Name="updated_date" Type="datetime" />
+          <Property Name="created_date" Type="datetime" />
+          <Property Name="status" Type="bit" />
+        </EntityType>
+        <EntityType Name="tblCustomerPointHistory">
+          <Key>
+            <PropertyRef Name="SalePointHistoryId" />
+          </Key>
+          <Property Name="SalePointHistoryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SaleId" Type="nvarchar" MaxLength="50" />
+          <Property Name="CustomerId" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="PointQTY" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="PointAmount" Type="money" />
+        </EntityType>
+        <EntityType Name="tblCustomers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="CustomerNo" Type="nvarchar(max)" />
+          <Property Name="CustomerName" Type="nvarchar(max)" />
+          <Property Name="Gender" Type="nvarchar" MaxLength="50" />
+          <Property Name="Status" Type="int" />
+          <Property Name="PhoneNumber" Type="nvarchar" MaxLength="128" />
+          <Property Name="ProjectLocation" Type="nvarchar" MaxLength="256" />
+          <Property Name="Noted" Type="nvarchar" MaxLength="4000" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedDate" Type="datetime" />
+          <Property Name="is_old_data" Type="bit" />
+          <Property Name="CustomerTypeId" Type="int" />
+          <Property Name="TotalPoint" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="TotalPointAmount" Type="money" />
+        </EntityType>
+        <EntityType Name="tblCustomerType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="customer_type" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="discount" Type="decimal" Precision="5" Scale="4" />
+          <Property Name="StoreDiscount" Type="decimal" Precision="10" Scale="2" />
+        </EntityType>
+        <EntityType Name="tblInvoices">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="InvoiceNo" Type="nvarchar" MaxLength="128" />
+          <Property Name="SaleId" Type="nvarchar" MaxLength="128" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedDate" Type="datetime" />
+          <Property Name="OutstandingInvoiceAmount" Type="float" />
+          <Property Name="Status" Type="int" />
+        </EntityType>
+        <EntityType Name="tblJeweler">
+          <Key>
+            <PropertyRef Name="JewelerId" />
+          </Key>
+          <Property Name="JewelerId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="255" />
+          <Property Name="ContactPhone" Type="nvarchar" MaxLength="255" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="Address" Type="nvarchar(max)" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdatedAt" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblProductAttribute">
+          <Key>
+            <PropertyRef Name="ProductAttributeId" />
+          </Key>
+          <Property Name="ProductAttributeId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="ProductId" Type="nvarchar" MaxLength="50" />
+          <Property Name="AttributeId" Type="nvarchar" MaxLength="50" />
+          <Property Name="Value" Type="nvarchar" MaxLength="255" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="AttributeName" Type="nvarchar" MaxLength="50" />
+          <Property Name="AttributeValue" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="ModifiedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblProductByUnit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ProductID" Type="nvarchar" MaxLength="128" />
+          <Property Name="UnitTypeID" Type="nvarchar" MaxLength="128" />
+          <Property Name="Cost" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="TypeDefault" Type="bit" />
+          <Property Name="CustomerType" Type="int" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsActive" Type="bit" />
+        </EntityType>
+        <EntityType Name="tblProducts">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="CategoryId" Type="nvarchar" MaxLength="128" />
+          <Property Name="Unitid" Type="nvarchar" MaxLength="128" />
+          <Property Name="SupplierId" Type="nvarchar" MaxLength="128" />
+          <Property Name="ShipperId" Type="nvarchar" MaxLength="128" />
+          <Property Name="ProductNo" Type="nvarchar" MaxLength="128" />
+          <Property Name="ProductCode" Type="nvarchar" MaxLength="128" />
+          <Property Name="ProductImage" Type="nvarchar" MaxLength="4000" />
+          <Property Name="QuantityInStock" Type="float" />
+          <Property Name="PriceInStock" Type="float" />
+          <Property Name="Description" Type="nvarchar" MaxLength="4000" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedDate" Type="datetime" />
+          <Property Name="Status" Type="int" />
+          <Property Name="ProductName" Type="nvarchar" MaxLength="128" />
+          <Property Name="QuantityInStockRetail" Type="float" />
+          <Property Name="quantity_alert" Type="float" />
+          <Property Name="LastAction" Type="nvarchar" MaxLength="50" />
+          <Property Name="LastModified" Type="datetime" />
+          <Property Name="ModifiedBy" Type="nvarchar" MaxLength="255" />
+          <Property Name="Service" Type="bit" />
+        </EntityType>
+        <EntityType Name="tblPurchaseBySupplier">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="SupplierId" Type="nvarchar" MaxLength="128" />
+          <Property Name="ShipperId" Type="nvarchar" MaxLength="128" />
+          <Property Name="Description" Type="nvarchar" MaxLength="4000" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedDate" Type="datetime" />
+          <Property Name="Status" Type="int" />
+          <Property Name="ShipperAmount" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="PurchaseAmount" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="Deposit" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="Discount" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="PurchaseStatus" Type="nvarchar" MaxLength="50" />
+          <Property Name="InvoiceNo" Type="nvarchar" MaxLength="100" />
+          <Property Name="InvoiceId" Type="int" />
+        </EntityType>
+        <EntityType Name="tblPurchaseBySupplierDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="PurchaseBySupplierId" Type="nvarchar" MaxLength="128" />
+          <Property Name="ProductId" Type="nvarchar" MaxLength="128" />
+          <Property Name="UnitTypeId" Type="nvarchar" MaxLength="128" />
+          <Property Name="Quantity" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Cost" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="Discount" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="ExpiredDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblSaleLabour">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="nvarchar" MaxLength="128" />
+          <Property Name="JewelerId" Type="nvarchar" MaxLength="50" />
+          <Property Name="Category" Type="nvarchar" MaxLength="50" />
+          <Property Name="Color" Type="nvarchar(max)" />
+          <Property Name="Weight" Type="nvarchar" MaxLength="50" />
+          <Property Name="FinishWeight" Type="nvarchar" MaxLength="50" />
+          <Property Name="LabourCost" Type="nvarchar" MaxLength="50" />
+          <Property Name="LabourDesignCost" Type="nvarchar" MaxLength="50" />
+          <Property Name="Length" Type="nvarchar" MaxLength="255" />
+          <Property Name="Size" Type="nvarchar" MaxLength="255" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="ImagePath" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="tblSaleLabourDetail">
+          <Key>
+            <PropertyRef Name="SaleLabourDetailId" />
+          </Key>
+          <Property Name="SaleLabourDetailId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="SaleLabourId" Type="bigint" />
+          <Property Name="ProductName" Type="nvarchar" MaxLength="255" />
+          <Property Name="Qty" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Price" Type="money" />
+          <Property Name="IsCustomer" Type="bit" />
+          <Property Name="ProductNameHe" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="tblSales">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="CustomerId" Type="nvarchar" MaxLength="128" />
+          <Property Name="Description" Type="nvarchar" MaxLength="4000" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedDate" Type="datetime" />
+          <Property Name="Status" Type="int" />
+          <Property Name="SaleCode" Type="nvarchar" MaxLength="128" />
+          <Property Name="Owe" Type="float" />
+          <Property Name="InvoiceStatus" Type="nvarchar" MaxLength="100" />
+          <Property Name="InvoiceNo" Type="nvarchar" MaxLength="100" />
+          <Property Name="Discount" Type="float" />
+          <Property Name="Amount" Type="float" />
+          <Property Name="RevicedFromCustomer" Type="float" />
+          <Property Name="customer_location" Type="int" />
+          <Property Name="InvoiceId" Type="int" />
+          <Property Name="ReceivedByABA" Type="money" />
+          <Property Name="SaleAmount" Type="money" />
+          <Property Name="SaleDeposit" Type="money" />
+          <Property Name="SaleCost" Type="money" />
+          <Property Name="Profit" Type="money" />
+          <Property Name="SaleImage" Type="nvarchar" MaxLength="4000" />
+          <Property Name="OrderingNumber" Type="int" />
+          <Property Name="TableNumber" Type="int" />
+          <Property Name="OrderType" Type="nvarchar" MaxLength="50" />
+          <Property Name="PaymentType" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsClosed" Type="bit" />
+        </EntityType>
+        <EntityType Name="tblSalesDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="SaleId" Type="nvarchar" MaxLength="128" />
+          <Property Name="ProductId" Type="nvarchar" MaxLength="128" />
+          <Property Name="Quantity" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="UnitTypeId" Type="nvarchar" MaxLength="128" />
+          <Property Name="color_code" Type="nvarchar(max)" />
+          <Property Name="actual_price" Type="decimal" Precision="18" Scale="6" />
+          <Property Name="cost" Type="money" />
+          <Property Name="Sugar" Type="nvarchar" MaxLength="50" />
+          <Property Name="Size" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="tblService">
+          <Key>
+            <PropertyRef Name="ServiceId" />
+          </Key>
+          <Property Name="ServiceId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ServiceTypeId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Price" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblServiceBooked">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="AppointmentId" Type="nvarchar" MaxLength="50" />
+          <Property Name="ServiceId" Type="nvarchar" MaxLength="50" />
+          <Property Name="Price" Type="money" />
+        </EntityType>
+        <EntityType Name="tblServiceProduct">
+          <Key>
+            <PropertyRef Name="ServiceProductId" />
+          </Key>
+          <Property Name="ServiceProductId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ServiceId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="ProductId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Quantity" Type="int" Nullable="false" />
+          <Property Name="Quality" Type="nvarchar" MaxLength="50" />
+          <Property Name="Notes" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="tblServiceProvided">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="AppointmentId" Type="nvarchar" MaxLength="50" />
+          <Property Name="ServiceId" Type="nvarchar" MaxLength="50" />
+          <Property Name="Price" Type="money" />
+        </EntityType>
+        <EntityType Name="tblServiceType">
+          <Key>
+            <PropertyRef Name="ServiceTypeId" />
+          </Key>
+          <Property Name="ServiceTypeId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="255" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblShippers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="ShipperName" Type="nvarchar" MaxLength="128" />
+          <Property Name="ContactName" Type="nvarchar" MaxLength="128" />
+          <Property Name="ContactPhone" Type="nvarchar" MaxLength="128" />
+          <Property Name="Gender" Type="nvarchar" MaxLength="50" />
+          <Property Name="Address" Type="nvarchar" MaxLength="128" />
+          <Property Name="Noted" Type="nvarchar" MaxLength="4000" />
+          <Property Name="Status" Type="int" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblStaff">
+          <Key>
+            <PropertyRef Name="StaffId" />
+          </Key>
+          <Property Name="StaffId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="StaffFullname" Type="nvarchar" MaxLength="255" />
+          <Property Name="StaffNumber" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdatedAt" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblSuppliers">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="SupplierName" Type="nvarchar" MaxLength="128" />
+          <Property Name="ContactName" Type="nvarchar" MaxLength="128" />
+          <Property Name="ContactPhone" Type="nvarchar" MaxLength="128" />
+          <Property Name="Gender" Type="nvarchar" MaxLength="50" />
+          <Property Name="Address" Type="nvarchar" MaxLength="128" />
+          <Property Name="Description" Type="nvarchar" MaxLength="4000" />
+          <Property Name="Status" Type="int" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblTable">
+          <Key>
+            <PropertyRef Name="TableId" />
+          </Key>
+          <Property Name="TableId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TableNumber" Type="nvarchar" MaxLength="50" />
+          <Property Name="People" Type="int" />
+          <Property Name="IsAvailable" Type="bit" />
+          <Property Name="Decription" Type="nvarchar(max)" />
+        </EntityType>
+        <EntityType Name="tblUnits">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="UnitNameEng" Type="nvarchar" MaxLength="128" />
+          <Property Name="UnitNameKh" Type="nvarchar" MaxLength="128" />
+          <Property Name="Quantity" Type="bigint" />
+          <Property Name="Description" Type="nvarchar" MaxLength="4000" />
+          <Property Name="Status" Type="int" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tbSalePayment">
+          <Key>
+            <PropertyRef Name="sale_payment_id" />
+          </Key>
+          <Property Name="sale_payment_id" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="sale_id" Type="nvarchar" MaxLength="128" />
+          <Property Name="payment_amount" Type="money" />
+          <Property Name="owe_amount" Type="money" />
+          <Property Name="created_at" Type="datetime" />
+          <Property Name="created_by" Type="nvarchar" MaxLength="50" />
+          <Property Name="payment_amount_aba" Type="money" />
+        </EntityType>
+        <EntityType Name="UserProfile">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="56" Nullable="false" />
+        </EntityType>
+        <EntityType Name="webpages_Membership">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" />
+          <Property Name="ConfirmationToken" Type="nvarchar" MaxLength="128" />
+          <Property Name="IsConfirmed" Type="bit" />
+          <Property Name="LastPasswordFailureDate" Type="datetime" />
+          <Property Name="PasswordFailuresSinceLastSuccess" Type="int" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="PasswordChangedDate" Type="datetime" />
+          <Property Name="PasswordSalt" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="PasswordVerificationToken" Type="nvarchar" MaxLength="128" />
+          <Property Name="PasswordVerificationTokenExpirationDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="webpages_OAuthMembership">
+          <Key>
+            <PropertyRef Name="Provider" />
+            <PropertyRef Name="ProviderUserId" />
+          </Key>
+          <Property Name="Provider" Type="nvarchar" MaxLength="30" Nullable="false" />
+          <Property Name="ProviderUserId" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="webpages_Roles">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="webpages_UsersInRoles">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="RoleId" Type="int" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__tblProduc__Custo__02FC7413">
+          <End Role="tblCustomerType" Type="Self.tblCustomerType" Multiplicity="0..1" />
+          <End Role="tblProductByUnit" Type="Self.tblProductByUnit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblCustomerType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblProductByUnit">
+              <PropertyRef Name="CustomerType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetUserClaims" Type="Self.AspNetUserClaims" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserClaims">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetUserLogins" Type="Self.AspNetUserLogins" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserLogins">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
+          <End Role="AspNetRoles" Type="Self.AspNetRoles" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetUserRoles" Type="Self.AspNetUserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetRoles">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserRoles">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId">
+          <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetUserRoles" Type="Self.AspNetUserRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserRoles">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_RoleId">
+          <End Role="webpages_Roles" Type="Self.webpages_Roles" Multiplicity="1" />
+          <End Role="webpages_UsersInRoles" Type="Self.webpages_UsersInRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="webpages_Roles">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="webpages_UsersInRoles">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Service_ServiceType">
+          <End Role="tblServiceType" Type="Self.tblServiceType" Multiplicity="1" />
+          <End Role="tblService" Type="Self.tblService" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblServiceType">
+              <PropertyRef Name="ServiceTypeId" />
+            </Principal>
+            <Dependent Role="tblService">
+              <PropertyRef Name="ServiceTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServiceProduct_Product">
+          <End Role="tblProducts" Type="Self.tblProducts" Multiplicity="1" />
+          <End Role="tblServiceProduct" Type="Self.tblServiceProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblProducts">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblServiceProduct">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServiceProduct_Service">
+          <End Role="tblService" Type="Self.tblService" Multiplicity="1" />
+          <End Role="tblServiceProduct" Type="Self.tblServiceProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblService">
+              <PropertyRef Name="ServiceId" />
+            </Principal>
+            <Dependent Role="tblServiceProduct">
+              <PropertyRef Name="ServiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblInvoices_tblSales">
+          <End Role="tblSales" Type="Self.tblSales" Multiplicity="0..1" />
+          <End Role="tblInvoices" Type="Self.tblInvoices" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblSales">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblInvoices">
+              <PropertyRef Name="SaleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblPurchaseBySupplierDetail_tblPurchaseBySupplier1">
+          <End Role="tblPurchaseBySupplier" Type="Self.tblPurchaseBySupplier" Multiplicity="0..1" />
+          <End Role="tblPurchaseBySupplierDetail" Type="Self.tblPurchaseBySupplierDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblPurchaseBySupplier">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblPurchaseBySupplierDetail">
+              <PropertyRef Name="PurchaseBySupplierId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblSaleLabour_Customers">
+          <End Role="tblCustomers" Type="Self.tblCustomers" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblSaleLabour" Type="Self.tblSaleLabour" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblCustomers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSaleLabour">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblSaleLabour_tblJeweler">
+          <End Role="tblJeweler" Type="Self.tblJeweler" Multiplicity="0..1" />
+          <End Role="tblSaleLabour" Type="Self.tblSaleLabour" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblJeweler">
+              <PropertyRef Name="JewelerId" />
+            </Principal>
+            <Dependent Role="tblSaleLabour">
+              <PropertyRef Name="JewelerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblSaleLabourDetail_tblSaleLabour">
+          <End Role="tblSaleLabour" Type="Self.tblSaleLabour" Multiplicity="0..1" />
+          <End Role="tblSaleLabourDetail" Type="Self.tblSaleLabourDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblSaleLabour">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSaleLabourDetail">
+              <PropertyRef Name="SaleLabourId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblSalesDetail_tblSales2">
+          <End Role="tblSales" Type="Self.tblSales" Multiplicity="0..1" />
+          <End Role="tblSalesDetail" Type="Self.tblSalesDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblSales">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSalesDetail">
+              <PropertyRef Name="SaleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tbSalePayment_tblSales">
+          <End Role="tblSales" Type="Self.tblSales" Multiplicity="0..1" />
+          <End Role="tbSalePayment" Type="Self.tbSalePayment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblSales">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tbSalePayment">
+              <PropertyRef Name="sale_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_UserId">
+          <End Role="UserProfile" Type="Self.UserProfile" Multiplicity="1" />
+          <End Role="webpages_UsersInRoles" Type="Self.webpages_UsersInRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserProfile">
+              <PropertyRef Name="UserId" />
+            </Principal>
+            <Dependent Role="webpages_UsersInRoles">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="CoffeePOSDataModelStoreContainer">
+          <EntitySet Name="__MigrationHistory" EntityType="Self.__MigrationHistory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaims" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblAppointment" EntityType="Self.tblAppointment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblAttribute" EntityType="Self.tblAttribute" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblCategories" EntityType="Self.tblCategories" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblCategoryAttribute" EntityType="Self.tblCategoryAttribute" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblCustomer_location" EntityType="Self.tblCustomer_location" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblCustomerPointHistory" EntityType="Self.tblCustomerPointHistory" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblCustomers" EntityType="Self.tblCustomers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblCustomerType" EntityType="Self.tblCustomerType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblInvoices" EntityType="Self.tblInvoices" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblJeweler" EntityType="Self.tblJeweler" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblProductAttribute" EntityType="Self.tblProductAttribute" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblProductByUnit" EntityType="Self.tblProductByUnit" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblProducts" EntityType="Self.tblProducts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblPurchaseBySupplier" EntityType="Self.tblPurchaseBySupplier" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblPurchaseBySupplierDetail" EntityType="Self.tblPurchaseBySupplierDetail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblSaleLabour" EntityType="Self.tblSaleLabour" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblSaleLabourDetail" EntityType="Self.tblSaleLabourDetail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblSales" EntityType="Self.tblSales" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblSalesDetail" EntityType="Self.tblSalesDetail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblService" EntityType="Self.tblService" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblServiceBooked" EntityType="Self.tblServiceBooked" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblServiceProduct" EntityType="Self.tblServiceProduct" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblServiceProvided" EntityType="Self.tblServiceProvided" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblServiceType" EntityType="Self.tblServiceType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblShippers" EntityType="Self.tblShippers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblStaff" EntityType="Self.tblStaff" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblSuppliers" EntityType="Self.tblSuppliers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblTable" EntityType="Self.tblTable" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblUnits" EntityType="Self.tblUnits" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tbSalePayment" EntityType="Self.tbSalePayment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserProfile" EntityType="Self.UserProfile" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="webpages_Membership" EntityType="Self.webpages_Membership" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="webpages_OAuthMembership" EntityType="Self.webpages_OAuthMembership" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="webpages_Roles" EntityType="Self.webpages_Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="webpages_UsersInRoles" EntityType="Self.webpages_UsersInRoles" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__tblProduc__Custo__02FC7413" Association="Self.FK__tblProduc__Custo__02FC7413">
+            <End Role="tblCustomerType" EntitySet="tblCustomerType" />
+            <End Role="tblProductByUnit" EntitySet="tblProductByUnit" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserClaims" EntitySet="AspNetUserClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserLogins" EntitySet="AspNetUserLogins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId" Association="Self.FK_dbo_AspNetUserRoles_dbo_AspNetRoles_RoleId">
+            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
+            <End Role="AspNetUserRoles" EntitySet="AspNetUserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserRoles_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserRoles" EntitySet="AspNetUserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="fk_RoleId" Association="Self.fk_RoleId">
+            <End Role="webpages_Roles" EntitySet="webpages_Roles" />
+            <End Role="webpages_UsersInRoles" EntitySet="webpages_UsersInRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Service_ServiceType" Association="Self.FK_Service_ServiceType">
+            <End Role="tblServiceType" EntitySet="tblServiceType" />
+            <End Role="tblService" EntitySet="tblService" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServiceProduct_Product" Association="Self.FK_ServiceProduct_Product">
+            <End Role="tblProducts" EntitySet="tblProducts" />
+            <End Role="tblServiceProduct" EntitySet="tblServiceProduct" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServiceProduct_Service" Association="Self.FK_ServiceProduct_Service">
+            <End Role="tblService" EntitySet="tblService" />
+            <End Role="tblServiceProduct" EntitySet="tblServiceProduct" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblInvoices_tblSales" Association="Self.FK_tblInvoices_tblSales">
+            <End Role="tblSales" EntitySet="tblSales" />
+            <End Role="tblInvoices" EntitySet="tblInvoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblPurchaseBySupplierDetail_tblPurchaseBySupplier1" Association="Self.FK_tblPurchaseBySupplierDetail_tblPurchaseBySupplier1">
+            <End Role="tblPurchaseBySupplier" EntitySet="tblPurchaseBySupplier" />
+            <End Role="tblPurchaseBySupplierDetail" EntitySet="tblPurchaseBySupplierDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblSaleLabour_Customers" Association="Self.FK_tblSaleLabour_Customers">
+            <End Role="tblCustomers" EntitySet="tblCustomers" />
+            <End Role="tblSaleLabour" EntitySet="tblSaleLabour" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblSaleLabour_tblJeweler" Association="Self.FK_tblSaleLabour_tblJeweler">
+            <End Role="tblJeweler" EntitySet="tblJeweler" />
+            <End Role="tblSaleLabour" EntitySet="tblSaleLabour" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblSaleLabourDetail_tblSaleLabour" Association="Self.FK_tblSaleLabourDetail_tblSaleLabour">
+            <End Role="tblSaleLabour" EntitySet="tblSaleLabour" />
+            <End Role="tblSaleLabourDetail" EntitySet="tblSaleLabourDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblSalesDetail_tblSales2" Association="Self.FK_tblSalesDetail_tblSales2">
+            <End Role="tblSales" EntitySet="tblSales" />
+            <End Role="tblSalesDetail" EntitySet="tblSalesDetail" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tbSalePayment_tblSales" Association="Self.FK_tbSalePayment_tblSales">
+            <End Role="tblSales" EntitySet="tblSales" />
+            <End Role="tbSalePayment" EntitySet="tbSalePayment" />
+          </AssociationSet>
+          <AssociationSet Name="fk_UserId" Association="Self.fk_UserId">
+            <End Role="UserProfile" EntitySet="UserProfile" />
+            <End Role="webpages_UsersInRoles" EntitySet="webpages_UsersInRoles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="CoffeePOSDataModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="C__MigrationHistory">
+          <Key>
+            <PropertyRef Name="MigrationId" />
+            <PropertyRef Name="ContextKey" />
+          </Key>
+          <Property Name="MigrationId" Type="String" MaxLength="150" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ContextKey" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Model" Type="Binary" MaxLength="Max" FixedLength="false" Nullable="false" />
+          <Property Name="ProductVersion" Type="String" MaxLength="32" FixedLength="false" Unicode="true" Nullable="false" />
+        </EntityType>
+        <EntityType Name="AspNetRole">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AspNetUsers" Relationship="Self.AspNetUserRoles" FromRole="AspNetRoles" ToRole="AspNetUsers" />
+        </EntityType>
+        <EntityType Name="AspNetUserClaim">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ClaimType" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ClaimValue" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUserClaims" ToRole="AspNetUsers" />
+        </EntityType>
+        <EntityType Name="AspNetUserLogin">
+          <Key>
+            <PropertyRef Name="LoginProvider" />
+            <PropertyRef Name="ProviderKey" />
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="LoginProvider" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProviderKey" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AspNetUser" Relationship="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUserLogins" ToRole="AspNetUsers" />
+        </EntityType>
+        <EntityType Name="AspNetUser">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="EmailConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="PasswordHash" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SecurityStamp" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="PhoneNumberConfirmed" Type="Boolean" Nullable="false" />
+          <Property Name="TwoFactorEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="LockoutEndDateUtc" Type="DateTime" Precision="3" />
+          <Property Name="LockoutEnabled" Type="Boolean" Nullable="false" />
+          <Property Name="AccessFailedCount" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="AspNetUserClaims" Relationship="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserClaims" />
+          <NavigationProperty Name="AspNetUserLogins" Relationship="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserLogins" />
+          <NavigationProperty Name="AspNetRoles" Relationship="Self.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
+        </EntityType>
+        <EntityType Name="tblAppointment">
+          <Key>
+            <PropertyRef Name="AppointmentId" />
+          </Key>
+          <Property Name="AppointmentId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="AppointmentDate" Type="DateTime" Precision="0" />
+          <Property Name="CustomerId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerContact" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="StatTime" Type="Time" Precision="7" />
+          <Property Name="EndTime" Type="Time" Precision="7" />
+          <Property Name="EndTimeExpected" Type="Time" Precision="7" />
+          <Property Name="PriceExpected" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="PriceFull" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="DiscountAmount" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="DiscountPercentage" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="PriceFinal" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Canceled" Type="Boolean" />
+          <Property Name="CanceledReason" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="AppointmentStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tblAttribute">
+          <Key>
+            <PropertyRef Name="AttributeId" />
+          </Key>
+          <Property Name="AttributeId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="AttributeName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tblCategory">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CategoryNameEng" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CategoryNameKh" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Int32" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+          <Property Name="Service" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="tblCategoryAttribute">
+          <Key>
+            <PropertyRef Name="CategoryAttributeId" />
+          </Key>
+          <Property Name="CategoryAttributeId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CategoryId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AttributeId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Value" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="String" MaxLength="355" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tblCustomer_location">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="customer_id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="location" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="updated_date" Type="DateTime" Precision="3" />
+          <Property Name="created_date" Type="DateTime" Precision="3" />
+          <Property Name="status" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="tblCustomerPointHistory">
+          <Key>
+            <PropertyRef Name="SalePointHistoryId" />
+          </Key>
+          <Property Name="SalePointHistoryId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SaleId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="PointQTY" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="PointAmount" Type="Decimal" Precision="19" Scale="4" />
+        </EntityType>
+        <EntityType Name="tblCustomer">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CustomerNo" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CustomerName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Gender" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Int32" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ProjectLocation" Type="String" MaxLength="256" FixedLength="false" Unicode="true" />
+          <Property Name="Noted" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+          <Property Name="is_old_data" Type="Boolean" />
+          <Property Name="CustomerTypeId" Type="Int32" />
+          <Property Name="TotalPoint" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="TotalPointAmount" Type="Decimal" Precision="19" Scale="4" />
+          <NavigationProperty Name="tblSaleLabours" Relationship="Self.FK_tblSaleLabour_Customers" FromRole="tblCustomers" ToRole="tblSaleLabour" />
+        </EntityType>
+        <EntityType Name="tblCustomerType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="customer_type" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="discount" Type="Decimal" Precision="5" Scale="4" />
+          <Property Name="StoreDiscount" Type="Decimal" Precision="10" Scale="2" />
+          <NavigationProperty Name="tblProductByUnits" Relationship="Self.FK__tblProduc__Custo__02FC7413" FromRole="tblCustomerType" ToRole="tblProductByUnit" />
+        </EntityType>
+        <EntityType Name="tblInvoice">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="InvoiceNo" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="SaleId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+          <Property Name="OutstandingInvoiceAmount" Type="Double" />
+          <Property Name="Status" Type="Int32" />
+          <NavigationProperty Name="tblSale" Relationship="Self.FK_tblInvoices_tblSales" FromRole="tblInvoices" ToRole="tblSales" />
+        </EntityType>
+        <EntityType Name="tblJeweler">
+          <Key>
+            <PropertyRef Name="JewelerId" />
+          </Key>
+          <Property Name="JewelerId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ContactPhone" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Address" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="tblSaleLabours" Relationship="Self.FK_tblSaleLabour_tblJeweler" FromRole="tblJeweler" ToRole="tblSaleLabour" />
+        </EntityType>
+        <EntityType Name="tblProductAttribute">
+          <Key>
+            <PropertyRef Name="ProductAttributeId" />
+          </Key>
+          <Property Name="ProductAttributeId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProductId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AttributeId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Value" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AttributeName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="AttributeValue" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="tblProductByUnit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProductID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="UnitTypeID" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Cost" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="TypeDefault" Type="Boolean" />
+          <Property Name="CustomerType" Type="Int32" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <NavigationProperty Name="tblCustomerType" Relationship="Self.FK__tblProduc__Custo__02FC7413" FromRole="tblProductByUnit" ToRole="tblCustomerType" />
+        </EntityType>
+        <EntityType Name="tblProduct">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CategoryId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Unitid" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="SupplierId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ShipperId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ProductNo" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ProductCode" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ProductImage" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="QuantityInStock" Type="Double" />
+          <Property Name="PriceInStock" Type="Double" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+          <Property Name="Status" Type="Int32" />
+          <Property Name="ProductName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="QuantityInStockRetail" Type="Double" />
+          <Property Name="quantity_alert" Type="Double" />
+          <Property Name="LastAction" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LastModified" Type="DateTime" Precision="3" />
+          <Property Name="ModifiedBy" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Service" Type="Boolean" />
+          <NavigationProperty Name="tblServiceProducts" Relationship="Self.FK_ServiceProduct_Product" FromRole="tblProducts" ToRole="tblServiceProduct" />
+        </EntityType>
+        <EntityType Name="tblPurchaseBySupplier">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SupplierId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ShipperId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+          <Property Name="Status" Type="Int32" />
+          <Property Name="ShipperAmount" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="PurchaseAmount" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="Deposit" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="Discount" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="PurchaseStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="InvoiceNo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="InvoiceId" Type="Int32" />
+          <NavigationProperty Name="tblPurchaseBySupplierDetails" Relationship="Self.FK_tblPurchaseBySupplierDetail_tblPurchaseBySupplier1" FromRole="tblPurchaseBySupplier" ToRole="tblPurchaseBySupplierDetail" />
+        </EntityType>
+        <EntityType Name="tblPurchaseBySupplierDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PurchaseBySupplierId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ProductId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="UnitTypeId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Cost" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="Discount" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="ExpiredDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="tblPurchaseBySupplier" Relationship="Self.FK_tblPurchaseBySupplierDetail_tblPurchaseBySupplier1" FromRole="tblPurchaseBySupplierDetail" ToRole="tblPurchaseBySupplier" />
+        </EntityType>
+        <EntityType Name="tblSaleLabour">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="JewelerId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Category" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Color" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Weight" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="FinishWeight" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LabourCost" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="LabourDesignCost" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Length" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Size" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="ImagePath" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblCustomer" Relationship="Self.FK_tblSaleLabour_Customers" FromRole="tblSaleLabour" ToRole="tblCustomers" />
+          <NavigationProperty Name="tblJeweler" Relationship="Self.FK_tblSaleLabour_tblJeweler" FromRole="tblSaleLabour" ToRole="tblJeweler" />
+          <NavigationProperty Name="tblSaleLabourDetails" Relationship="Self.FK_tblSaleLabourDetail_tblSaleLabour" FromRole="tblSaleLabour" ToRole="tblSaleLabourDetail" />
+        </EntityType>
+        <EntityType Name="tblSaleLabourDetail">
+          <Key>
+            <PropertyRef Name="SaleLabourDetailId" />
+          </Key>
+          <Property Name="SaleLabourDetailId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="SaleLabourId" Type="Int64" />
+          <Property Name="ProductName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Qty" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Price" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="IsCustomer" Type="Boolean" />
+          <Property Name="ProductNameHe" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblSaleLabour" Relationship="Self.FK_tblSaleLabourDetail_tblSaleLabour" FromRole="tblSaleLabourDetail" ToRole="tblSaleLabour" />
+        </EntityType>
+        <EntityType Name="tblSale">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CustomerId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+          <Property Name="Status" Type="Int32" />
+          <Property Name="SaleCode" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Owe" Type="Double" />
+          <Property Name="InvoiceStatus" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="InvoiceNo" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Discount" Type="Double" />
+          <Property Name="Amount" Type="Double" />
+          <Property Name="RevicedFromCustomer" Type="Double" />
+          <Property Name="customer_location" Type="Int32" />
+          <Property Name="InvoiceId" Type="Int32" />
+          <Property Name="ReceivedByABA" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="SaleAmount" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="SaleDeposit" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="SaleCost" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Profit" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="SaleImage" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="OrderingNumber" Type="Int32" />
+          <Property Name="TableNumber" Type="Int32" />
+          <Property Name="OrderType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="PaymentType" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsClosed" Type="Boolean" />
+          <NavigationProperty Name="tblInvoices" Relationship="Self.FK_tblInvoices_tblSales" FromRole="tblSales" ToRole="tblInvoices" />
+          <NavigationProperty Name="tblSalesDetails" Relationship="Self.FK_tblSalesDetail_tblSales2" FromRole="tblSales" ToRole="tblSalesDetail" />
+          <NavigationProperty Name="tbSalePayments" Relationship="Self.FK_tbSalePayment_tblSales" FromRole="tblSales" ToRole="tbSalePayment" />
+        </EntityType>
+        <EntityType Name="tblSalesDetail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SaleId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ProductId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="UnitTypeId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="color_code" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="actual_price" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="cost" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Sugar" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Size" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblSale" Relationship="Self.FK_tblSalesDetail_tblSales2" FromRole="tblSalesDetail" ToRole="tblSales" />
+        </EntityType>
+        <EntityType Name="tblService">
+          <Key>
+            <PropertyRef Name="ServiceId" />
+          </Key>
+          <Property Name="ServiceId" Type="Guid" Nullable="false" />
+          <Property Name="ServiceTypeId" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Price" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="tblServiceType" Relationship="Self.FK_Service_ServiceType" FromRole="tblService" ToRole="tblServiceType" />
+          <NavigationProperty Name="tblServiceProducts" Relationship="Self.FK_ServiceProduct_Service" FromRole="tblService" ToRole="tblServiceProduct" />
+        </EntityType>
+        <EntityType Name="tblServiceBooked">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="AppointmentId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Price" Type="Decimal" Precision="19" Scale="4" />
+        </EntityType>
+        <EntityType Name="tblServiceProduct">
+          <Key>
+            <PropertyRef Name="ServiceProductId" />
+          </Key>
+          <Property Name="ServiceProductId" Type="Guid" Nullable="false" />
+          <Property Name="ServiceId" Type="Guid" Nullable="false" />
+          <Property Name="ProductId" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" Nullable="false" />
+          <Property Name="Quality" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Notes" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblProduct" Relationship="Self.FK_ServiceProduct_Product" FromRole="tblServiceProduct" ToRole="tblProducts" />
+          <NavigationProperty Name="tblService" Relationship="Self.FK_ServiceProduct_Service" FromRole="tblServiceProduct" ToRole="tblService" />
+        </EntityType>
+        <EntityType Name="tblServiceProvided">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="AppointmentId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ServiceId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Price" Type="Decimal" Precision="19" Scale="4" />
+        </EntityType>
+        <EntityType Name="tblServiceType">
+          <Key>
+            <PropertyRef Name="ServiceTypeId" />
+          </Key>
+          <Property Name="ServiceTypeId" Type="Guid" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="tblServices" Relationship="Self.FK_Service_ServiceType" FromRole="tblServiceType" ToRole="tblService" />
+        </EntityType>
+        <EntityType Name="tblShipper">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ShipperName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ContactName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ContactPhone" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Gender" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Address" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Noted" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Int32" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="tblStaff">
+          <Key>
+            <PropertyRef Name="StaffId" />
+          </Key>
+          <Property Name="StaffId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="StaffFullname" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="StaffNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="tblSupplier">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="SupplierName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ContactName" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="ContactPhone" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Gender" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Address" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Int32" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="tblTable">
+          <Key>
+            <PropertyRef Name="TableId" />
+          </Key>
+          <Property Name="TableId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TableNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="People" Type="Int32" />
+          <Property Name="IsAvailable" Type="Boolean" />
+          <Property Name="Decription" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="tblUnit">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UnitNameEng" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="UnitNameKh" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int64" />
+          <Property Name="Description" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Int32" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="tbSalePayment">
+          <Key>
+            <PropertyRef Name="sale_payment_id" />
+          </Key>
+          <Property Name="sale_payment_id" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="sale_id" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="payment_amount" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="owe_amount" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="created_at" Type="DateTime" Precision="3" />
+          <Property Name="created_by" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="payment_amount_aba" Type="Decimal" Precision="19" Scale="4" />
+          <NavigationProperty Name="tblSale" Relationship="Self.FK_tbSalePayment_tblSales" FromRole="tbSalePayment" ToRole="tblSales" />
+        </EntityType>
+        <EntityType Name="UserProfile">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="56" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="webpages_Roles" Relationship="Self.webpages_UsersInRoles" FromRole="UserProfile" ToRole="webpages_Roles" />
+        </EntityType>
+        <EntityType Name="webpages_Membership">
+          <Key>
+            <PropertyRef Name="UserId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="CreateDate" Type="DateTime" Precision="3" />
+          <Property Name="ConfirmationToken" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="IsConfirmed" Type="Boolean" />
+          <Property Name="LastPasswordFailureDate" Type="DateTime" Precision="3" />
+          <Property Name="PasswordFailuresSinceLastSuccess" Type="Int32" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PasswordChangedDate" Type="DateTime" Precision="3" />
+          <Property Name="PasswordSalt" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="PasswordVerificationToken" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="PasswordVerificationTokenExpirationDate" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="webpages_OAuthMembership">
+          <Key>
+            <PropertyRef Name="Provider" />
+            <PropertyRef Name="ProviderUserId" />
+          </Key>
+          <Property Name="Provider" Type="String" MaxLength="30" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProviderUserId" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="webpages_Roles">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoleName" Type="String" MaxLength="256" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="UserProfiles" Relationship="Self.webpages_UsersInRoles" FromRole="webpages_Roles" ToRole="UserProfile" />
+        </EntityType>
+        <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetUserClaims" Type="Self.AspNetUserClaim" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserClaims">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="AspNetUserLogins" Type="Self.AspNetUserLogin" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AspNetUsers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="AspNetUserLogins">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblSaleLabour_Customers">
+          <End Role="tblCustomers" Type="Self.tblCustomer" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblSaleLabour" Type="Self.tblSaleLabour" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblCustomers">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSaleLabour">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tblProduc__Custo__02FC7413">
+          <End Role="tblCustomerType" Type="Self.tblCustomerType" Multiplicity="0..1" />
+          <End Role="tblProductByUnit" Type="Self.tblProductByUnit" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblCustomerType">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblProductByUnit">
+              <PropertyRef Name="CustomerType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblInvoices_tblSales">
+          <End Role="tblSales" Type="Self.tblSale" Multiplicity="0..1" />
+          <End Role="tblInvoices" Type="Self.tblInvoice" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblSales">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblInvoices">
+              <PropertyRef Name="SaleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblSaleLabour_tblJeweler">
+          <End Role="tblJeweler" Type="Self.tblJeweler" Multiplicity="0..1" />
+          <End Role="tblSaleLabour" Type="Self.tblSaleLabour" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblJeweler">
+              <PropertyRef Name="JewelerId" />
+            </Principal>
+            <Dependent Role="tblSaleLabour">
+              <PropertyRef Name="JewelerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServiceProduct_Product">
+          <End Role="tblProducts" Type="Self.tblProduct" Multiplicity="1" />
+          <End Role="tblServiceProduct" Type="Self.tblServiceProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblProducts">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblServiceProduct">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblPurchaseBySupplierDetail_tblPurchaseBySupplier1">
+          <End Role="tblPurchaseBySupplier" Type="Self.tblPurchaseBySupplier" Multiplicity="0..1" />
+          <End Role="tblPurchaseBySupplierDetail" Type="Self.tblPurchaseBySupplierDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblPurchaseBySupplier">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblPurchaseBySupplierDetail">
+              <PropertyRef Name="PurchaseBySupplierId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblSaleLabourDetail_tblSaleLabour">
+          <End Role="tblSaleLabour" Type="Self.tblSaleLabour" Multiplicity="0..1" />
+          <End Role="tblSaleLabourDetail" Type="Self.tblSaleLabourDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblSaleLabour">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSaleLabourDetail">
+              <PropertyRef Name="SaleLabourId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tblSalesDetail_tblSales2">
+          <End Role="tblSales" Type="Self.tblSale" Multiplicity="0..1" />
+          <End Role="tblSalesDetail" Type="Self.tblSalesDetail" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblSales">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblSalesDetail">
+              <PropertyRef Name="SaleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_tbSalePayment_tblSales">
+          <End Role="tblSales" Type="Self.tblSale" Multiplicity="0..1" />
+          <End Role="tbSalePayment" Type="Self.tbSalePayment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblSales">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tbSalePayment">
+              <PropertyRef Name="sale_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Service_ServiceType">
+          <End Role="tblServiceType" Type="Self.tblServiceType" Multiplicity="1" />
+          <End Role="tblService" Type="Self.tblService" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblServiceType">
+              <PropertyRef Name="ServiceTypeId" />
+            </Principal>
+            <Dependent Role="tblService">
+              <PropertyRef Name="ServiceTypeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ServiceProduct_Service">
+          <End Role="tblService" Type="Self.tblService" Multiplicity="1" />
+          <End Role="tblServiceProduct" Type="Self.tblServiceProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblService">
+              <PropertyRef Name="ServiceId" />
+            </Principal>
+            <Dependent Role="tblServiceProduct">
+              <PropertyRef Name="ServiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="AspNetUserRoles">
+          <End Role="AspNetRoles" Type="Self.AspNetRole" Multiplicity="*" />
+          <End Role="AspNetUsers" Type="Self.AspNetUser" Multiplicity="*" />
+        </Association>
+        <Association Name="webpages_UsersInRoles">
+          <End Role="webpages_Roles" Type="Self.webpages_Roles" Multiplicity="*" />
+          <End Role="UserProfile" Type="Self.UserProfile" Multiplicity="*" />
+        </Association>
+        <EntityContainer Name="jotunDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="C__MigrationHistory" EntityType="Self.C__MigrationHistory" />
+          <EntitySet Name="AspNetRoles" EntityType="Self.AspNetRole" />
+          <EntitySet Name="AspNetUserClaims" EntityType="Self.AspNetUserClaim" />
+          <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogin" />
+          <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUser" />
+          <EntitySet Name="tblAppointments" EntityType="Self.tblAppointment" />
+          <EntitySet Name="tblAttributes" EntityType="Self.tblAttribute" />
+          <EntitySet Name="tblCategories" EntityType="Self.tblCategory" />
+          <EntitySet Name="tblCategoryAttributes" EntityType="Self.tblCategoryAttribute" />
+          <EntitySet Name="tblCustomer_location" EntityType="Self.tblCustomer_location" />
+          <EntitySet Name="tblCustomerPointHistories" EntityType="Self.tblCustomerPointHistory" />
+          <EntitySet Name="tblCustomers" EntityType="Self.tblCustomer" />
+          <EntitySet Name="tblCustomerTypes" EntityType="Self.tblCustomerType" />
+          <EntitySet Name="tblInvoices" EntityType="Self.tblInvoice" />
+          <EntitySet Name="tblJewelers" EntityType="Self.tblJeweler" />
+          <EntitySet Name="tblProductAttributes" EntityType="Self.tblProductAttribute" />
+          <EntitySet Name="tblProductByUnits" EntityType="Self.tblProductByUnit" />
+          <EntitySet Name="tblProducts" EntityType="Self.tblProduct" />
+          <EntitySet Name="tblPurchaseBySuppliers" EntityType="Self.tblPurchaseBySupplier" />
+          <EntitySet Name="tblPurchaseBySupplierDetails" EntityType="Self.tblPurchaseBySupplierDetail" />
+          <EntitySet Name="tblSaleLabours" EntityType="Self.tblSaleLabour" />
+          <EntitySet Name="tblSaleLabourDetails" EntityType="Self.tblSaleLabourDetail" />
+          <EntitySet Name="tblSales" EntityType="Self.tblSale" />
+          <EntitySet Name="tblSalesDetails" EntityType="Self.tblSalesDetail" />
+          <EntitySet Name="tblServices" EntityType="Self.tblService" />
+          <EntitySet Name="tblServiceBookeds" EntityType="Self.tblServiceBooked" />
+          <EntitySet Name="tblServiceProducts" EntityType="Self.tblServiceProduct" />
+          <EntitySet Name="tblServiceProvideds" EntityType="Self.tblServiceProvided" />
+          <EntitySet Name="tblServiceTypes" EntityType="Self.tblServiceType" />
+          <EntitySet Name="tblShippers" EntityType="Self.tblShipper" />
+          <EntitySet Name="tblStaffs" EntityType="Self.tblStaff" />
+          <EntitySet Name="tblSuppliers" EntityType="Self.tblSupplier" />
+          <EntitySet Name="tblTables" EntityType="Self.tblTable" />
+          <EntitySet Name="tblUnits" EntityType="Self.tblUnit" />
+          <EntitySet Name="tbSalePayments" EntityType="Self.tbSalePayment" />
+          <EntitySet Name="UserProfiles" EntityType="Self.UserProfile" />
+          <EntitySet Name="webpages_Membership" EntityType="Self.webpages_Membership" />
+          <EntitySet Name="webpages_OAuthMembership" EntityType="Self.webpages_OAuthMembership" />
+          <EntitySet Name="webpages_Roles" EntityType="Self.webpages_Roles" />
+          <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserClaims" EntitySet="AspNetUserClaims" />
+          </AssociationSet>
+          <AssociationSet Name="FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId">
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+            <End Role="AspNetUserLogins" EntitySet="AspNetUserLogins" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblSaleLabour_Customers" Association="Self.FK_tblSaleLabour_Customers">
+            <End Role="tblCustomers" EntitySet="tblCustomers" />
+            <End Role="tblSaleLabour" EntitySet="tblSaleLabours" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tblProduc__Custo__02FC7413" Association="Self.FK__tblProduc__Custo__02FC7413">
+            <End Role="tblCustomerType" EntitySet="tblCustomerTypes" />
+            <End Role="tblProductByUnit" EntitySet="tblProductByUnits" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblInvoices_tblSales" Association="Self.FK_tblInvoices_tblSales">
+            <End Role="tblSales" EntitySet="tblSales" />
+            <End Role="tblInvoices" EntitySet="tblInvoices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblSaleLabour_tblJeweler" Association="Self.FK_tblSaleLabour_tblJeweler">
+            <End Role="tblJeweler" EntitySet="tblJewelers" />
+            <End Role="tblSaleLabour" EntitySet="tblSaleLabours" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServiceProduct_Product" Association="Self.FK_ServiceProduct_Product">
+            <End Role="tblProducts" EntitySet="tblProducts" />
+            <End Role="tblServiceProduct" EntitySet="tblServiceProducts" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblPurchaseBySupplierDetail_tblPurchaseBySupplier1" Association="Self.FK_tblPurchaseBySupplierDetail_tblPurchaseBySupplier1">
+            <End Role="tblPurchaseBySupplier" EntitySet="tblPurchaseBySuppliers" />
+            <End Role="tblPurchaseBySupplierDetail" EntitySet="tblPurchaseBySupplierDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblSaleLabourDetail_tblSaleLabour" Association="Self.FK_tblSaleLabourDetail_tblSaleLabour">
+            <End Role="tblSaleLabour" EntitySet="tblSaleLabours" />
+            <End Role="tblSaleLabourDetail" EntitySet="tblSaleLabourDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tblSalesDetail_tblSales2" Association="Self.FK_tblSalesDetail_tblSales2">
+            <End Role="tblSales" EntitySet="tblSales" />
+            <End Role="tblSalesDetail" EntitySet="tblSalesDetails" />
+          </AssociationSet>
+          <AssociationSet Name="FK_tbSalePayment_tblSales" Association="Self.FK_tbSalePayment_tblSales">
+            <End Role="tblSales" EntitySet="tblSales" />
+            <End Role="tbSalePayment" EntitySet="tbSalePayments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Service_ServiceType" Association="Self.FK_Service_ServiceType">
+            <End Role="tblServiceType" EntitySet="tblServiceTypes" />
+            <End Role="tblService" EntitySet="tblServices" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ServiceProduct_Service" Association="Self.FK_ServiceProduct_Service">
+            <End Role="tblService" EntitySet="tblServices" />
+            <End Role="tblServiceProduct" EntitySet="tblServiceProducts" />
+          </AssociationSet>
+          <AssociationSet Name="AspNetUserRoles" Association="Self.AspNetUserRoles">
+            <End Role="AspNetRoles" EntitySet="AspNetRoles" />
+            <End Role="AspNetUsers" EntitySet="AspNetUsers" />
+          </AssociationSet>
+          <AssociationSet Name="webpages_UsersInRoles" Association="Self.webpages_UsersInRoles">
+            <End Role="webpages_Roles" EntitySet="webpages_Roles" />
+            <End Role="UserProfile" EntitySet="UserProfiles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="CoffeePOSDataModelStoreContainer" CdmEntityContainer="jotunDBEntities">
+          <EntitySetMapping Name="C__MigrationHistory">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.C__MigrationHistory">
+              <MappingFragment StoreEntitySet="__MigrationHistory">
+                <ScalarProperty Name="MigrationId" ColumnName="MigrationId" />
+                <ScalarProperty Name="ContextKey" ColumnName="ContextKey" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="ProductVersion" ColumnName="ProductVersion" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetRoles">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.AspNetRole">
+              <MappingFragment StoreEntitySet="AspNetRoles">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetUserClaims">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.AspNetUserClaim">
+              <MappingFragment StoreEntitySet="AspNetUserClaims">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="ClaimType" ColumnName="ClaimType" />
+                <ScalarProperty Name="ClaimValue" ColumnName="ClaimValue" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetUserLogins">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.AspNetUserLogin">
+              <MappingFragment StoreEntitySet="AspNetUserLogins">
+                <ScalarProperty Name="LoginProvider" ColumnName="LoginProvider" />
+                <ScalarProperty Name="ProviderKey" ColumnName="ProviderKey" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="AspNetUsers">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.AspNetUser">
+              <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="SecurityStamp" ColumnName="SecurityStamp" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="PhoneNumberConfirmed" ColumnName="PhoneNumberConfirmed" />
+                <ScalarProperty Name="TwoFactorEnabled" ColumnName="TwoFactorEnabled" />
+                <ScalarProperty Name="LockoutEndDateUtc" ColumnName="LockoutEndDateUtc" />
+                <ScalarProperty Name="LockoutEnabled" ColumnName="LockoutEnabled" />
+                <ScalarProperty Name="AccessFailedCount" ColumnName="AccessFailedCount" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblAppointments">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblAppointment">
+              <MappingFragment StoreEntitySet="tblAppointment">
+                <ScalarProperty Name="AppointmentId" ColumnName="AppointmentId" />
+                <ScalarProperty Name="AppointmentDate" ColumnName="AppointmentDate" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="CustomerContact" ColumnName="CustomerContact" />
+                <ScalarProperty Name="StatTime" ColumnName="StatTime" />
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+                <ScalarProperty Name="EndTimeExpected" ColumnName="EndTimeExpected" />
+                <ScalarProperty Name="PriceExpected" ColumnName="PriceExpected" />
+                <ScalarProperty Name="PriceFull" ColumnName="PriceFull" />
+                <ScalarProperty Name="DiscountAmount" ColumnName="DiscountAmount" />
+                <ScalarProperty Name="DiscountPercentage" ColumnName="DiscountPercentage" />
+                <ScalarProperty Name="PriceFinal" ColumnName="PriceFinal" />
+                <ScalarProperty Name="Canceled" ColumnName="Canceled" />
+                <ScalarProperty Name="CanceledReason" ColumnName="CanceledReason" />
+                <ScalarProperty Name="AppointmentStatus" ColumnName="AppointmentStatus" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblAttributes">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblAttribute">
+              <MappingFragment StoreEntitySet="tblAttribute">
+                <ScalarProperty Name="AttributeId" ColumnName="AttributeId" />
+                <ScalarProperty Name="AttributeName" ColumnName="AttributeName" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblCategories">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblCategory">
+              <MappingFragment StoreEntitySet="tblCategories">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CategoryNameEng" ColumnName="CategoryNameEng" />
+                <ScalarProperty Name="CategoryNameKh" ColumnName="CategoryNameKh" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="Service" ColumnName="Service" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblCategoryAttributes">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblCategoryAttribute">
+              <MappingFragment StoreEntitySet="tblCategoryAttribute">
+                <ScalarProperty Name="CategoryAttributeId" ColumnName="CategoryAttributeId" />
+                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+                <ScalarProperty Name="AttributeId" ColumnName="AttributeId" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblCustomer_location">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblCustomer_location">
+              <MappingFragment StoreEntitySet="tblCustomer_location">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="customer_id" ColumnName="customer_id" />
+                <ScalarProperty Name="location" ColumnName="location" />
+                <ScalarProperty Name="updated_date" ColumnName="updated_date" />
+                <ScalarProperty Name="created_date" ColumnName="created_date" />
+                <ScalarProperty Name="status" ColumnName="status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblCustomerPointHistories">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblCustomerPointHistory">
+              <MappingFragment StoreEntitySet="tblCustomerPointHistory">
+                <ScalarProperty Name="SalePointHistoryId" ColumnName="SalePointHistoryId" />
+                <ScalarProperty Name="SaleId" ColumnName="SaleId" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="PointQTY" ColumnName="PointQTY" />
+                <ScalarProperty Name="PointAmount" ColumnName="PointAmount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblCustomers">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblCustomer">
+              <MappingFragment StoreEntitySet="tblCustomers">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CustomerNo" ColumnName="CustomerNo" />
+                <ScalarProperty Name="CustomerName" ColumnName="CustomerName" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="ProjectLocation" ColumnName="ProjectLocation" />
+                <ScalarProperty Name="Noted" ColumnName="Noted" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="is_old_data" ColumnName="is_old_data" />
+                <ScalarProperty Name="CustomerTypeId" ColumnName="CustomerTypeId" />
+                <ScalarProperty Name="TotalPoint" ColumnName="TotalPoint" />
+                <ScalarProperty Name="TotalPointAmount" ColumnName="TotalPointAmount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblCustomerTypes">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblCustomerType">
+              <MappingFragment StoreEntitySet="tblCustomerType">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="customer_type" ColumnName="customer_type" />
+                <ScalarProperty Name="discount" ColumnName="discount" />
+                <ScalarProperty Name="StoreDiscount" ColumnName="StoreDiscount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblInvoices">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblInvoice">
+              <MappingFragment StoreEntitySet="tblInvoices">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="InvoiceNo" ColumnName="InvoiceNo" />
+                <ScalarProperty Name="SaleId" ColumnName="SaleId" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="OutstandingInvoiceAmount" ColumnName="OutstandingInvoiceAmount" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblJewelers">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblJeweler">
+              <MappingFragment StoreEntitySet="tblJeweler">
+                <ScalarProperty Name="JewelerId" ColumnName="JewelerId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ContactPhone" ColumnName="ContactPhone" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblProductAttributes">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblProductAttribute">
+              <MappingFragment StoreEntitySet="tblProductAttribute">
+                <ScalarProperty Name="ProductAttributeId" ColumnName="ProductAttributeId" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="AttributeId" ColumnName="AttributeId" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="AttributeName" ColumnName="AttributeName" />
+                <ScalarProperty Name="AttributeValue" ColumnName="AttributeValue" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="ModifiedDate" ColumnName="ModifiedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblProductByUnits">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblProductByUnit">
+              <MappingFragment StoreEntitySet="tblProductByUnit">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ProductID" ColumnName="ProductID" />
+                <ScalarProperty Name="UnitTypeID" ColumnName="UnitTypeID" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="TypeDefault" ColumnName="TypeDefault" />
+                <ScalarProperty Name="CustomerType" ColumnName="CustomerType" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblProducts">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblProduct">
+              <MappingFragment StoreEntitySet="tblProducts">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+                <ScalarProperty Name="Unitid" ColumnName="Unitid" />
+                <ScalarProperty Name="SupplierId" ColumnName="SupplierId" />
+                <ScalarProperty Name="ShipperId" ColumnName="ShipperId" />
+                <ScalarProperty Name="ProductNo" ColumnName="ProductNo" />
+                <ScalarProperty Name="ProductCode" ColumnName="ProductCode" />
+                <ScalarProperty Name="ProductImage" ColumnName="ProductImage" />
+                <ScalarProperty Name="QuantityInStock" ColumnName="QuantityInStock" />
+                <ScalarProperty Name="PriceInStock" ColumnName="PriceInStock" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="QuantityInStockRetail" ColumnName="QuantityInStockRetail" />
+                <ScalarProperty Name="quantity_alert" ColumnName="quantity_alert" />
+                <ScalarProperty Name="LastAction" ColumnName="LastAction" />
+                <ScalarProperty Name="LastModified" ColumnName="LastModified" />
+                <ScalarProperty Name="ModifiedBy" ColumnName="ModifiedBy" />
+                <ScalarProperty Name="Service" ColumnName="Service" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblPurchaseBySuppliers">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblPurchaseBySupplier">
+              <MappingFragment StoreEntitySet="tblPurchaseBySupplier">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SupplierId" ColumnName="SupplierId" />
+                <ScalarProperty Name="ShipperId" ColumnName="ShipperId" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="ShipperAmount" ColumnName="ShipperAmount" />
+                <ScalarProperty Name="PurchaseAmount" ColumnName="PurchaseAmount" />
+                <ScalarProperty Name="Deposit" ColumnName="Deposit" />
+                <ScalarProperty Name="Discount" ColumnName="Discount" />
+                <ScalarProperty Name="PurchaseStatus" ColumnName="PurchaseStatus" />
+                <ScalarProperty Name="InvoiceNo" ColumnName="InvoiceNo" />
+                <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblPurchaseBySupplierDetails">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblPurchaseBySupplierDetail">
+              <MappingFragment StoreEntitySet="tblPurchaseBySupplierDetail">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="PurchaseBySupplierId" ColumnName="PurchaseBySupplierId" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="UnitTypeId" ColumnName="UnitTypeId" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="Discount" ColumnName="Discount" />
+                <ScalarProperty Name="ExpiredDate" ColumnName="ExpiredDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSaleLabours">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblSaleLabour">
+              <MappingFragment StoreEntitySet="tblSaleLabour">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="JewelerId" ColumnName="JewelerId" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="Color" ColumnName="Color" />
+                <ScalarProperty Name="Weight" ColumnName="Weight" />
+                <ScalarProperty Name="FinishWeight" ColumnName="FinishWeight" />
+                <ScalarProperty Name="LabourCost" ColumnName="LabourCost" />
+                <ScalarProperty Name="LabourDesignCost" ColumnName="LabourDesignCost" />
+                <ScalarProperty Name="Length" ColumnName="Length" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="ImagePath" ColumnName="ImagePath" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSaleLabourDetails">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblSaleLabourDetail">
+              <MappingFragment StoreEntitySet="tblSaleLabourDetail">
+                <ScalarProperty Name="SaleLabourDetailId" ColumnName="SaleLabourDetailId" />
+                <ScalarProperty Name="SaleLabourId" ColumnName="SaleLabourId" />
+                <ScalarProperty Name="ProductName" ColumnName="ProductName" />
+                <ScalarProperty Name="Qty" ColumnName="Qty" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="IsCustomer" ColumnName="IsCustomer" />
+                <ScalarProperty Name="ProductNameHe" ColumnName="ProductNameHe" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSales">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblSale">
+              <MappingFragment StoreEntitySet="tblSales">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="SaleCode" ColumnName="SaleCode" />
+                <ScalarProperty Name="Owe" ColumnName="Owe" />
+                <ScalarProperty Name="InvoiceStatus" ColumnName="InvoiceStatus" />
+                <ScalarProperty Name="InvoiceNo" ColumnName="InvoiceNo" />
+                <ScalarProperty Name="Discount" ColumnName="Discount" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="RevicedFromCustomer" ColumnName="RevicedFromCustomer" />
+                <ScalarProperty Name="customer_location" ColumnName="customer_location" />
+                <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
+                <ScalarProperty Name="ReceivedByABA" ColumnName="ReceivedByABA" />
+                <ScalarProperty Name="SaleAmount" ColumnName="SaleAmount" />
+                <ScalarProperty Name="SaleDeposit" ColumnName="SaleDeposit" />
+                <ScalarProperty Name="SaleCost" ColumnName="SaleCost" />
+                <ScalarProperty Name="Profit" ColumnName="Profit" />
+                <ScalarProperty Name="SaleImage" ColumnName="SaleImage" />
+                <ScalarProperty Name="OrderingNumber" ColumnName="OrderingNumber" />
+                <ScalarProperty Name="TableNumber" ColumnName="TableNumber" />
+                <ScalarProperty Name="OrderType" ColumnName="OrderType" />
+                <ScalarProperty Name="PaymentType" ColumnName="PaymentType" />
+                <ScalarProperty Name="IsClosed" ColumnName="IsClosed" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSalesDetails">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblSalesDetail">
+              <MappingFragment StoreEntitySet="tblSalesDetail">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SaleId" ColumnName="SaleId" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="UnitTypeId" ColumnName="UnitTypeId" />
+                <ScalarProperty Name="color_code" ColumnName="color_code" />
+                <ScalarProperty Name="actual_price" ColumnName="actual_price" />
+                <ScalarProperty Name="cost" ColumnName="cost" />
+                <ScalarProperty Name="Sugar" ColumnName="Sugar" />
+                <ScalarProperty Name="Size" ColumnName="Size" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblServices">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblService">
+              <MappingFragment StoreEntitySet="tblService">
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="ServiceTypeId" ColumnName="ServiceTypeId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblServiceBookeds">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblServiceBooked">
+              <MappingFragment StoreEntitySet="tblServiceBooked">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="AppointmentId" ColumnName="AppointmentId" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblServiceProducts">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblServiceProduct">
+              <MappingFragment StoreEntitySet="tblServiceProduct">
+                <ScalarProperty Name="ServiceProductId" ColumnName="ServiceProductId" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Quality" ColumnName="Quality" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblServiceProvideds">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblServiceProvided">
+              <MappingFragment StoreEntitySet="tblServiceProvided">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="AppointmentId" ColumnName="AppointmentId" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblServiceTypes">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblServiceType">
+              <MappingFragment StoreEntitySet="tblServiceType">
+                <ScalarProperty Name="ServiceTypeId" ColumnName="ServiceTypeId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblShippers">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblShipper">
+              <MappingFragment StoreEntitySet="tblShippers">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="ShipperName" ColumnName="ShipperName" />
+                <ScalarProperty Name="ContactName" ColumnName="ContactName" />
+                <ScalarProperty Name="ContactPhone" ColumnName="ContactPhone" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Noted" ColumnName="Noted" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblStaffs">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblStaff">
+              <MappingFragment StoreEntitySet="tblStaff">
+                <ScalarProperty Name="StaffId" ColumnName="StaffId" />
+                <ScalarProperty Name="StaffFullname" ColumnName="StaffFullname" />
+                <ScalarProperty Name="StaffNumber" ColumnName="StaffNumber" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSuppliers">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblSupplier">
+              <MappingFragment StoreEntitySet="tblSuppliers">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="SupplierName" ColumnName="SupplierName" />
+                <ScalarProperty Name="ContactName" ColumnName="ContactName" />
+                <ScalarProperty Name="ContactPhone" ColumnName="ContactPhone" />
+                <ScalarProperty Name="Gender" ColumnName="Gender" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblTables">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblTable">
+              <MappingFragment StoreEntitySet="tblTable">
+                <ScalarProperty Name="TableId" ColumnName="TableId" />
+                <ScalarProperty Name="TableNumber" ColumnName="TableNumber" />
+                <ScalarProperty Name="People" ColumnName="People" />
+                <ScalarProperty Name="IsAvailable" ColumnName="IsAvailable" />
+                <ScalarProperty Name="Decription" ColumnName="Decription" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblUnits">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblUnit">
+              <MappingFragment StoreEntitySet="tblUnits">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UnitNameEng" ColumnName="UnitNameEng" />
+                <ScalarProperty Name="UnitNameKh" ColumnName="UnitNameKh" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tbSalePayments">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tbSalePayment">
+              <MappingFragment StoreEntitySet="tbSalePayment">
+                <ScalarProperty Name="sale_payment_id" ColumnName="sale_payment_id" />
+                <ScalarProperty Name="sale_id" ColumnName="sale_id" />
+                <ScalarProperty Name="payment_amount" ColumnName="payment_amount" />
+                <ScalarProperty Name="owe_amount" ColumnName="owe_amount" />
+                <ScalarProperty Name="created_at" ColumnName="created_at" />
+                <ScalarProperty Name="created_by" ColumnName="created_by" />
+                <ScalarProperty Name="payment_amount_aba" ColumnName="payment_amount_aba" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserProfiles">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.UserProfile">
+              <MappingFragment StoreEntitySet="UserProfile">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="webpages_Membership">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.webpages_Membership">
+              <MappingFragment StoreEntitySet="webpages_Membership">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="ConfirmationToken" ColumnName="ConfirmationToken" />
+                <ScalarProperty Name="IsConfirmed" ColumnName="IsConfirmed" />
+                <ScalarProperty Name="LastPasswordFailureDate" ColumnName="LastPasswordFailureDate" />
+                <ScalarProperty Name="PasswordFailuresSinceLastSuccess" ColumnName="PasswordFailuresSinceLastSuccess" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="PasswordChangedDate" ColumnName="PasswordChangedDate" />
+                <ScalarProperty Name="PasswordSalt" ColumnName="PasswordSalt" />
+                <ScalarProperty Name="PasswordVerificationToken" ColumnName="PasswordVerificationToken" />
+                <ScalarProperty Name="PasswordVerificationTokenExpirationDate" ColumnName="PasswordVerificationTokenExpirationDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="webpages_OAuthMembership">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.webpages_OAuthMembership">
+              <MappingFragment StoreEntitySet="webpages_OAuthMembership">
+                <ScalarProperty Name="Provider" ColumnName="Provider" />
+                <ScalarProperty Name="ProviderUserId" ColumnName="ProviderUserId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="webpages_Roles">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.webpages_Roles">
+              <MappingFragment StoreEntitySet="webpages_Roles">
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="AspNetUserRoles" TypeName="CoffeePOSDataModel.AspNetUserRoles" StoreEntitySet="AspNetUserRoles">
+            <EndProperty Name="AspNetRoles">
+              <ScalarProperty Name="Id" ColumnName="RoleId" />
+            </EndProperty>
+            <EndProperty Name="AspNetUsers">
+              <ScalarProperty Name="Id" ColumnName="UserId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="webpages_UsersInRoles" TypeName="CoffeePOSDataModel.webpages_UsersInRoles" StoreEntitySet="webpages_UsersInRoles">
+            <EndProperty Name="webpages_Roles">
+              <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+            </EndProperty>
+            <EndProperty Name="UserProfile">
+              <ScalarProperty Name="UserId" ColumnName="UserId" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

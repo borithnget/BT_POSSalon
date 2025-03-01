@@ -1,0 +1,31 @@
+﻿@model jotun.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Delete";
+    //Layout= null;
+}
+    
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal" style="background-color:#e9ecef; padding:15px; margin-top:0px">
+        <h4>Delete User</h4>
+        <hr />
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.Id)
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="OK" class="btn btn-success" />              
+                <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Account';" />
+
+            </div>
+        </div>
+    </div>
+}
+
+@*<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>*@
+

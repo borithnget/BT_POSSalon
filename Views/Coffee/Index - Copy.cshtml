@@ -1,0 +1,1041 @@
+﻿@model jotun.Models.ProductViewModels
+@using Microsoft.AspNet.Identity;
+@{
+    ViewBag.Title = "Index";
+    ViewBag.productactive = "aactive";
+}
+
+<style>
+    * {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    :lang(km) {
+        font-family: 'Noto Sans Khmer', sans-serif;
+    }
+
+    #productGridWrapper {
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 15px;
+    }
+
+    #productGrid {
+        flex-wrap: wrap;
+    }
+
+    .product-card {
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+        .product-card:hover {
+            transform: scale(1.05);
+        }
+
+    .card-body h5 {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .payment-form-container {
+        margin-top: auto;
+        padding-top: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .payment-form-container .d-flex {
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .payment-form-container input, .payment-form-container select {
+            width: 100px;
+            margin-left: auto;
+        }
+
+    .category-card {
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .category-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .category-card h6 {
+            margin: 0;
+            font-size: 16px;
+        }
+
+    .custom-gap {
+        gap: 37px;
+    }
+
+    .icon-item {
+        position: relative;
+        padding: 10px 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+        .icon-item:hover {
+            background-color: #dc3545 !important;
+            color: white !important;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+    .no-hover:hover {
+        background-color: transparent !important;
+        color: inherit !important;
+    }
+
+
+    .search-item {
+        background-color: #fff;
+        border-radius: 4px;
+        padding: 10px;
+        width: 285px;
+        border: 1px solid #ccc;
+        padding-left: 35px;
+        padding-right: 35px;
+    }
+
+    .icon-item .fa-magnifying-glass {
+        position: absolute;
+        top: 50%;
+        left: 23px;
+        transform: translateY(-50%);
+        color: gray;
+    }
+
+    .icon-item .fa-barcode {
+        position: absolute;
+        top: 50%;
+        right: 22px;
+        transform: translateY(-50%);
+        color: gray;
+    }
+
+    .search-item:focus {
+        outline: none;
+        border-color: #007bff;
+    }
+
+    .text-align-center {
+        text-align: center;
+        width: 100%;
+    }
+
+    .rounded-right {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+    }
+
+    #customerTypeDisplay {
+        min-width: 150px;
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        gap: 4px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-8">
+        <div style="margin-left:-15px">
+            <ul class="d-flex text-decoration-none list-unstyled custom-gap bg-success rounded-right">
+                <li id="customerTypeDisplay" class="icon-item bg-danger text-white px-3 py-2 d-flex align-items-center " style="gap: 4px;" lang="km">
+                    <i class="fa-solid fa-fire"></i> ទីតាំង
+                </li>
+                <li><img src="~/Images/Logo02.jpg" alt="Icon" width="60" height="60"></li>
+                @* @if (ViewBag.CanCreateCustomerType != null && ViewBag.CanCreateCustomerType)
+                    {*@
+                @*<li class="icon-item p-2" onclick="window.location.href='/Coffee/CreateCustomerType';">
+                        <i class="fa-solid fa-plus"></i>
+                    </li>*@
+                @*  }
+                    else
+                    {
+                        <li class="icon-item p-2" onclick="return false;">
+                            <i class="fa-solid fa-plus" style="opacity: 0.5;"></i>
+                        </li>
+                    }
+                *@
+                <li class="icon-item p-2">
+                    <a href="@Url.Action("IndexSale","Sale")" style="color:white;" target="_blank"><i class="fa-solid fa-list"></i></a>
+                </li>
+                @*<li class="icon-item p-2"><i class="fa-solid fa-rotate-right"></i></li>*@
+                @if (User.IsInRole("SuperAdmin") || User.IsInRole("Administrator"))
+                {
+                    <li class="icon-item p-2"><a href="@Url.Action("Index","Home")" style="color:white;" target="_blank"><i class="fa-solid fa-database"></i></a></li>
+                }
+
+                @*<li class="icon-item p-2"><i class="fa-solid fa-icons"></i></li>*@
+                <li class="icon-item p-2"><i class="fa-solid fa-user-circle"></i> Hello, @User.Identity.GetUserName()</li>
+
+                @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right", @style = "margin:0px !important;" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <li class="icon-item p-2" style="height:100% !important;"><a href="javascript:document.getElementById('logoutForm').submit()" style="color:white;vertical-align:middle !important;"> <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
+                }
+
+
+
+                <li class="icon-item p-2 no-hover" lang="km">
+                    <input type="text" class="search-item" placeholder="ស្វែងរកកូដ...">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <i class="fa-solid fa-barcode"></i>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-4 d-flex flex-column" style="height: 100%;">
+        <div>
+            <ul class="d-flex text-decoration-none list-unstyled"
+                style="justify-content: space-between; align-items: center; width: 100%; height: 40px; padding-left: 2px; padding-right: 2px; font-size: medium; color: gray; white-space: nowrap;">
+                <li>
+                    <div class="dropdown">
+                        <button class="btn dropdown-toggle" type="button" id="orderTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Walk In :
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="orderTypeDropdown">
+                            <li><a class="dropdown-item" href="#" data-value="walkin">Walk In</a></li>
+                            <li><a class="dropdown-item" href="#" data-value="takeaway">Take Away</a></li>
+                        </ul>
+                    </div>
+                    <input type="hidden" id="orderTypeValue" value="walkin">
+                </li>
+                <li class="ml-2"><i class="fa-solid fa-rotate-right"></i></li>
+                <li class="text-align-center">Est,Leave : @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")</li>
+                <li class="text-align-right">Issued : @DateTime.Now.ToString("HH:mm")</li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+@using (Html.BeginForm("Index", "Coffee", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    <div style="background-color:#e9ecef; padding:15px;margin-top:-15px;">
+        <!-- Row containing two columns: products and payment card -->
+        <div class="row">
+            <!-- Product section: Takes 50% of the screen width -->
+            <div class="col-md-8">
+                <!--<div style="margin-left:-15px">
+                    <ul class="d-flex text-decoration-none list-unstyled custom-gap bg-success rounded-right">
+                        <li id="customerTypeDisplay" class="icon-item bg-danger text-white px-3 py-2 d-flex align-items-center " style="gap: 4px;" lang="km">
+                            <i class="fa-solid fa-fire"></i> ទីតាំង
+                        </li>
+                        <li><img src="~/Images/Logo02.jpg" alt="Icon" width="60" height="60"></li>-->
+                @* @if (ViewBag.CanCreateCustomerType != null && ViewBag.CanCreateCustomerType)
+                    {*@
+                @*<li class="icon-item p-2" onclick="window.location.href='/Coffee/CreateCustomerType';">
+                        <i class="fa-solid fa-plus"></i>
+                    </li>*@
+                @*  }
+                    else
+                    {
+                        <li class="icon-item p-2" onclick="return false;">
+                            <i class="fa-solid fa-plus" style="opacity: 0.5;"></i>
+                        </li>
+                    }
+                *@
+                <!--<li class="icon-item p-2">
+                    <a href="@Url.Action("IndexSale","Sale")" style="color:white;" target="_blank"><i class="fa-solid fa-list"></i></a>
+                </li>-->
+                @*<li class="icon-item p-2"><i class="fa-solid fa-rotate-right"></i></li>*@
+                <!--<li class="icon-item p-2"><a href="@Url.Action("Index","Home")" style="color:white;" target="_blank"><i class="fa-solid fa-database"></i></a></li>-->
+                @*<li class="icon-item p-2"><i class="fa-solid fa-icons"></i></li>*@
+                <!--<li class="icon-item p-2"><i class="fa-solid fa-user-circle"></i> Hello, @User.Identity.GetUserName()</li>-->
+                @*<li class="icon-item p-2"><a href="@Url.Action("LogOff","Account")"> <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>*@
+                <!--<li class="icon-item p-2 no-hover" lang="km">
+                            <input type="text" class="search-item" placeholder="ស្វែងរកកូដ...">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <i class="fa-solid fa-barcode"></i>
+                        </li>
+                    </ul>
+                </div>-->
+                <div id="productGridWrapper" style="min-height:500px; overflow-y: auto;">
+                    <div class="row" id="productGrid">
+                    </div>
+                </div>
+                <div id="categoryGridWrapper" class="mt-3">
+                    <div class="row" id="categoryGrid">
+                    </div>
+                </div>
+            </div>
+            <!-- Payment processing section: Takes the other 50% of the screen width -->
+            <div class="col-md-4 d-flex flex-column" style="height: 100%;">
+                @*<div>
+                        <ul class="d-flex text-decoration-none list-unstyled"
+                            style="justify-content: space-between; align-items: center; width: 100%; height: 40px; padding-left: 2px; padding-right: 2px; font-size: medium; color: gray; white-space: nowrap;">
+                            <li>
+                                <div class="dropdown">
+                                    <button class="btn dropdown-toggle" type="button" id="orderTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Walk In :
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="orderTypeDropdown">
+                                        <li><a class="dropdown-item" href="#" data-value="walkin">Walk In</a></li>
+                                        <li><a class="dropdown-item" href="#" data-value="takeaway">Take Away</a></li>
+                                    </ul>
+                                </div>
+                                <input type="hidden" id="orderTypeValue" value="walkin">
+                            </li>
+                            <li class="ml-2"><i class="fa-solid fa-rotate-right"></i></li>
+                            <li class="text-align-center">Est,Leave : @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")</li>
+                            <li class="text-align-right">Issued : @DateTime.Now.ToString("HH:mm")</li>
+                        </ul>
+                    </div>*@
+                <!-- Selected Products Display Section (Fixed height 300px) -->
+                <div style="height: 300px; overflow-y: auto; margin-bottom: 15px;">
+                    <div id="paymentSection" class="flex-grow-1">
+                        <div id="selectedProductsList" style="display: flex; flex-direction: column; gap: 10px;"></div>
+                    </div>
+                </div>
+                <!-- Process Payment Form (Always at the bottom) -->
+                <div class="payment-form-container" style="margin-top: auto; padding-top: 15px;">
+                    <div class="d-flex align-items-center w-100 gap-3">
+                        <div class="dropdown">
+                            <button class="btn btn-light dropdown-toggle" type="button" id="salerDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person"></i>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="salerDropdown">
+                                <li><a class="dropdown-item" href="#" data-value="1" data-name="John Doe"><i class="bi bi-person-fill"></i> John Doe</a></li>
+                                <li><a class="dropdown-item" href="#" data-value="2" data-name="Jane Smith"><i class="bi bi-person-fill"></i> Jane Smith</a></li>
+                            </ul>
+                        </div>
+                        <select id="customerTypeDropdown" class="form-control ms-0" style="width: 150px;" lang="km">
+                            <option value="">ប្រភេទអតិថិជន</option>
+                        </select>
+                        <div class="form-group mt-4">
+                            <label for="DiscountPercentage" id="discountLabel" style="display:none; margin-right: 5px;" lang="km">
+                                បានបញ្ចុះតម្លៃសម្រាប់អតិថិជនចំនួន:
+                            </label> <!-- Initially hidden -->
+                            <span id="DiscountField" style="display: inline-block; width: auto; padding: 0;"></span> <!-- Display the value here -->
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center w-100 gap-3">
+                        <label class="control-label">Customer:</label>
+                        <input type="hidden" id="customer_id" name="customer_id" />
+                        <input type="text" class="form-control" id="customer_name" name="customer_name" style="width:150px !important;" />
+                        <label class="control-label" id="lbl_customer_point">Point:</label>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <label for="cashReceived" class="me-2" lang="km">ប្រាក់ទទួល :</label>
+                        <input type="number" class="form-control text-end" id="cashReceived" value="0.00" style="width: 120px;" min="0">
+
+                        <select id="currencyType" class="form-select ms-2" style="width: 80px;">
+                            <option value="KHR">KHR</option>
+                            <option value="USD">USD</option>
+                        </select>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <label for="discountAmount" class="me-2" ​ lang="km">បញ្ចុះតម្លៃ :</label>
+                        <select class="form-control text-end" id="discountAmount" style="width: 120px;">
+                            <option value="0">0%</option>  <!-- No discount -->
+                            <option value="20">20%</option>
+                            <option value="30">30%</option>
+                            <option value="40">40%</option>
+                        </select>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <label for="taxAmount" class="me-2" lang="km">ពន្ធ(%) :</label>
+                        <input type="number" class="form-control text-end" id="taxAmount" style="width: 120px;" placeholder="0.00">
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <label for="totalAmount" class="me-2" ​ lang="km">តម្លៃសរុប:</label>
+                        <input type="text" id="totalAmount" class="form-control text-end" style="width: 120px;" readonly value="$0.00">
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <label for="depositKHR" class="me-2" lang="km">ប្រាក់អាប់ជាខ្មែរ:</label>
+                        <input type="text" class="form-control text-end" id="depositKHR" value="0.00" style="width: 120px;" readonly>
+                    </div>
+                    <div class="d-flex align-items-center mb-2">
+                        <label for="depositUSD" class="me-2" ​​ lang="km">ប្រាក់អាប់ជាដុល្លា:</label>
+                        <input type="text" class="form-control text-end" id="depositUSD" value="0.00" style="width: 120px;" readonly>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <div class="d-flex align-items-center mb-1">
+                            <div class="dropdown">
+                                <button id="paymentMethod" class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" lang="km">
+                                    ជ្រើសរើសការទូទាត់
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="paymentMethod">
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center" href="#" data-value="creditCard">
+                                            <i class="fas fa-credit-card me-2 text-primary"></i> Credit Card
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center" href="#" data-value="cash">
+                                            <i class="fas fa-money-bill-wave me-2 text-success"></i> Cash
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item d-flex align-items-center" href="#" data-value="aba">
+                                            <i class="fas fa-university me-2 text-primary"></i> ABA
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-success  mt-1 w-50" id="savePaymentBtn" lang="km" type="button" style="font-size:20px;">
+                        ទូទាត់​ប្រាក់
+                        <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v1H0V4zm0 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6H0zm2 4a1 1 0 1 1 0 2h4a1 1 0 1 1 0-2H2z" />
+                        </svg>
+                    </button>
+                    <div class="d-flex align-items-center mb-2" style="visibility: hidden;">
+                        <label for="totalAmount" class="me-2">Amount :</label>
+                        <input type="text" id="AllAmount" class="form-control text-end" readonly value="$0.00">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Sugar Selection Modal -->
+        <div class="modal fade" id="sugarModal" tabindex="-1" aria-labelledby="sugarModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sugarModalLabel"></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="productId">
+                        <h6 id="productName"></h6>
+                        <p id="productPrice"></p>
+                        <label for="sugarAmount">Select Sugar Amount:</label>
+                        <select id="sugarAmount" class="form-control">
+                            <option value="0">0%</option>
+                            <option value="20">20%</option>
+                            <option value="50">50%</option>
+                            <option value="80">80%</option>
+                            <option value="100">100%</option>
+                        </select>
+                        <label for="size">Select Size:</label>
+                        <select id="size" class="form-control">
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="confirmSugar">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="~/Content/jquery-ui.css" />
+    @section Scripts {
+        <!-- Bootstrap 5 Modal -->
+        <script src="../../plugins/jquery/jquery.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/Scripts/jquery-ui.js"></script>
+
+        <script type="text/javascript">
+            $(function () {
+                $('#customer_name').autocomplete({
+
+                    source: '@Url.Action("getCust", "Sale")',
+                    select: function (event, ui) {
+                        var selectedObj = ui.item;
+
+                        var id = selectedObj.id;
+                        var pn = selectedObj.label;
+                        var status = selectedObj.status;
+                        //console.log(selectedObj);
+                        $('#customer_id').val(id);
+
+
+
+                    }
+                })
+        })
+    document.addEventListener('DOMContentLoaded', function () {
+        const totalAmountInput = document.getElementById('totalAmount');
+        const discountInput = document.getElementById('discountAmount');
+        const Amount = document.getElementById('AllAmount');
+        const taxInput = document.getElementById('taxAmount');
+        const cashReceivedInput = document.getElementById('cashReceived');
+        const currencyTypeSelect = document.getElementById('currencyType');
+        const depositKHRInput = document.getElementById('depositKHR');
+        const depositUSDInput = document.getElementById('depositUSD');
+        const cashReceivedHidden = document.getElementById("cashReceivedHidden");
+        const exchangeRate = 4100;
+        let selectedProducts = [];
+
+        function handleProductSelection(card) {
+            const productId = card.getAttribute('data-id');
+            const productName = card.getAttribute('data-name');
+            const productDescription = card.getAttribute('data-description');
+            const categoryName = card.getAttribute('data-category-name');
+            const productPrice = parseFloat(card.getAttribute('data-price'));
+
+            document.getElementById('productId').value = productId;
+            document.getElementById('productName').textContent = productName;
+            document.getElementById('productPrice').textContent = `$${productPrice.toFixed(2)}`
+
+            if (categoryName.toLowerCase() === 'bread' || categoryName.toLowerCase() === 'food') {
+                addProductToCart(productId, productName, productPrice);
+            } else {
+                const sugarModal = new bootstrap.Modal(document.getElementById('sugarModal'));
+                sugarModal.show();
+            }
+        }
+        document.getElementById('confirmSugar').addEventListener('click', function () {
+            const productId = document.getElementById('productId').value;
+            const productName = document.getElementById('productName').textContent;
+            const productPrice = parseFloat(document.getElementById('productPrice').textContent.replace('$', ''));
+            const sugarAmount = document.getElementById('sugarAmount').value;
+            const size = document.getElementById('size').value;
+
+            let existingProduct = selectedProducts.find(product => product.id === productId && product.sugarAmount === sugarAmount && product.size === size);
+            if (existingProduct) {
+                existingProduct.quantity += 1;
+                existingProduct.sugarAmount = sugarAmount;
+            } else {
+                const selectedProduct = {
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    quantity: 1,
+                    sugarAmount: sugarAmount,
+                    size: size,
+                };
+                selectedProducts.push(selectedProduct);
+            }
+            updateTotalAmount();
+            updateAllAmount();
+            updatePaymentSection();
+            const sugarModal = bootstrap.Modal.getInstance(document.getElementById('sugarModal'));
+            sugarModal.hide();
+        });
+        function addProductToCart(productId, productName, productPrice) {
+            let existingProduct = selectedProducts.find(product => product.id === productId);
+
+            if (existingProduct) {
+                existingProduct.quantity += 1;
+            } else {
+                selectedProducts.push({
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    quantity: 1
+                });
+            }
+            updateAllAmount();
+            updateTotalAmount();
+            updatePaymentSection();
+            console.log(`Added ${productName} to cart`);
+        }
+        cashReceivedInput.addEventListener('dblclick', function () {
+            cashReceivedInput.value = '';
+            updateDeposit();
+        });
+        function updateAllAmount() {
+            if (!totalAmountInput) {
+                return;
+            }
+            const subtotal = (selectedProducts && selectedProducts.length > 0)
+                ? selectedProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0)
+                : 0;
+
+            Amount.value = `$${subtotal.toFixed(2)}`;
+        }
+
+        function updateTotalAmount() {
+            if (!totalAmountInput || !discountInput || !taxInput) {
+                console.error('One or more input fields (Total, Discount, Tax) not found!');
+                return;
+            }
+
+            const discount = parseFloat(discountInput.value) / 100 || 0;
+            const taxRate = parseFloat(taxInput.value) / 100 || 0;
+
+
+            const subtotal = (selectedProducts && selectedProducts.length > 0)
+                ? selectedProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0)
+                : 0;
+
+            const discountAmount = subtotal * discount;
+            const taxAmount = subtotal * taxRate;
+            const totalAmount = subtotal + taxAmount - discountAmount;
+
+            totalAmountInput.value = `$${totalAmount.toFixed(2)}`;
+           /* updateDeposit();*/
+        }
+        function updateDeposit() {
+            const totalAmountUSD = parseFloat(totalAmountInput.value.replace('$', '')) || 0;
+            const totalAmountKHR = totalAmountUSD * exchangeRate;
+
+            let cashReceived = parseFloat(cashReceivedInput.value) || 0;
+            const selectedCurrency = currencyTypeSelect.value;
+
+            let totalCashKHR = selectedCurrency === "USD" ? cashReceived * exchangeRate : cashReceived;
+
+            const depositKHR = totalCashKHR - totalAmountKHR;
+            const depositUSD = depositKHR / exchangeRate;
+
+            depositKHRInput.value = `${depositKHR.toLocaleString()} KHR`;
+            depositUSDInput.value = `$${depositUSD.toFixed(2)} USD`;
+
+            depositKHRInput.style.color = depositKHR < 0 ? 'red' : 'green';
+            depositUSDInput.style.color = depositUSD < 0 ? 'red' : 'green';
+        }
+        discountInput.addEventListener('input', updateTotalAmount);
+        taxInput.addEventListener('input', updateTotalAmount);
+        cashReceivedInput.addEventListener('input', updateDeposit);
+        currencyTypeSelect.addEventListener('change', updateDeposit);
+        function updatePaymentSection() {
+            const paymentDetailsSection = document.getElementById('paymentSection');
+
+            if (paymentDetailsSection) {
+                paymentDetailsSection.innerHTML = '';
+
+                const flexContainer = document.createElement('div');
+                flexContainer.style.display = 'flex';
+                flexContainer.style.flexDirection = 'column';
+                flexContainer.style.gap = '10px';
+                selectedProducts.forEach(product => {
+                    const productDetails = document.createElement('div');
+                    productDetails.classList.add('selected-product');
+                    productDetails.style.display = 'flex';
+                    productDetails.style.alignItems = 'center';
+                    productDetails.style.justifyContent = 'space-between';
+                    productDetails.style.border = '1px solid #ccc';
+                    productDetails.style.padding = '10px';
+                    productDetails.style.margin = '5px';
+                    productDetails.style.borderRadius = '5px';
+                    productDetails.style.gap = '15px';
+                    productDetails.style.minHeight = '60px';
+                    productDetails.innerHTML = `
+    <h6 style="flex: 2; margin: 0; font-weight: bold; font-size: 0.9em; color: #333;">
+        ${product.name} ${product.sugarAmount !== undefined ? `(${product.sugarAmount}% Sugar)` : ''} ${product.size !== undefined ? `(${product.size})` : ''}
+    </h6>
+    <div style="flex: 1; display: flex; justify-content: center; align-items: center;">
+        <button class="btn btn-sm btn-outline-secondary update-quantity-btn" data-id="${product.id}" data-sugar="${product.sugarAmount !== undefined ? product.sugarAmount : 0}" data-change="-1">-</button>
+        <span style="margin: 0 10px;">${product.quantity}</span>
+        <button class="btn btn-sm btn-outline-secondary update-quantity-btn" data-id="${product.id}" data-sugar="${product.sugarAmount !== undefined ? product.sugarAmount : 0}" data-change="1">+</button>
+    </div>
+    <p style="flex: 3; text-align: right; margin: 0; font-size: 1em; font-weight: bold; color: #007bff;">
+        $${(product.price * product.quantity).toFixed(2)}
+    </p>
+    <button class="btn btn-danger btn-sm remove-btn" style="flex: 0;" data-id="${product.id}" data-sugar="${product.sugarAmount !== undefined ? product.sugarAmount : 0}">
+        <i class="fas fa-trash"></i>
+    </button>
+`;
+                    flexContainer.appendChild(productDetails);
+                });
+                paymentDetailsSection.appendChild(flexContainer);
+
+                document.querySelectorAll('.remove-btn').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const productId = this.getAttribute('data-id');
+                        let sugarAmount = this.getAttribute('data-sugar') || 0;
+                        removeAllProduct(productId, sugarAmount);
+                    });
+                });
+                document.querySelectorAll('.update-quantity-btn').forEach(button => {
+                    button.addEventListener('click', function () {
+                        const productId = this.getAttribute('data-id');
+                        const change = parseInt(this.getAttribute('data-change'));
+                        const sugarAmount = this.getAttribute('data-sugar') || 0;
+                        updateQuantity(productId, sugarAmount,change);
+                    });
+                });
+            } else {
+                console.error('Payment section not found!');
+            }
+        }
+        function updateQuantity(productId, sugarAmount, change) {
+            sugarAmount = (sugarAmount === undefined || sugarAmount === "undefined" || sugarAmount === null) ? 0 : sugarAmount;
+            let product = selectedProducts.find(product =>
+                product.id === productId && (product.sugarAmount ?? 0) == sugarAmount
+            );
+            if (product) {
+                product.quantity += change;
+                if (product.quantity <= 0) {
+                    removeProduct(productId, sugarAmount);
+                }
+                updateAllAmount();
+                updateTotalAmount();
+                updatePaymentSection();
+                renderProductDetails(product);
+            }
+        }
+        function removeAllProduct(productId, sugarAmount) {
+            sugarAmount = (sugarAmount === undefined || sugarAmount === "undefined" || sugarAmount === null) ? 0 : sugarAmount;
+            selectedProducts = selectedProducts.filter(product =>
+                !(product.id === productId && (product.sugarAmount ?? 0) == sugarAmount)
+            );
+            updateTotalAmount();
+            updatePaymentSection();
+            updateAllAmount();
+        }
+
+        function removeProduct(productId, sugarAmount) {
+            sugarAmount = (sugarAmount === undefined || sugarAmount === "undefined" || sugarAmount === null) ? 0 : sugarAmount;
+            let productIndex = selectedProducts.findIndex(product => product.id === productId && (product.sugarAmount ?? 0) == sugarAmount);
+
+            if (productIndex !== -1) {
+                selectedProducts.splice(productIndex, 1);
+            }
+            updateAllAmount();
+            updateTotalAmount();
+            updatePaymentSection();
+        }
+        function renderProductDetails(product) {
+            const productCard = document.querySelector(`[data-id='${product.id}']`);
+            if (productCard) {
+                productCard.querySelector(".quantity").textContent = product.quantity;
+                productCard.querySelector(".total-price").textContent = `$${(product.price * product.quantity).toFixed(2)}`;
+            }
+        }
+        function addProductCardEventListeners() {
+            const productCards = document.querySelectorAll('.product-card');
+            productCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    handleProductSelection(card);
+                });
+            });
+        }
+        addProductCardEventListeners();
+        $(document).ready(function () {
+            var categoryMap = {};
+    $.ajax({
+        url: '@Url.Action("GetCategories", "Coffee")',
+        type: 'GET',
+        success: function (categories) {
+            var allButton = `
+            <div class="col-md-3 mb-2" style="width: 200px;">
+                <div class="card p-2 text-center category-card bg-primary text-white" data-category-id="all">
+                    <h6 class="m-0">All</h6>
+                </div>
+            </div>
+            `;
+            $('#categoryGrid').append(allButton);
+            categories.forEach(function (category) {
+                categoryMap[category.Id] = category;
+                var categoryName = category.CategoryNameEng || category.CategoryNameKh;
+                var categoryButton = `
+                <div class="col-md-3 mb-2" style="width: 200px;">
+                    <div class="card p-2 text-center category-card" data-category-id="${category.Id}">
+                        <h6 class="m-0">${categoryName}</h6>
+                    </div>
+                </div>
+                `;
+                $('#categoryGrid').append(categoryButton);
+            });
+            $(".category-card").on("click", function () {
+                var selectedCategoryId = $(this).data("category-id");
+
+                if (selectedCategoryId === "all") {
+                    loadProducts(1, "");
+                } else {
+                    var selectedCategoryIds = [selectedCategoryId];
+                    var categoryFilter = selectedCategoryIds.join(',');
+                    loadProducts(1, categoryFilter);
+                }
+            });
+        },
+        error: function () {
+            alert("Error loading categories.");
+        }
+    });
+            loadProducts(1, "");
+        });
+        $(document).ready(function () {
+        var customerTypeMap = {};
+        $.ajax({
+            url: '@Url.Action("GetCustomerTypes", "Coffee")',
+            type: 'GET',
+            success: function (customerTypes) {
+                customerTypes.forEach(function (customerType) {
+                    customerTypeMap[customerType.Id] = customerType;
+                    var customerTypeName = customerType.customer_type;
+                    var option = `<option value="${customerType.Id}">${customerTypeName}</option>`;
+                    $('#customerTypeDropdown').append(option);
+                });
+                $("#customerTypeDropdown").on("change", function () {
+                    var selectedCustomerTypeId = $(this).val();
+                    var liElement = $('#customerTypeDisplay');
+                    if (selectedCustomerTypeId) {
+                        var selectedCustomerType = customerTypeMap[selectedCustomerTypeId];
+                        liElement.html(`<i class="fa-solid fa-fire"></i> ${selectedCustomerType.customer_type}`);
+                        liElement.css("background-color", "#ff5733");
+                        loadProducts(1, "", selectedCustomerTypeId);
+                    } else {
+                        liElement.html('<i class="fa-solid fa-fire"></i> ទីតាំង');
+                        liElement.css("background-color", "#dc3545");
+                        loadProducts(1, "");
+                    }
+                });
+            },
+            error: function () {
+                alert("Error loading customer types.");
+            }
+        });
+        loadProducts(1, "");
+        });
+
+function loadProducts(pageNumber, categoryFilter, selectedCustomerTypeId) {
+            $.ajax({
+                url: '@Url.Action("GetProductData", "Coffee")',
+                type: 'GET',
+                data: {
+                    pageNumber: pageNumber,
+                    pageSize: 26,
+                    categoryFilter: categoryFilter,
+                    selectedCustomerTypeId: selectedCustomerTypeId
+                },
+                success: function (response) {
+                    console.log(response);
+                    var products = response;
+                    var productGrid = $('#productGrid');
+                    productGrid.empty();
+                    if (products.length === 0) {
+                        productGrid.append('<p>No products found.</p>');
+                    }
+                    products.forEach(function (product) {
+                        var productImage = product.ProductImage ? product.ProductImage : '/Images/default-product.jpg';
+                        var productCard = `
+            <div class="col-md-3 col-sm-6 product-card mb-4"
+                data-id="${product.Id}"
+                data-name="${product.ProductName}"
+                data-price="${product.PriceInStock}"
+                data-description="${product.Description}"
+                data-category-name="${product.CategoryName}">
+
+                <div class="card h-100 position-relative shadow-sm">
+                    <div class="position-absolute top-0 end-0 m-2 bg-success text-white p-2 rounded" style="font-size:16px">
+                        $${product.PriceInStock}
+                    </div>
+                    <img src="${productImage}" class="card-img-top" alt="${product.ProductName}"
+                        style="height: 200px; object-fit: cover;">
+                    <div class="card-body text-center">
+                        <h5 class="card-title" style="font-size:16px">${product.ProductName}</h5>
+                    </div>
+                </div>
+            </div>
+        `;
+                        $("#productGrid").append(productCard);
+                    });
+                    addProductCardEventListeners();
+                },
+                error: function () {
+                    alert('Error loading product data');
+                }
+            });
+        }
+        loadProducts(1);
+        function savePaymentToDatabase() {
+            if (selectedProducts.length === 0) {
+                alert("No products selected!");
+                return;
+            }
+            let Payment = 0;
+            const orderType = document.getElementById("orderTypeValue").value ?? "walkin";
+            const salerName = document.querySelector('#salerDropdown').closest('.dropdown')?.querySelector('.dropdown-item.active')?.getAttribute('data-name') ?? null;
+            const paymentMethod = document.querySelector('#paymentMethod').closest('.dropdown')?.querySelector('.dropdown-item.active')?.getAttribute('data-value') ?? null;
+            const discountPercent = parseFloat(document.getElementById("discountAmount").value) || 0;
+            const amount = parseFloat(document.getElementById("AllAmount").value.replace(/[^0-9.]/g, "")) || 0;
+            let discountAmount = (discountPercent / 100) * amount;
+            const taxAmount = parseFloat(document.getElementById("taxAmount").value) || 0;
+            const totalAmount = parseFloat(document.getElementById("totalAmount").value.replace('$', '')) || 0;
+            const customerTypeDropdown = document.getElementById("customerTypeDropdown");
+            const customerType = customerTypeDropdown?.value || null;
+            let cashReceived = parseFloat(document.getElementById("cashReceived").value) || 0;
+            const currencyType = document.getElementById("currencyType").value;
+            if (currencyType === "KHR") {
+                cashReceived = cashReceived / exchangeRate;
+            }
+            if (cashReceived == 0) {
+                Payment = totalAmount;
+            } else {
+                Payment = 0;
+            }
+            const client = {
+                SaleDate: new Date().toISOString(),
+                Amount: totalAmount || 0,
+                Discount: discountAmount || 0,
+                TaxAmount: taxAmount || 0,
+                ReceivedByABA: Payment || 0,
+                OrderType: orderType,
+                CustomerId: customerType,
+                CreatedDate: new Date().toISOString(),
+                UpdatedDate: new Date().toISOString(),
+                SaleCode: salerName,
+            };
+            const cliented = {
+                UnitTypeId: orderType ?? null,
+                actual_price:null,
+                GetDetail: selectedProducts.map(product => ({
+                    ProductId: product.id ?? null,
+                    Quantity: product.quantity ?? 0,
+                    Price: product.price ?? 0,
+                    Unit: product.unitId ?? null,
+                    ActualPrice: product.actualPrice ?? 0,
+                    color_code: product.colorCode ?? null,
+                }))
+            }
+            const model = {
+                Amount: totalAmount || 0,
+                RevicedFromCustomer: cashReceived || 0,
+                Discount: discountAmount || 0,
+                ReceivedByABA: Payment || 0,
+                Description: "",
+                GetDetail: selectedProducts.map(product => ({
+                    ProductId: product.id ?? null,
+                    Quantity: product.quantity ?? 0,
+                    Price: product.price ?? 0,
+                    Unit: product.unitId ?? null,
+                    ActualPrice: product.actualPrice ?? 0,
+                    ColorCode: product.colorCode ?? null,
+                    UnitTypeId: orderType ?? null,
+                })),
+                CustomerId: $('#customer_id').val(),
+                CustomerName: $('#customer_name').val(),
+            };
+
+            const requestData = {
+                client: client,
+                cliented: cliented,
+                model: model,
+                pmodel: {}
+            }
+                ;
+            fetch('/Coffee/CreateSale', {
+                method: 'POST',
+                //headers: { 'Content-Type': 'application/json' },
+                //body: JSON.stringify(requestData),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            })
+                .then(response => {
+                    console.log(response)
+                    if (!response.ok) {
+                        console.error(`HTTP error! Status: ${response.status}`);
+                        return response.text().then(errorText => {
+                            throw new Error(errorText);  // Log the error text if the response is not OK
+                        });
+                    }
+                    return response.json(); // Parse the response body as JSON
+                })
+                .then(data => {
+                    console.log("Response Data:", data); // Log the full response to verify its contents
+                    if (data.success) {
+                        alert("Payment saved successfully!");
+                        if (data.redirectUrl) {
+                            console.log("Redirecting to URL:", data.redirectUrl); // Log the URL to check if it's valid
+                            window.location.href = data.redirectUrl; // Perform the redirect to the invoice
+                        } else {
+                            console.error("Redirect URL is missing from response.");
+                            alert("Redirect URL is missing in the response.");
+                        }
+                    } else {
+                        alert(data.message || "An error occurred.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error occurred:", error);  // Log the error details
+                    alert("An unexpected error occurred. Please try again.");
+                });
+        }
+        document.getElementById("savePaymentBtn").addEventListener("click", savePaymentToDatabase);
+
+        const customerDropdown = document.querySelector('#customerTypeDropdown');
+
+        if (customerDropdown) {
+            customerDropdown.addEventListener('change', function () {
+                console.log("Selected Customer Type:", this.value);
+            });
+        }
+});
+    function setupDropdown(buttonId, inputId = null) {
+        const button = document.getElementById(buttonId);
+        const dropdownItems = button.closest('.dropdown').querySelectorAll('.dropdown-menu .dropdown-item');
+
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
+                dropdownItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                button.textContent = this.textContent.trim();
+                if (inputId) {
+                    document.getElementById(inputId).value = this.getAttribute('data-value') ?? "";
+                }
+                const selectedName = this.getAttribute('data-name') ?? null;
+                const selectedPayment = this.getAttribute('data-value') ?? null;
+                console.log('Selected Payment:', selectedPayment);
+            });
+        });
+    }
+    setupDropdown('orderTypeDropdown', 'orderTypeValue');
+    setupDropdown('salerDropdown');
+    setupDropdown('paymentMethod');
+
+$(document).ready(function () {
+$('#discountLabel').hide();
+$('#DiscountField').hide();
+$('#customerTypeDropdown').change(function () {
+    var selectedCustomerTypeId = $(this).val();
+    if (selectedCustomerTypeId) {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetDiscount", "Coffee")',
+            data: { selectedCustomerTypeId: selectedCustomerTypeId },
+            success: function (response) {
+                if (response.success) {
+                    if (response.discount !== null && response.discount > 0) {
+                        var discount = response.discount * 100;
+                        $('#discountLabel').show();
+                        $('#DiscountField').show().text(discount + '%');
+                    }
+                    else if (response.storeDiscount !== null && response.storeDiscount > 0) {
+                        $('#discountLabel').show();
+                        $('#DiscountField').show().text('$' + response.storeDiscount);
+                    }
+                    else {
+                        $('#discountLabel').hide();
+                        $('#DiscountField').hide();
+                    }
+                } else {
+                    $('#discountLabel').hide();
+                    $('#DiscountField').hide();
+                }
+            },
+            error: function () {
+                $('#discountLabel').hide();
+                $('#DiscountField').hide();
+            }
+        });
+    } else {
+        $('#discountLabel').hide();
+        $('#DiscountField').hide();
+    }
+});
+
+});
+
+        </script>
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}

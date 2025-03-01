@@ -1,0 +1,137 @@
+﻿@using System.Data;
+@{
+    ViewBag.Title = "Import Excel";
+}
+
+<h2 class="ml-4">Import Excel</h2>
+
+<!-- File Upload Form -->
+@using (Html.BeginForm("ImportExcel", "Sale", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div style="margin: 15px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9; max-width: 500px;">
+        <label for="file" style="font-weight: bold; margin-bottom: 10px; display: block;">Select Excel File</label>
+        <input type="file" name="file" id="file" class="form-control" />
+        <div style="margin-top: 15px; text-align: center;">
+            <button type="submit" class="btn btn-primary" style="margin-right: 10px;">Upload</button>
+            <a href="@Url.Action("ListDataLD", "Sale")" class="btn btn-default" style="margin-right: 10px;" ​​​​​​​​​>View List</a>
+            <a href="@Url.Action("Index", "Sale")" class="btn btn-danger">Back</a>
+        </div>
+    </div>
+}
+@if (ViewBag.Data != null && (ViewBag.Data as DataTable).Rows.Count > 0)
+{
+    var dataTable = ViewBag.Data as DataTable;
+    var images = ViewBag.Images;
+    <style>
+        .small-table {
+            width: 80%;
+            font-size: 15px;
+            margin: 0 auto;
+            margin-top: 40px;
+            border-collapse: collapse;
+            background-color: white;
+            border: 1px solid black;
+        }
+
+            /* Table header styling */
+            .small-table th {
+                padding: 15px;
+                font-size: 20px;
+                color: #000;
+                text-align: center;
+                background-color: #f4f4f4;
+                border: 1px solid #ccc;
+            }
+
+            /* Table data cell styling */
+            .small-table td {
+                padding: 10px 15px;
+                border: 1px solid #ddd;
+                text-align: center;
+            }
+
+        /* Image cell styling */
+        td.image-cell {
+            background-color: #f9f9f9;
+            width: 120px;
+            height: 120px;
+            padding: 0;
+            text-align: center;
+            vertical-align: middle;
+        }
+            td.image-cell img {
+                max-width: 100%;
+                max-height: 100%;
+                width: 100px;
+                height: 100px;
+                display: block;
+                margin: 0 auto;
+                border-radius: 5px;
+                transition: transform 0.3s ease;
+            }
+
+                td.image-cell img:hover {
+                    transform: scale(1.1);
+                }   
+    </style>
+    <table class="small-table">
+        <thead>
+            <tr>
+                <th colspan="3" style="text-align:center">រូបភាពនិងទិន្នន័យ</th>
+                <th>No</th>
+                <th>តម្លៃ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < dataTable.Rows.Count; i++)
+            {
+                <tr>
+                    @if (i == 0)
+                    {
+                        <td colspan="3" class="image-cell">
+                            @if (images != null)
+                            {
+                                <img src="@images" alt="Image" />
+                            }
+                            else
+                            {
+                                <span>No image available</span>
+                            }
+                        </td>
+                        <td>
+                            <span>@dataTable.Rows[0][3]</span>
+                        </td>
+                        <td>
+                            <span>@dataTable.Rows[0][4]</span>
+                        </td>
+                    }
+                    else
+                    {
+
+                        <td>
+                            <span> @dataTable.Rows[i][0]</span>
+                        </td>
+                        <td>
+                            <span> @dataTable.Rows[i][1]</span>
+                        </td>
+
+                        <td>
+                            <span>@dataTable.Rows[i][2]</span>
+                        </td>
+                        <td>
+                            <span>@dataTable.Rows[i][3]</span>
+                        </td>
+                        <td>
+                            <span>@dataTable.Rows[i][4]</span>
+                        </td>
+
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+    else
+    {
+        <p class="text-center mt-5">No data available to display. Please choose a file!</p>
+    }

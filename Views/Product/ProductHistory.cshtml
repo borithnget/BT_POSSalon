@@ -1,0 +1,75 @@
+﻿@model IEnumerable<jotun.Models.ProductHistoryViewModel>
+
+@{
+    ViewBag.Title = "Product History";
+}
+<div style="background-color:#e9ecef; padding:15px;">
+    <h4>Product History</h4>
+
+    <table style="background-color:white;" id="historyTable" class="table table-striped table-bordered" cellspacing="0">
+        <thead>
+            <tr>
+
+                <th>Product Code</th>
+                <th>Product Name</th>
+                <th>Last Action</th>
+                <th>Last Modified</th>
+                <th>Modified By</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+
+                    <td>@item.ProductCode</td>
+                    <td>@item.ProductName</td>
+                    <td>@item.LastAction</td>
+                    <td>@item.LastModified</td>
+                    <td>@item.ModifiedBy</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+@section Scripts {
+    <script src="https://cdn.datatables.net/v/bs4/dt-1.10.20/datatables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/datatables.min.css" />
+
+    @*<script>
+            $(document).ready(function () {
+                $('#historyTable').DataTable({
+                    "autoWidth": false,
+                    "scrollX": true,
+                    "order": [[3, "desc"]] // Order by Last Modified descending
+                });
+            });
+        </script>*@
+    <script>
+        $(document).ready(function () {
+            $('#historyTable').DataTable({
+                "autoWidth": false,
+                "scrollX": true,
+                "ajax": {
+                    "url": "/Product/GetProductHistoryData",
+                    "type": "GET",
+                    "datatype": "json"
+                },
+                "columns": [
+                    {
+                        "render": function (data, type, full, meta) {
+                            return '<a href="/Product/ProductHistoryDetail/' + full.Id + '">' + full.ProductCode + '</a>';
+                        }
+                    },
+                    { "data": "ProductName" },
+                    { "data": "LastAction" },
+                    { "data": "LastModified" },
+                    { "data": "ModifiedBy" }
+                ]
+            });
+        });
+    </script>
+
+
+
+}

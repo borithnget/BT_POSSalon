@@ -1,0 +1,32 @@
+﻿
+@using ReportViewerForMvc;
+@{
+    ViewBag.Title = "InvoiceReportWithPaid";
+}
+
+<br /><br /><br />
+<div class="form-horizontal">
+    <div class="bs-example">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="col-lg-4">
+                            <h3>Invoice</h3>
+                        </div>
+                        <div class="col-lg-8 right">
+                            <div class="col-md-10"></div>
+                            <div class="col-md-2">@Html.ActionLink("BACK", "Index", "Sale", new { @class = "btn btn-primary btn-search" })</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="text-center">
+                    @Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer@*, new {@class="rp-width"}*@)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

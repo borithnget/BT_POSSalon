@@ -1,0 +1,158 @@
+﻿@model jotun.Models.UnitViewModels
+@{
+    ViewBag.Title = "Detail";
+}
+
+@*<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+
+
+@using (Html.BeginForm("Detail", "Unit", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Detail Unit</h4>
+        <hr />
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary("", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.Id)
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+
+                        <div class="modal-body">
+                            Are you sure you want to delete?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                            <input type="reset" value="Delete" i class="btn btn-danger" onclick="window.location='/Unit/Delete/@Html.ValueFor(model => model.Id)';" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group ">
+                            @Html.Label("Date", new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.CreatedDate, new { @class = " form-control", @readonly = "readonly" })
+
+                                @* @Html.LabelFor(m => m.UpdatedDate, DateTime.Now.ToString("dd-MMM-yyyy"), new { @class = " form-control", @readonly = "readonly" })*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            @Html.Label("Unit Name(Eng)", new { @class = "col-md-12 control-label disabled" })
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.UnitNameEng, new { @class = "form-control getAutoCustomerNo", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            @Html.Label("Unit Name(Kh)", new { @class = "col-md-12 control-label disabled" })
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.UnitNameKh, new { @class = "form-control getAutoCustomerNo", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            @Html.Label("Quantity ", new { @class = "col-md-12 control-label disabled" })
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.Quantity, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                <div class="row">
+                    <div class="col-md-8" style="background-color:transparent">
+                        <div class="form-group">
+                            @Html.Label("Description", new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @Html.TextAreaFor(m => m.Description, new { @class = "form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-9">
+                    <input type="reset" value="Edit" class="btn btn-info" onclick="window.location='/Unit/Edit/@Html.ValueFor(model => model.Id)';" />
+                    <input type="reset" value="Delete" id="kosalid" class="btn btn-danger" data-toggle="modal" data-target="#myModal" />
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Unit';" />
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    @section Scripts {
+        <script>
+
+
+        </script>
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

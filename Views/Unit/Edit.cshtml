@@ -1,0 +1,200 @@
+﻿@model jotun.Models.UnitViewModels
+@{
+    ViewBag.Title = "Edit";
+}
+
+@*<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+
+
+@using (Html.BeginForm("Edit", "Unit", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Edit Unit</h4>
+        <hr />
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.CreatedDate)
+            @Html.HiddenFor(model => model.Status)
+
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group ">
+                            @Html.Label("Date Updated", new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @* @Html.TextBoxFor(m => m.CreatedDate, new { @class = " form-control", @readonly = "readonly" })*@
+
+                                @Html.LabelFor(m => m.UpdatedDate, DateTime.Now.ToString("dd-MMM-yyyy"), new { @class = " form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            <span style=" float:left">
+                                @Html.Label("Unit Name (Eng)", new { @class = "col-md-12 control-label" })
+                            </span>
+                            <span style="color:red; float:left; font-size:20px">*</span>
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.UnitNameEng, new { @class = "form-control unitnameeng", id = "un", onchange = "UserCheck()", @autocomplete = "off" })
+                                @Html.ValidationMessageFor(model => model.UnitNameEng, "", new { @class = "text-danger" })
+                                <span id="sta"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            @Html.Label("Unit Name(Kh)", new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.UnitNameKh, new { @class = "form-control unitnamekh", @autocomplete = "off" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            <span style=" float:left">
+                                @Html.Label("Quantity", new { @class = "col-md-12 control-label" })
+                            </span>
+                            <span style="color:red; float:left; font-size:20px">*</span>                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.Quantity, new { @class = "form-control", type = "number", step = "1.00", pattern = "[0-9]+([.][0-9]+)?", min = "-0", max = "99999999", @autocomplete = "off" })
+                                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                <div class="row">
+                    <div class="col-md-8" style="background-color:transparent">
+                        <div class="form-group">
+                            @Html.Label("Description", new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @Html.TextAreaFor(m => m.Description, new { @class = "form-control", @autocomplete = "off" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-9">
+                    <input type="submit" class="btn btn-primary kkkk" value="Save" />
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Unit';" />
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+    @section Scripts {
+        <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+        <link href="~/Content/vendor/jquery/jquery-ui.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-1.12.4.js"></script>
+        <script src="~/Scripts/jquery-ui.js"></script>
+        <script src="~/Scripts/datatables.min.js"></script>
+        <script>
+
+            $(function () {
+                //   $(".hiddenclass").hide();
+                //$("#SelectedDate").datepicker({ dateFormat: 'dd/mm/yy' });
+
+                //$(".unitnameeng").change(function () {
+                //    if ($('.unitnameeng').val() != "") {
+                //        //$(".unitnamekh").prop("disabled", true);
+                //        $(".unitnamekh").val("");
+                //    } else {
+                //        $(".unitnamekh").prop("disabled", false);
+                //        $(".unitnamekh").val("");
+                //    }
+                //});
+                //$(".unitnamekh").change(function () {
+                //    if ($('.unitnamekh').val() != "") {
+                //        //$(".unitnameeng").prop("disabled", true);
+                //        $(".unitnameeng").val("");
+                //    } else {
+                //        $(".unitnameeng").prop("disabled", false);
+                //        $(".unitnameeng").val("");
+                //    }
+                //});
+
+
+
+
+
+            });
+        </script>
+        <script>
+            function UserCheck() {
+                alert("hello");
+        $.post("@Url.Action("CheckUsernameAvailability", "Unit")",
+            {
+                userdata: $("#un").val()
+            },
+        function (data) {
+            if (data == 0) {
+                $("#un").css("border-color", "Green");
+                $('.kkkk').removeAttr('disabled');
+                $("#sta").html('');
+            }
+            else {
+                $("#sta").html('<font color="Red">That name is taken.Try Another.</font>');
+                $("#un").css("border-color", "Red");
+                $('.kkkk').attr('disabled', 'disabled');
+            }
+        });
+    }
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

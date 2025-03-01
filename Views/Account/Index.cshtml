@@ -1,0 +1,142 @@
+﻿@model jotun.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Index";
+    ViewBag.accountactive = "aactive";
+
+}
+
+@*<script src="~/Content/vendor/bootstrap/js/bootstrap.min.js"></script>*@
+
+@using (Html.BeginForm("Index", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
+<div style="background-color:#e9ecef; padding:15px;">
+    <h4>Users Account Operation</h4>
+    <hr />
+
+  @*  <a class="btn btn-primary" data-toggle="modal" data-target="#myModal">Add New</a>*@
+
+    <a href="/Account/Create/" class="btn btn-primary">Add New</a>
+
+    <br />
+    <br />
+
+    <table style="background-color:white;" id="userstable" class="table table-striped table-bordered active" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Email</th>
+                <th>Name</th>
+                <th>Roles</th>
+                <th>Enabled</th>
+                @*<th>Actions</th>*@
+
+
+            </tr>
+        </thead>
+    </table>
+</div>
+
+
+    @*<link href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+        <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap.min.css" rel="stylesheet" />*@
+    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.css" />*@
+    <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+    @section Scripts {
+        <script src="~/Scripts/datatables.min.js"></script>
+        @*<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+            <script href="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap.min.js"></script>*@
+        @*<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.js"></script>*@
+
+
+
+        <script>
+
+      
+            $(document).ready(function () {
+                var t = $("#userstable").DataTable({
+                    "autoWidth": false,
+                    "scrollX": true,
+                    "initComplete": function (settings, json) {
+                        $('#userstable thead tr').css({ visibility: 'collapse' });
+                    },
+                    "ajax": {
+                        "url": "/Account/GetUserData",
+                        "type": "GET",
+                        "datatype": "json"
+                    },
+                    "columns": [
+                        {"data": "Id"},
+                        //{ "data": "Email" },
+                        //{ "data": "UserName" },
+                        //{ "data": "UserRoles" },
+                        //{ "data": "LockoutEnabled" },
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Account/Detail/' + full.Id + '">' + full.Email + '</a>';
+                            }
+                        },     
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Account/Detail/' + full.Id + '">' + full.UserName + '</a>';
+                            }
+                        },     
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Account/Detail/' + full.Id + '">' + full.UserRoles + '</a>';
+                            }
+                        },     
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Account/Detail/' + full.Id + '">' + full.LockoutEnabled + '</a>';
+                            }
+                        },     
+
+                   
+                        //{
+                        //    "data": "Id", "render": function (data) {
+                        //        if (data == "99981074-b6f5-452a-9837-46f562d7d4a1") {
+                        //            //  return '<a href="/Account/Edit/' + data + '" class="btn btn-default btn-sm" class="modal" data-toggle="modal" data-target="#"><i class="fa fa-pencil"></i>Edit</a>'
+                        //            return null;
+                        //        }
+                        //        else {
+                        //            return '<a href="/Account/Edit/' + data + '" class="btn btn-primary btn-sm"><i class="fa fa-pencil"></i>Edit</a> | <a href="/Account/Delete/' + data + '" class="btn btn-danger btn-sm"><i class="fa fa-pencil"></i>Delete</a>'
+                        //        }
+                        //    }
+                        //},
+
+                    ],
+                    "columnDefs": [{
+                        "searchable": false,
+                        "orderable": false,
+                        "targets": 0
+                    }],
+                    "order": [[1, 'asc']]
+
+                });
+                t.on('order.dt search.dt', function () {
+                    t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+                }).draw();
+               
+
+            });
+
+
+
+            //$.fn.dataTable.ext.errMode = 'throw';
+
+        </script>
+      
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}
+
+
+

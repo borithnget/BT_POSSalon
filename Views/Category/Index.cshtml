@@ -1,0 +1,116 @@
+﻿@model jotun.Models.CategoryViewModels
+@{
+    ViewBag.Title = "Index";
+    ViewBag.categoryactive = "aactive";
+
+}
+
+
+@*//<script src="~/Content/vendor/bootstrap/js/bootstrap.min.js"></script>*@
+
+@using (Html.BeginForm("Index", "Category", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Category Operation</h4>
+        <hr />
+
+        <a href="/Category/Create/" class="btn btn-primary">Add New</a>
+        @*<a class="btn btn-default" data-toggle="modal" data-target="#myModal">Add New</a>*@
+        <br />
+        <br />
+
+
+        <table style="background-color:white;" id="userstable" class="table table-striped table-bordered" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Category Name(Eng)</th>
+                    <th>Category Name(Kh)</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+
+
+
+
+    @*<link href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet" />
+        <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />*@
+    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.css" />*@
+    @*<link href="~/Content/vendor/datatables/datatables.min.css" rel="stylesheet" />*@
+    <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+    @section Scripts {
+
+        @*<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+            <script href="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>*@
+        @*<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.js"></script>*@
+        <script src="~/Scripts/datatables.min.js"></script>
+
+
+        <script>
+
+            $(document).ready(function () {
+                var t = $("#userstable").DataTable({
+                    //"bLengthChange": false,
+                    //"scrollX": true, //Do Not Use This (Remove This Line)
+                    //"scrollXInner": true,
+                    //"dom": 'frtp',
+                    "autoWidth": false,
+                    "scrollX": true,
+                    "initComplete": function (settings, json) {
+                        $('#userstable thead tr').css({ visibility: 'collapse' });
+                    },
+                    "ajax": {
+                        "url": "/Category/GetCategoryData",
+                        "type": "GET",
+                        "datatype": "json",
+
+                    },
+
+                    "columns": [
+                        { "data": "Id" },
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Category/Detail/' + full.Id + '">' + full.CategoryNameEng + '</a>';
+                            }
+                        },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Category/Detail/' + full.Id + '">' + full.CategoryNameKh + '</a>';
+                            }
+                        },
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Category/Detail/' + full.Id + '">' + full.Description + '</a>';
+                            }
+                        },
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Category/Detail/' + full.Id + '">' + full.CreatedDate + '</a>';
+                            }
+                        },
+
+                    ],
+                     "columnDefs": [{ type: 'date', 'targets': [4] }],
+                    "order": [[4, "desc"]], 
+                });
+                t.on('order.dt search.dt', function () {
+                    t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+                }).draw();
+            });
+             //$.fn.dataTable.ext.errMode = 'throw';
+
+        </script>
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}

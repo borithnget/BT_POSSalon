@@ -1,0 +1,184 @@
+﻿@model jotun.Models.ProductViewModels
+@{
+    ViewBag.Title = "Index";
+    ViewBag.productactive = "aactive";
+}
+
+
+@*<script src="~/Content/vendor/bootstrap/js/bootstrap.min.js"></script>*@
+
+@using (Html.BeginForm("Index", "Product", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Product Operation</h4>
+        <hr />
+
+        <a href="/Product/Create/" class="btn btn-primary">Add New</a>
+        <a href="/Import/ProductExcel" class="btn btn-primary">Import Excel</a>
+        @*<a class="btn btn-default" data-toggle="modal" data-target="#myModal">Add New</a>*@
+        <br />
+        <br />
+
+
+        <table style="background-color:white;" id="userstable" class="table table-striped table-bordered" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    @*<th>Product No</th>*@
+                    <th>Product Code</th>
+                    <th>Product Name</th>
+                    <th>Product Image</th>
+                    <th>Quantity In Stock</th>
+                    @*<th>Price In Stock</th>*@
+                    <th>Category Name</th>
+                    @*<th>Unit Type Name</th>*@
+                    @*<th>Supplier Name</th>
+                        <th>Shipper Name</th>*@
+                    <th>Description</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+
+
+
+
+    @*<link href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet" />
+        <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />*@
+    //<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.css" />
+
+    @section Scripts {
+
+        @*<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+            <script href="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>*@
+        <script type="text/javascript" src="~/Scripts/datatables.min.js"></script>
+        @*<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.js"></script>*@
+
+
+
+        <script>
+
+            $(document).ready(function () {
+                var t = $("#userstable").DataTable({
+                    //"bLengthChange": false,
+                    //"scrollX": true, //Do Not Use This (Remove This Line)
+                    //"scrollXInner": true,
+                    //"dom": 'frtp',
+
+                    //responsive: true,
+                    //"scrollY": 500,
+                    //"scrollCollapse": true,
+                    //"jQueryUI": true,
+                    //"aaSorting": [],
+
+                    "processing": true,
+                    "autoWidth": false,
+                    "scrollX": true,
+                    "initComplete": function (settings, json) {
+                        $('#userstable thead tr').css({ visibility: 'collapse' });
+                    },
+                    "ajax": {
+                        "url": "/Product/GetProductData",
+                        "type": "GET",
+                        "datatype": "json",
+
+                    },
+
+                    "columns": [
+                        { "data": "Id" },
+                        //{
+                        //    "render": function (data, type, full, meta) {
+                        //        return '<a href="/Unit/Detial/' + full.Id + '">' + full + '</a>';
+                        //    }
+                        //},
+                        //{
+                        //    "render": function (data, type, full, meta) {
+                        //        return '<a href="/Product/Detail/' + full.Id + '">' + full.ProductNo + '</a>';
+                        //    }
+                        //},
+
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Product/Detail/' + full.Id + '">' + full.ProductCode + '</a>';
+                            }
+                        },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Product/Detail/' + full.Id + '">' + full.ProductName + '</a>';
+                            }
+                        },
+
+                        {
+
+                            'data': 'ProductImage', "render": function (data, type, full, row) {
+                                return '<a href="/Product/Detail/' + full.Id + '">' + '<img src="../..' + data + '" style="height:Auto;width:50px;" />' + '</a>';
+                            }, "targets": 1
+                        },
+
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Product/Detail/' + full.Id + '">' + parseFloat(full.QuantityInStock).toFixed(2) + '</a>';
+                            }
+                        },
+                        //{
+                        //    "render": function (data, type, full, meta) {
+                        //        return '<a href="/Product/Detail/' + full.Id + '">' + full.PriceInStock + '</a>';
+                        //    }
+                        //},
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Product/Detail/' + full.Id + '">' + full.CategoryName + '</a>';
+                            }
+                        },
+                        //{
+                        //    "render": function (data, type, full, meta) {
+                        //        return '<a href="/Product/Detail/' + full.Id + '">' + full.UnitName + '</a>';
+                        //    }
+                        //},
+
+                        //{
+                        //    "render": function (data, type, full, meta) {
+                        //        return '<a href="/Product/Detail/' + full.Id + '">' + full.SupplierName + '</a>';
+                        //    }
+                        //},
+                        //{
+                        //    "render": function (data, type, full, meta) {
+                        //        return '<a href="/Product/Detail/' + full.Id + '">' + full.ShipperName + '</a>';
+                        //    }
+                        //},
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Product/Detail/' + full.Id + '">' + full.Description + '</a>';
+                            }
+                        },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Product/Detail/' + full.Id + '">' + full.CreatedDate + '</a>';
+                            }
+                        },
+
+
+
+                    ],
+                    "columnDefs": [{ type: 'date', 'targets': [7] }],
+                    "order": [[7, "desc"]],
+                });
+
+                t.on('order.dt search.dt', function () {
+                    t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+                }).draw();
+            });
+            //$.fn.dataTable.ext.errMode = 'throw';
+
+        </script>
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}

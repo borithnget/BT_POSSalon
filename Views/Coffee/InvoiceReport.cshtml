@@ -1,0 +1,82 @@
+﻿@model jotun.Models.SaleViewModels
+@*@model IEnumerable<jotun.Models.SaleViewModels>*@
+
+@using ReportViewerForMvc;
+@{
+    ViewBag.Title = "InvoiceReport";
+}
+<style>
+    #printerDiv iframe {
+        position: absolute;
+        top: -1000px;
+    }
+</style>
+<div style="background-color:#e9ecef; padding:15px;">
+    <h4>Invoice Sale</h4>
+    <hr />
+    <div hidden>
+        @Html.TextBoxFor(m => m.Id, htmlAttributes: new { @class = "form-control", @id = "saleid", autocomplete = "off" })
+    </div>
+    <div id="divPDF">
+        <div id="printerDiv"><iframe id="frmPDF"></iframe></div>
+    </div>
+    <div class="col-md-3" id="getfrasm">
+        <input style="margin-top:25px" class="btn btn-danger" type="button" value="Back" onclick="window.location='/Coffee';" />
+        <input style="margin-top:25px" class="btn btn-success" type="button" value="Print" onclick="funExportToPDF()" />
+    </div>
+
+    <hr />
+    <div class="panel-body" style="background-color:white">
+        <div class="text-center getfram" id="getfram">
+
+            @Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer, new { id = "kosalreportsale" })
+        </div>
+    </div>
+</div>
+<br />
+@section Scripts{
+    @*<script type="text/javascript" src="~/Scripts/custom/print-script.js"></script>*@
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript">
+    function funExportToPDF() {
+        //alert(document.getElementById("getfram").getElementsByTagName("iframe"));
+        $.ajax({
+            url: '@Url.Action("ExportToPDF", "Coffee")',
+            type: 'GET',
+            data: { id: $('#saleid').val() },
+            contentType: 'application/json; charset=utf-8',
+            success: function (result) {
+                $('#frmPDF').attr('src', '@Url.Content("~/")' + result);
+                setTimeout(function () {
+                    frame = document.getElementById("frmPDF");
+                    frameframedoc = frame.contentWindow;
+                    console.log(frameframedoc);
+                    console.log(frame);
+                    frameframedoc.focus();
+                    frameframedoc.print();
+
+                    $.ajax({
+                        url: '@Url.Action("ExportToPDFRemove", "Coffee")',
+                        data: { id: '@Url.Content("~/")' + result },
+                        type: 'GET',
+                    });
+                }, 3000);
+
+            },
+            error: function (xhr, status, err) {
+                alert(err);
+                $.ajax({
+                    url: '@Url.Action("ExportToPDFRemove", "Coffee")',
+                    data: { id: '@Url.Content("~/")' + result },
+                    type: 'GET',
+                });
+            }
+        });
+            return false;
+    }
+
+
+</script>
+
+

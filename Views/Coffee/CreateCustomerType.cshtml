@@ -1,0 +1,163 @@
+﻿@{
+    ViewData["Title"] = "Create Customer Type";
+}
+<style>
+    * {
+        font-family: 'Roboto', sans-serif;
+    }
+
+    :lang(km) {
+        font-family: 'Noto Sans Khmer', sans-serif;
+    }
+
+    
+
+</style>
+<h2>Create Customer Type</h2>
+<div class="mt-5 d-flex justify-content-center">
+    <form id="customerTypeForm" class="w-75">
+        <h3>Customer Type</h3>
+        <hr />
+        <div class="row">
+            <div class="col-md-3 form-group">
+                <label for="CustomerType" lang="km">ប្រភេទអតិថិជន:</label>
+                <input type="text" id="CustomerType" name="CustomerType" class="form-control" required />
+            </div>
+
+            <div class="col-md-3 form-group">
+                <label for="DiscountPercentage" lang="km">បញ្ចុះតម្លៃ (%):</label>
+                <input type="number" step="0.01" id="DiscountPercentage" name="DiscountPercentage" class="form-control" />
+            </div>
+
+            <div class="col-md-3 form-group">
+                <label for="StoreDiscount" lang="km">បញ្ចុះតម្លៃ ($):</label>
+                <input type="number" step="0.01" id="StoreDiscount" name="StoreDiscount" class="form-control" />
+            </div>
+        </div>
+
+        <button class="btn btn-danger mt-3" onclick="window.location='/Coffee/Index';">Cancel</button>
+        <button type="submit" class="btn btn-primary mt-3">Create</button>
+    </form>
+
+
+
+</div>
+<div class="row p-5">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="table_1">
+            <thead>
+                <tr>
+                    <th>Customer Type</th>
+                    <th>Discount (%)</th>
+                    <th>Discount (USD)</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+    <!-- Bootstrap 5 Modal -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#customerTypeForm").submit(function (event) {
+            event.preventDefault(); // Prevent full page reload
+
+            var formData = {
+                CustomerType: $("#CustomerType").val(),
+                DiscountPercentage: parseFloat($("#DiscountPercentage").val()) || 0,
+                StoreDiscount: parseFloat($("#StoreDiscount").val()) || 0
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "@Url.Action("CreateCustomerType", "Coffee")",
+                data: formData,
+                success: function (response) {
+                    $("#responseMessage").html(
+                        '<div class="alert alert-' + (response.success ? 'success' : 'danger') + '">' + response.message + '</div>'
+                    );
+                    if (response.success) {
+                        $("#customerTypeForm")[0].reset(); // Reset form on success
+
+                        // Show success alert
+                        alert("Customer Type created successfully!");
+                    }
+                },
+                error: function () {
+                    $("#responseMessage").html('<div class="alert alert-danger">An error occurred while processing your request.</div>');
+                }
+            });
+        });
+    });
+        $(document).ready(function () {
+            // Listen for input in DiscountPercentage and StoreDiscount fields
+            $('#DiscountPercentage, #StoreDiscount').on('input', function () {
+                var discountPercentageVal = $('#DiscountPercentage').val();
+                var storeDiscountVal = $('#StoreDiscount').val();
+
+                if (discountPercentageVal) {
+                    $('#StoreDiscount').prop('disabled', true);
+                } else {
+                    $('#StoreDiscount').prop('disabled', false);
+                }
+                if (storeDiscountVal) {
+                    $('#DiscountPercentage').prop('disabled', true);
+                } else {
+                    $('#DiscountPercentage').prop('disabled', false);
+                }
+            });
+
+            var t = $("#table_1").DataTable({
+                    "autoWidth": false,
+                    "scrollX": true,
+                    //"initComplete": function (settings, json) {
+                    //    $('#userstable thead tr').css({ visibility: 'collapse' });
+                    //},
+                    "ajax": {
+                        "url": "/Coffee/GetCustomerTypeAJax",
+                        "type": "GET",
+                        "datatype": "json",
+                    },
+
+                    "columns": [
+                        { "data": "customer_type" },
+                        { "data": "discount" },
+                        { "data": "StoreDiscount" },
+                    ],
+
+                    //"columnDefs": [{ type: 'date', 'targets': [9] }],
+                    //"order": [[9, "desc"]],
+            });
+
+            printDiv();
+
+            function printDiv() 
+                {
+
+                  var divToPrint=$('#invoice-POS');
+
+                  var newWin=window.open('','Print-Window');
+
+                  newWin.document.open();
+
+                  newWin.document.write('<html><body onload="window.print()">'+divToPrint.innerHTML+'</body></html>');
+
+                  newWin.document.close();
+
+                  setTimeout(function(){newWin.close();},10);
+
+                }
+        });
+
+    
+</script>
+

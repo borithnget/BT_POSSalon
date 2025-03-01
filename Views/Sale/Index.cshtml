@@ -1,0 +1,820 @@
+﻿@model jotun.Models.SaleViewModels
+
+@{
+    ViewBag.Title = "Index";
+    ViewBag.saleactive = "aactive";
+}
+
+<style>
+    #printerDiv iframe {
+        position: absolute;
+        top: -1000px;
+    }
+</style>
+
+@using (Html.BeginForm("Index", "Sale", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    <div style="background-color:#e9ecef; padding:15px">
+        <h4>Sale Operation</h4>
+        <hr />
+        <div id="divPDF">
+            <div id="printerDiv"><iframe id="frmPDF"></iframe></div>
+        </div>
+        <style>
+            /*  body {
+                background-color: yellow;
+            }*/
+
+            .grid-container {
+                height: 400px;
+                background-color: lightgray;
+                margin-top: 20px;
+                border: 1px solid black;
+            }
+
+            .grid-image {
+                height: 150px;
+                width: 150px;
+                background-color: lightgray;
+                border: 1px solid black;
+                margin-top: 50px;
+            }
+
+            .form-section {
+                margin-bottom: 15px;
+            }
+
+            .summary-input.w-7px {
+                width: 50px;
+            }
+
+            .summary-input2 {
+                width: 196px;
+            }
+
+            .summary-input {
+                width: 200px !important;
+            }
+
+            .form-group {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+            }
+
+                .form-group label {
+                    min-width: 100px;
+                }
+
+            .col-md-4 {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .input-button-gap {
+                margin-left: 10px !important; /* Force a 10px gap */
+            }
+
+            .d-flex-btn {
+                display: flex;
+                gap: 1rem;
+            }
+
+            .custom-label {
+                margin-right: 10px;
+            }
+        </style>
+
+        <div class="container py-5">
+            <h1 class="text-center mb-4">Sales Page</h1>
+            <form>
+                <div class="container">
+                    <div class="row g-4">
+                        <!-- Column 1 -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="cust" class="form-label fw-bold">Customer</label>
+                                @Html.TextBoxFor(m => m.CustomerName, new { id = "cust", @class = "form-control summary-input", autocomplete = "off" })
+                                <input type="hidden" id="custid" name="CustomerId" />
+                            </div>
+                            <!--Just add to make layout-->
+                            <!--<div class="form-group">
+                            <label for="inventory-type" class="form-label fw-bold " style="margin-right:10px;">Customer Location</label>
+                            @Html.TextBoxFor(m => m.CustomerName, new { id = "custLocation", @class = "form-control summary-input", autocomplete = "off" })-->
+                            @* @Html.TextBoxFor(m => m.InventoryType, new { id = "inventory-type", @class = "form-control summary-input", autocomplete = "off" })*@
+                            <!--</div>
+                        <div class="form-group">
+                            <label for="inventory-type" class="form-label fw-bold " style="margin-right:10px;">Description</label>
+                            @Html.TextBoxFor(m => m.CustomerName, new { id = "description", @class = "form-control summary-input", autocomplete = "off" })-->
+                            @* @Html.TextBoxFor(m => m.InventoryType, new { id = "inventory-type", @class = "form-control summary-input", autocomplete = "off" })*@
+                            <!--</div>-->
+
+                        </div>
+                        <!-- Column 2 -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="unittype" class="form-label fw-bold" style="margin-right:16px;">Unit Type</label>
+                                @Html.TextBoxFor(m => m.UnitType, new { id = "unittype", @class = "form-control summary-input", autocomplete = "off" })
+                            </div>
+                            <div class="form-group">
+                                <label for="colorcode" class="form-label fw-bold" style="margin-right:16px;">Color Code</label>
+                                @Html.TextBoxFor(m => m.ColorCode, new { id = "colorcode", @class = "form-control summary-input", autocomplete = "off" })
+                            </div>
+                            @* <div class="form-group">
+                                <label for="price" class="form-label fw-bold" style="margin-right:10px;">Price</label>
+                                @Html.TextBoxFor(m => m.Price, new { id = "price", @class = "form-control summary-input", autocomplete = "off" })
+                            </div>*@
+                            <div class="form-group d-flex">
+                                <label for="quantity" class="fw-bold" style="margin-right: 16px">Quantity</label>
+                                <input type="number" class="form-control" style="width:136px;" id="quantity" name="Quantity">
+                                @* <button id="submitBtn" class="btn btn-primary input-button-gap" type="submit">Add</button>*@
+                                <a href="/Sale/Create" class="btn btn-primary">Add new</a>
+                            </div>
+                        </div>
+                        <!-- Column 3 -->
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label for="invoiceNo" class="form-label fw-bold">Invoice No.</label>
+                                <input type="text" class="form-control summary-input" id="invoiceNo" name="InvoiceNo">
+                            </div>
+                            <div class="form-group mb-2">
+                                <label for="date" class="form-label fw-bold">Date</label>
+                                <input type="date" class="form-control summary-input" id="date" name="Date">
+                            </div>
+                            @*<div class="form-group">
+                                <label for="item" class="form-label fw-bold" style="margin-right:10px;">Item</label>
+                                @Html.TextBoxFor(m => m.Item, new { id = "item", @class = "form-control summary-input", autocomplete = "off" })
+                            </div>*@
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="grid-container">
+                    <div style="overflow-y: auto; max-height: 400px; margin-top: 20px; display: none;" id="gridContainer">
+                        <table style="background-color:white;" id="userstable" class="table table-striped table-bordered" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Customer</th>
+                                    <th>Customer Item</th>
+                                    <th>Location</th>
+                                    <th>SaleImage</th>
+                                    <th>Amount</th>
+                                    <th>Discount($)</th>
+                                    <th>Received From Customer</th>
+                                    <th>Owe</th>
+                                    <th>Status</th>
+                                    <th>Description</th>
+                                    <th>Created Date</th>
+                                    <th>Invoice No</th>
+                                    <th>Generate Invoice</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Dynamic rows will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="d-flex align-items-start mt-5">
+                    <!-- Grid Image on the Left -->
+                    <div class="grid-image" id="imageUploadSection" style="display: none;">
+                        <div>
+                            <!-- File input for uploading an image -->
+                            @Html.TextBoxFor(m => m.SaleImage, new
+                            {
+                                id = "SaleImage",
+                                @class = "form-control imageBrowes",
+                                type = "file",
+                                name = "file_name",
+                                onchange = "PreviewImage();"
+                            })
+                            <!-- Hidden input for storing file path -->
+                            <input hidden type="text" class="form-control" name="file_path" id="file-path">
+                        </div>
+
+                        <!-- Image preview container -->
+                        <div id="imgPreview" class="thumbnail">
+                            <img src="@Url.Content("~/Images/defaultimage.jpg")"
+                                 style="background-color: white; width: 100%; height: auto;"
+                                 class="img-responsive"
+                                 id="targetImg" />
+                            <div class="caption">
+                                <a href="#" onclick="ClearPreview()">
+                                    <i class="glyphicon glyphicon-trash"></i>
+                                </a>
+                                <span id="descriptionimage"></span>
+                            </div>
+                        </div>
+                        <!-- Uploaded image display -->
+                        <div class="col-md-2 thumbnail" id="uploadedImage"></div>
+                    </div>
+
+
+
+
+                    <!-- Form on the Right -->
+                    <div class="d-flex flex-column align-items-end" style="flex: 3;">
+                        <!-- Labour Cost -->
+                        <div class="mb-2 d-flex align-items-center">
+                            <label for="labour-cost" class="form-label fw-bold me-3 text-nowrap custom-label">Amount</label>
+                            <input type="number" class="form-control summary-input" id="labourCost" name="labourCost" />
+                        </div>
+
+                        <!-- Sub Total -->
+                        <div class="mb-2 d-flex align-items-center">
+                            <label for="subtotal" class="form-label fw-bold me-3 text-start custom-label">Sub Total</label>
+                            <input type="number" class="form-control summary-input" id="labourCost" name="subTotal" />
+                        </div>
+
+                        <!-- Discount Fields -->
+                        <div class="mb-2 d-flex align-items-center">
+                            <label for="subtotal" class="form-label fw-bold me-3 text-start custom-label">Discount (%)</label>
+                            <input type="number" class="form-control" style="width:90px" id="DiscountPercentage" name="DiscountPercentage" />
+                            <label for="subtotal" class="form-label fw-bold me-3 ">($)</label>
+                            <input type="number" class="form-control" style="width:90px" id="DiscountDollar" name="DiscountDollar" />
+                        </div>
+
+                        <!-- Deposit -->
+                        <div class="mb-2 d-flex align-items-center">
+                            <label for="deposit" class="form-label fw-bold me-3 text-start custom-label">Owe</label>
+                            <input type="number" class="form-control summary-input" id="deposit" name="deposit" />
+                        </div>
+
+
+                        <!-- Total Balance -->
+                        <div class="mb-2 d-flex align-items-center ">
+                            <label for="total-balance" class="form-label fw-bold me-3 text-start custom-label">Received From Customer</label>
+                            <input type="number" class="form-control summary-input" id="total-balance" name="totalBalance" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex-btn justify-content-start gap-3 mt-4">
+                    <a href="/Sale/CustomerHistory" class="btn btn-primary">View History</a>
+                    <a href="/Sale/ImportExcel" class="btn btn-secondary">Import File</a>
+
+                    <div class="d-flex-btn justify-content-center mx-auto gap-3">
+                        <button type="button" class="btn btn-success" onclick="UploadImage()">Save</button>
+                        <a id="printButton" href="#" class="btn btn-primary" disabled>Print</a>
+                        @*<button type="button" class="btn btn-danger">Delete</button>*@
+                        <input type="reset" value="Delete" id="kosalid" class="btn btn-danger" data-toggle="modal" data-target="#myModal" />
+                        <button type="button" class="btn btn-secondary">Cancel</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    </div>
+        <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+        @section Scripts{
+
+            <script src="~/Content/vendor/jquery/jquery.min.js"></script>
+            @*<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.js"></script>*@
+            <script src="~/Content/vendor/datatables/jquery.dataTables.min.js"></script>
+            <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+            <script src="~/Scripts/jquery-ui.js"></script>
+            <script src="~/Scripts/datatables.min.js"></script>
+
+            <script>
+            $('#history_block').hide();
+            function funExportToPDF() {
+                $('#cus_history_report').text("Waiting...");
+            $.ajax({
+                url: '@Url.Action("ExportToPDFSaleDetailHistoryByCustomer", "Report")',
+                type: 'GET',
+                data: { customerid: $('#custid').val(),  },
+                contentType: 'application/json; charset=utf-8',
+                success: function (result) {
+                    $('#frmPDF').attr('src', '@Url.Content("~/")' + result);
+                    setTimeout(function () {
+                        frame = document.getElementById("frmPDF");
+                        frameframedoc = frame.contentWindow;
+                        console.log(frameframedoc);
+                        console.log(frame);
+                        frameframedoc.focus();
+                        frameframedoc.print();
+
+                        $.ajax({
+                            url: '@Url.Action("ExportToPDFRemove", "Report")',
+                            data: { id: '@Url.Content("~/")' + result },
+                            type: 'GET',
+                        });
+                        $('#cus_history_report').text("History");
+
+                    }, 3000);
+
+                },
+                error: function (xhr, status, err) {
+                    alert(err);
+                    $.ajax({
+                         url: '@Url.Action("ExportToPDFRemove", "Report")',
+                         data: { id: '@Url.Content("~/")' + result },
+                         type: 'GET',
+                     });
+                }
+            });
+            return false;
+        }
+            $(function () {
+                $('#orderDate').datepicker({
+                    dateFormat: 'dd-MM-yy'
+                }).datepicker("setDate", new Date());
+            });
+            $(function () {
+                $('#orderDate1').datepicker({
+                    dateFormat: 'dd-MM-yy'
+                }).datepicker("setDate", new Date());
+            });
+            $(document).ready(function () {
+                var Todate = $('#orderDate').val();
+                var FromDate = $('#orderDate1').val();
+                console.log(Todate);
+                console.log(FromDate);
+
+
+                var t = $("#userstable").DataTable({
+                    "autoWidth": false,
+                    "scrollX": true,
+                    "initComplete": function (settings, json) {
+                        $('#userstable thead tr').css({ visibility: 'collapse' });
+                    },
+                    "ajax": {
+                        "url": "/Sale/GetSale",
+                        "type": "GET",
+                        "datatype": "json",
+                        "data": { 'Todate': Todate, 'FromDate': FromDate },
+                    },
+                    "columns": [
+                        { "data": "Id" },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Sale/Details/' + full.Id + '">' + full.CustomerId + '</a>';
+                            }
+                        },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<input type="checkbox" class="invoice-checkbox" data-id="' + full.Id + '">';
+                            }
+                        },
+                        { "data": "ProjectLocation" },
+                        { "data": "SaleImage"},
+                        { "data": "Amount" },
+                        { "data": "Discount" },
+                        { "data": "RevicedFromCustomer" },
+                        { "data": "Owe" },
+                        { "data": "InvoiceStatus" },
+                        { "data": "Description" },
+                        { "data": "CreatedDate" },
+                        { "data": "InvoiceNo" },
+                        {
+                            "render": function (data, type, full, meta) {
+                                //  return '<a  href="/Sale/InvoiceReport/' + full.Id + '">' + "Print" + '</a>' + ' | ' + '<a href="/Sale/InvoiceReportWithPaid/' + full.Id + '">' + "Paid" + '</a>';
+                                /*return '<a  href="/Sale/InvoiceReport/' + full.Id + '">' + "Print" + '</a>';*/
+                                return '<input type="checkbox" class="invoice-checkbox" data-id="' + full.Id + '">';
+                            }
+                        },
+
+                    ],
+
+                    "columnDefs": [{ type: 'date', 'targets': [9] }],
+                    "order": [[9, "desc"]],
+                });
+                $('#cust').on('input', function () {
+                    var customerName = $(this).val().trim();
+                    if (customerName) {
+                        $('#gridContainer').show(); // Show the table when customer name is entered
+                        t.ajax.reload(); // Reload the table data
+                    } else {
+                        $('#gridContainer').hide(); // Hide the table if no customer name is entered
+                    }
+                });
+                t.on('order.dt search.dt', function () {
+                    t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+                }).draw();
+
+            });
+            $(function () {
+                    $('#cust').autocomplete({
+                        source: '@Url.Action("getCust", "Sale")',
+                        select: function (event, ui) {
+                            var selectedObj = ui.item;
+                            var id = selectedObj.id;
+                            var pn = selectedObj.label;
+                            var p = selectedObj.label2;
+                            var status = selectedObj.status;
+                            $('#custid').val(pn);
+                            $('#custid').val(id);
+                            if (p == "") {
+                                $('#custphone').val("Not Phone");
+                            } else {
+                                $('#custphone').val(p);
+                            }
+
+                            $('#history_block').show();
+                            Check();
+                        }
+                    })
+        });
+        $(function () {
+                    $('#custphone').autocomplete({
+                        source: '@Url.Action("getCustPhone", "Sale")',
+                        select: function (event, ui) {
+                            var selectedObj = ui.item;
+                            var id = selectedObj.id;
+                            var pn = selectedObj.label;
+                            var p = selectedObj.label2;
+                            var status = selectedObj.status;
+                            $('#custid').val(pn);
+                            $('#custid').val(id);
+                            $('#cust').val(p);
+                            $('#history_block').show();
+                            Check();
+                        }
+                    })
+        });
+
+        $('#cust').mouseout(function (e) {
+            if ($('#cust').val() == "") {
+                $('#custid').val("");
+                $('#custphone').val("");
+                $('#history_block').hide();
+
+            }
+        });
+        $('#custphone').mouseout(function (e) {
+            if ($('#custphone').val() == "") {
+                $('#custid').val("");
+                $('#cust').val("");
+                $('#history_block').hide();
+
+            }
+        });
+            function Check() {
+                loadInvoiceByCustomer();
+            }
+            function getFormattedDateDDMMYYYY(date) {
+                var year = date.getFullYear();
+
+                var month = (1 + date.getMonth()).toString();
+                month = month.length > 1 ? month : '0' + month;
+
+                var day = date.getDate().toString();
+                day = day.length > 1 ? day : '0' + day;
+
+                return month + '/' + day + '/' + year;
+            }
+
+
+            $('#Generrate').click(function (e) {
+                //  var SalessViewModel = {
+                //$('#userstable').dataTable().fnDestroy();
+                //$('#userstable').dataTable().fnClearTable();
+
+                var Todate = $('#orderDate').val();
+                var FromDate = $('#orderDate1').val();
+
+
+
+                var t = $("#userstable").DataTable({
+                    "autoWidth": false,
+                    "scrollX": true,
+                    "initComplete": function (settings, json) {
+                        $('#userstable thead tr').css({ visibility: 'collapse' });
+                    },
+                    "ajax": {
+                        "url": "/Sale/GetSale",
+                        "type": "GET",
+                        "datatype": "json",
+                        "data": { 'Todate': Todate, 'FromDate': FromDate },
+                    },
+
+                    "columns": [
+                        { "data": "Id" },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Sale/Details/' + full.Id + '">' + full.CustomerId + '</a>';
+                            }
+                        },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<input type="checkbox" class="invoice-checkbox" data-id="' + full.Id + '">';
+                            }
+                        },
+                        { "data": "ProjectLocation" },
+                        { "data": "SaleImage" },
+                        { "data": "Amount" },
+                        { "data": "Discount" },
+                        { "data": "RevicedFromCustomer" },
+                        { "data": "Owe" },
+                        { "data": "InvoiceStatus" },
+                        { "data": "Description" },
+                        { "data": "CreatedDate" },
+                        { "data": "InvoiceNo" },
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                //  return '<a  href="/Sale/InvoiceReport/' + full.Id + '">' + "Print" + '</a>' + ' | ' + '<a href="/Sale/InvoiceReportWithPaid/' + full.Id + '">' + "Paid" + '</a>';
+                                /* return '<a  href="/Sale/InvoiceReport/' + full.Id + '">' + "Print" + '</a>';*/
+                                return '<input type="checkbox" class="invoice-checkbox" data-id="' + full.Id + '">';
+                            }
+                        },
+
+                    ],
+
+                    "columnDefs": [{ type: 'date', 'targets': [10] }],
+                    "bDestroy": true,
+                    "order": [[10, "desc"]],
+                });
+
+                t.on('order.dt search.dt', function () {
+                    t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+                }).draw();
+
+
+
+            });
+
+
+            function loadInvoiceByCustomer() {
+                var customerId = $('#custid').val();
+                var t = $("#userstable").DataTable({
+                    "autoWidth": false,
+                    "scrollX": true,
+                    "initComplete": function (settings, json) {
+                        $('#userstable thead tr').css({ visibility: 'collapse' });
+                    },
+                    "ajax": {
+                        "url": "/Sale/getCustomerHistory",
+                        "type": "GET",
+                        "datatype": "json",
+                        "data": { 'customer_id': customerId, 'old_record': true },
+                    },
+
+                    "columns": [
+                        { "data": "Id" },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Sale/Details/' + full.Id + '">' + full.CustomerId + '</a>';
+                            }
+                        },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<input type="checkbox" class="invoice-checkbox" data-id="' + full.Id + '">';
+                            }
+                        },
+                        { "data": "ProjectLocation" },
+                        {
+                            "data": "SaleImage",
+                            "render": function (data, type, full, meta) {
+                                if (data) {
+                                    return '<img src="' + data + '" alt="Sale Image" style="width: 100px; height: auto;" />';
+                                } else {
+                                    return 'No Image';
+                                }
+                            }
+                        },
+                        { "data": "Amount" },
+                        { "data": "Discount" },
+                        { "data": "RevicedFromCustomer" },
+                        { "data": "Owe" },
+                        { "data": "InvoiceStatus" },
+                        { "data": "Description" },
+                        { "data": "CreatedDate" },
+                        { "data": "InvoiceNo" },
+
+                        {
+                            "render": function (data, type, full, meta) {
+                                //  return '<a  href="/Sale/InvoiceReport/' + full.Id + '">' + "Print" + '</a>' + ' | ' + '<a href="/Sale/InvoiceReportWithPaid/' + full.Id + '">' + "Paid" + '</a>';
+                                /*return '<a  href="/Sale/InvoiceReport/' + full.Id + '">' + "Print" + '</a>';*/
+                                return full && full.Id
+                                    ? '<input type="checkbox" class="invoice-checkbox" data-id="' + full.Id + '">'
+                                    : '';
+
+                            }
+                        },
+
+                    ],
+
+                    "columnDefs": [{ type: 'date', 'targets': [10] }],
+                    "bDestroy": true,
+                    "order": [[10, "desc"]],
+                });
+
+                t.on('order.dt search.dt', function () {
+                    t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+                }).draw();
+            };
+
+            $('#clear').click(function (e) {
+                $('#userstable').dataTable().fnDestroy();
+                $('#userstable').dataTable().fnClearTable();
+
+            })
+            const selectedIds = new Set();
+            $(document).ready(function () {
+                const baseRoute = "/Sale/InvoiceReport/";
+                let totalAmount = 0, totalDiscount = 0, totalReceived = 0, totalOwe = 0;
+
+                $(document).on('change', '.invoice-checkbox', function () {
+                    const row = $(this).closest('tr');
+                    const id = $(this).data('id');
+                    const amount = parseFloat(row.find('td:nth-child(5)').text()) || 0;
+                    const discount = parseFloat(row.find('td:nth-child(6)').text()) || 0;
+                    const received = parseFloat(row.find('td:nth-child(7)').text()) || 0;
+                    const owe = parseFloat(row.find('td:nth-child(8)').text()) || 0;
+
+                    if (this.checked) {
+                        selectedIds.add(id);
+                        totalAmount += amount;
+                        totalDiscount += discount;
+                        totalReceived += received;
+                        totalOwe += owe;
+                    } else {
+                        selectedIds.delete(id);
+                        totalAmount -= amount;
+                        totalDiscount -= discount;
+                        totalReceived -= received;
+                        totalOwe -= owe;
+                    }
+
+                    updateInputFields();
+                    updatePrintButton();
+
+                    if (selectedIds.size > 0) {
+                        $('#imageUploadSection').show();
+                    } else {
+                        $('#imageUploadSection').hide();
+                    }
+                });
+
+                function updateInputFields() {
+                    $('#labourCost').val(totalAmount.toFixed(2));
+                    $('#DiscountDollar').val(totalDiscount.toFixed(2));
+                    $('#total-balance').val(totalReceived.toFixed(2));
+                    $('#deposit').val(totalOwe.toFixed(2));
+                }
+                function updatePrintButton() {
+                    const idsArray = Array.from(selectedIds);
+                    const printButton = $('#printButton');
+
+                    if (idsArray.length > 0) {
+                        const form = $('<form>', {
+                            method: 'post',
+                            action: `/Sale/StoreIds`
+                        });
+
+                        const input = $('<input>', {
+                            type: 'hidden',
+                            name: 'ids',
+                            value: idsArray.join(',')
+                        });
+
+                        form.append(input);
+                        $('body').append(form);
+
+                        printButton.prop('disabled', false);
+                        printButton.off('click').on('click', function () {
+                            form.submit();
+                        });
+                    } else {
+                        printButton.prop('disabled', true);
+                    }
+                }
+                $('#resetButton').on('click', function () {
+                    selectedIds.clear();
+                    totalAmount = 0;
+                    totalDiscount = 0;
+                    totalReceived = 0;
+                    totalOwe = 0;
+                    updateInputFields();
+                    updatePrintButton();
+                    $('.invoice-checkbox').prop('checked', false);
+                    $('#imageUploadSection').hide();
+                });
+
+                updatePrintButton();
+            });
+
+            function ClearPreview() {
+                $(".imageBrowes").val('');
+                $("#description").text('');
+                $("#imgPreview").hide();
+                $("#targetImg").attr("src", "/Images/defaultimage.jpg");
+            }
+
+            function PreviewImage() {
+                var fileInput = document.getElementById("SaleImage");
+                var targetImg = document.getElementById("targetImg");
+                var filePath = document.getElementById("file-path");
+
+                if (fileInput.files && fileInput.files[0]) {
+                    var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+                    if (!allowedExtensions.exec(fileInput.files[0].name)) {
+                        alert("Please select a valid image file (JPG or PNG).");
+                        ClearPreview();
+                        return;
+                    }
+
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        targetImg.src = e.target.result;
+                    };
+                    filePath.value = fileInput.files[0].name;
+                    reader.readAsDataURL(fileInput.files[0]);
+                }
+            }
+
+            function UploadImage() {
+                var fileInput = $(".imageBrowes").get(0).files;
+
+                if (!fileInput || !fileInput[0]) {
+                    alert("Please select an image before uploading.");
+                    return;
+                }
+                // Ensure exactly one row is selected
+                if (selectedIds.size === 0) {
+                    alert("Please select a row before uploading.");
+                    return;
+                } else if (selectedIds.size > 1) {
+                    alert("Please select only one row to upload an image.");
+                    return;
+                }
+                var selectedId = Array.from(selectedIds)[0]; // Get the single selected ID
+                var data = new FormData();
+                data.append("ImageFile", fileInput[0]);
+                data.append("Id", selectedId); // Send the single selected ID to the server
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Sale/ImageUpload", // Your controller action URL
+                    data: data,
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        if (response.success) {
+                            alert("Image uploaded successfully!");
+                            ClearPreview();
+                        } else {
+                            alert(response.message || "Error uploading the image.");
+                        }
+                    },
+                    error: function (xhr) {
+                        alert(xhr.responseText || "Error uploading the image.");
+                    },
+                });
+            }
+            $(document).ready(function () {
+                $("#submitBtn").click(function () {
+                    var formData = {
+                        CustomerName: $("#cust").val(),
+                        CustomerLocation: $("#custLocation").val(),
+                        Description: $("#description").val(),
+                        UnitType: $("#unittype").val(),
+                        ColorCode: $("#colorcode").val(),
+                        Price: parseFloat($("#price").val()) || null,
+                        Quantity: parseInt($("#quantity").val()) || 0,
+                        InvoiceNo: $("#invoiceNo").val(),
+                        Date: $("#date").val() ? new Date($("#date").val()).toISOString() : null,
+                        Item: $("#item").val()
+                    };
+
+                    // Validate formData before sending (e.g., check required fields)
+                    if (!formData.CustomerName || !formData.InvoiceNo || !formData.Date) {
+                        alert("Please fill in all required fields.");
+                        return;
+                    }
+
+                    // Make an AJAX POST request
+                    $.ajax({
+                        type: "POST",
+                        url: "/Sale/Create", // Directly sending the data to Create
+                        data: formData,
+                        success: function (response) {
+                            if (response.success) {
+                                window.location.href = '/Sale/Create'; // Optionally redirect after successful processing
+                            } else {
+                                alert("Error processing data: " + response.message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.log("Error:", error);
+                        }
+                    });
+
+                });
+            });
+            </script>
+
+            @Scripts.Render("~/bundles/jqueryval")
+        }
+        }

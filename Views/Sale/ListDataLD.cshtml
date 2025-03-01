@@ -1,0 +1,574 @@
+﻿@using jotun.Models
+@using Newtonsoft.Json
+
+@{
+    var dataListJson = ViewBag.DataList as string;
+    List<ExcelData> dataList = null;
+
+    if (!string.IsNullOrEmpty(dataListJson))
+    {
+        dataList = JsonConvert.DeserializeObject<List<ExcelData>>(dataListJson);
+    }
+}
+<div style="margin: 15px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background-color: #f9f9f9; max-width: 500px;">
+    <div style="text-align: center;">
+        <h2 class="ml-4">Imported Data List</h2>
+    </div>
+</div>
+<div style="width: 80%; margin: 20px auto; display: flex; justify-content: flex-end; align-items: center; position: relative;">
+    <input type="text"
+           id="searchCustomerName"
+           placeholder="Search Customer Name"
+           style="width: 230px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; margin-right: 10px;" />
+
+    <input type="text"
+           id="searchJewelerName"
+           placeholder="Search Jeweler Name"
+           style="width: 230px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; margin-right: 10px;" />
+
+    <input type="text"
+           id="searchDate"
+           placeholder="Search Date (yyyy-mm-dd)"
+           style="width: 230px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; margin-right: 10px;" />
+
+    <button id="searchButton"
+            onclick="searchData()"
+            style="padding: 10px 15px; border: 1px solid #ccc; background-color: #007BFF; color: white; border-radius: 5px; font-size: 16px; cursor: pointer; margin-right: 10px;">
+        Search
+    </button>
+    <div id="loading" style="display: none;"></div>
+    <button id="addNewButton"
+            onclick="window.location.href='/Sale/ImportExcel';"
+            style="padding: 10px 15px; border: 1px solid #ccc; background-color: #28a745; color: white; border-radius: 5px; font-size: 16px; cursor: pointer;">
+        Add New
+    </button>
+</div>
+@if (dataList != null && dataList.Count > 0)
+{
+    <style>
+        /* General table styling */
+        .small-table {
+            width: 80%;
+            font-size: 15px;
+            margin: 0 auto;
+            margin-top: 40px;
+            border-collapse: collapse;
+            background-color: white;
+            border: 1px solid black;
+        }
+
+            /* Table header styling */
+            .small-table th {
+                padding: 15px;
+                font-size: 20px;
+                color: #000;
+                text-align: center;
+                background-color: #f4f4f4;
+                border: 1px solid #ccc;
+            }
+
+            /* Table data cell styling */
+            .small-table td {
+                padding: 10px 15px;
+                border: 1px solid #ddd;
+                text-align: center;
+            }
+
+        /* Image cell styling */
+        td.image-cell {
+            background-color: #f9f9f9;
+            width: 120px;
+            height: 120px;
+            padding: 0;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+            /* Image inside cell styling */
+            td.image-cell img {
+                max-width: 100%;
+                max-height: 100%;
+                width: 100px;
+                height: 100px;
+                display: block;
+                margin: 0 auto;
+                border-radius: 5px;
+                transition: transform 0.3s ease;
+            }
+
+                td.image-cell img:hover {
+                    transform: scale(1.1);
+                }
+
+        /* Modal container styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 400px;
+            height: auto;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+            .modal.show {
+                display: flex;
+            }
+
+        .modal-content {
+            width: 100%;
+            max-width: 300px;
+            margin: auto;
+            transform: scale(0.8);
+            opacity: 0;
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: white;
+            font-size: 30px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            transition: color 0.2s ease;
+        }
+
+            .close:hover,
+            .close:focus {
+                color: #f0f0f0;
+                text-decoration: none;
+            }
+
+        .clickable-image {
+            cursor: pointer;
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .clickable-image:hover {
+                transform: scale(1.1);
+                box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.3);
+            }
+
+        .modal-content img {
+            width: 100%;
+            max-height: 400px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
+            object-fit: contain;
+        }
+
+        .modal-content .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Buttons styling */
+        .modal-content .btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .modal-content .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+
+            .modal-content .btn-primary:hover {
+                background-color: #0056b3;
+                transform: scale(1.05);
+            }
+
+        .modal-content .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+            .modal-content .btn-danger:hover {
+                background-color: #b02a37;
+                transform: scale(1.05);
+            }
+    </style>
+
+    <table class="small-table">
+        <thead>
+            <tr>
+                <th colspan="3" style="text-align:center">រូបភាពនិងទិន្នន័យ</th>
+                <th>No</th>
+                <th>តម្លៃ</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (dataList != null && dataList.Count > 0)
+            {
+                string currentImagePath = null;
+
+                for (int i = 0; i < dataList.Count; i++)
+                {
+                    bool isNewGroup = !string.IsNullOrEmpty(dataList[i].ImagePath) && dataList[i].ImagePath != currentImagePath;
+
+                    if (isNewGroup)
+                    {
+                        currentImagePath = dataList[i].ImagePath;
+
+                        <!-- Image Group Row -->
+                        <tr class="image-group" data-image-path="@dataList[i].ImagePath">
+                            <td colspan="3" class="image-cell">
+                                <img src="@dataList[i].ImagePath" alt="Image" class="clickable-image" data-index="@i" data-image-path="@dataList[i].ImagePath" />
+                            </td>
+                            <td><strong>កាលបរិច្ឆេទ:</strong></td>
+                            <td>
+                                <span>@(dataList[i].Date.HasValue ? dataList[i].Date.Value.ToString("yyyy-MM-dd") : "N/A")</span>
+                            </td>
+                        </tr>
+
+                        <!-- Detailed Information Rows -->
+                        <tr>
+                            <td colspan="2"><span>ទំហំនិងចំនួនពេជ្រ</span></td>
+                            <td></td>
+                            <td><strong>ឈ្មោះអតិថិជន:</strong></td>
+                            <td><span>@dataList[i].CustomerName</span></td>
+                        </tr>
+                        <!-- Loop through Seeds and HeSeeds -->
+                        for (int j = 0; j < dataList.Count; j++)
+                        {
+                            if (dataList[j].ImagePath == currentImagePath)
+                            {
+                                <tr>
+                                    <td><span>@dataList[j].Seeds</span></td>
+                                    <td><span>@dataList[j].HeSeeds</span></td>
+                                    <td></td>
+                                    @if (j == 0)
+                                    {
+                                        <td><strong>ឈ្មោះជាង:</strong></td>
+                                        <td><span>@dataList[j].JewelerName</span></td>
+                                    }
+                                    @if (j == 1)
+                                    {
+                                        <td><strong>ប្រភេទគ្រឿងអលង្ការ:</strong></td>
+                                        <td><span>@dataList[j].Category</span></td>
+                                    }
+                                    @if (j == 2)
+                                    {
+                                        <td><strong>ពណ៍សំបក:</strong></td>
+                                        <td><span>@dataList[j].Color</span></td>
+                                    }
+                                    @if (j == 3)
+                                    {
+                                        <td><strong>ទំងន់:</strong></td>
+                                        <td><span>@dataList[j].Weight</span></td>
+                                    }
+                                    @if (j == 4)
+                                    {
+                                        <td><strong>ថ្លៃឈ្នួល:</strong></td>
+                                        <td><span>@dataList[j].LabourCost</span></td>
+                                    }
+                                    @if (j == 5)
+                                    {
+                                        <td><strong>ប្រវែង:</strong></td>
+                                        <td><span>@dataList[j].LabourDesignCost</span></td>
+                                    }
+                                </tr>
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="13" class="text-center">No data has been imported with this content yet.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-center mt-5">No data import yet.Please go to import file (Add new)!</p>
+}
+<tbody id="dataTableBody">
+    <!-- Dynamic content will be inserted here -->
+</tbody>
+
+<div id="imageModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="" alt="Modal Image" id="modalImage" style="max-width: 100%; height: auto;" data-customer-id="" />
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button id="editBtn" class="btn btn-primary">Edit</button>
+            <button id="detailBtn" class="btn btn-success">Detail</button>
+            <button id="deleteBtn" class="btn btn-danger">Delete</button>
+        </div>
+    </div>
+</div>
+}
+<script>
+ document.addEventListener("DOMContentLoaded", function () {
+    // Modal and Button References
+    const modal = document.getElementById("imageModal");
+    const modalImage = document.getElementById("modalImage");
+    const closeBtn = document.querySelector(".modal .close");
+    const editBtn = document.getElementById("editBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
+    const detailBtn = document.getElementById("detailBtn"); 
+
+    let currentCustomerId = null;
+    let currentSaleLabourId = null;
+
+    const dataList = @Html.Raw(ViewBag.DataList ?? "[]");
+
+    if (!dataList || dataList.length === 0) {
+        console.error("No data found in dataList.");
+        return;
+    }
+     function renderTable(dataList) {
+         const tableBody = document.querySelector("tbody");
+         tableBody.innerHTML = ""; // Clear the existing table content
+
+         if (dataList && dataList.length > 0) {
+             let currentImagePath = null;
+
+             dataList.forEach((item, index) => {
+                 const isNewGroup = item.ImagePath && item.ImagePath !== currentImagePath;
+
+                 if (isNewGroup) {
+                     currentImagePath = item.ImagePath;
+
+                     // Image Group Row
+                     const imageGroupRow = `
+                    <tr class="image-group" data-image-path="${item.ImagePath}">
+                        <td colspan="3" class="image-cell">
+                            <img src="${item.ImagePath}" alt="Image" class="clickable-image" data-index="${index}" data-image-path="${item.ImagePath}" />
+                        </td>
+                        <td><strong>កាលបរិច្ឆេទ:</strong></td>
+                        <td>${item.Date ? new Date(item.Date).toISOString().split("T")[0] : "N/A"}</td>
+                    </tr>
+                `;
+                     tableBody.innerHTML += imageGroupRow;
+
+                     // Detailed Information Rows
+                     const detailRows = `
+                    <tr>
+                        <td colspan="2"><span>ទំហំនិងចំនួនពេជ្រ</span></td>
+                        <td></td>
+                        <td><strong>ឈ្មោះអតិថិជន:</strong></td>
+                        <td>${item.CustomerName || "N/A"}</td>
+                    </tr>
+                    <tr>
+                        <td><a>គ្រាប់ដាំ</a></td>
+                        <td><a>គ្រាប់កាត់</a></td>
+                        <td></td>
+                        <td><strong>ដាំហើយ:</strong></td>
+                        <td>${item.FinishWeight || "N/A"}</td>
+                    </tr>
+                `;
+                     tableBody.innerHTML += detailRows;
+
+                     // Seeds Rows based on ImagePath
+                     dataList.filter(x => x.ImagePath === currentImagePath).forEach((seedItem, seedIndex) => {
+                         const seedRow = `
+                        <tr>
+                            <td>${seedItem.Seeds || ""}</td>
+                            <td>${seedItem.HeSeeds || ""}</td>
+                            <td></td>
+
+                            ${seedIndex === 0
+                                 ? `<td><strong>ឈ្មោះជាង:</strong></td><td>${seedItem.JewelerName || "N/A"}</td>`
+                                 : ""}
+                            ${seedIndex === 1
+                                 ? `<td><strong>ប្រភេទគ្រឿងអលង្ការ:</strong></td><td>${seedItem.Category || "N/A"}</td>`
+                                 : ""}
+                            ${seedIndex === 2
+                                 ? `<td><strong>ពណ៍សំបក:</strong></td><td>${seedItem.Color || "N/A"}</td>`
+                                 : ""}
+                            ${seedIndex === 3
+                                 ? `<td><strong>ទំងន់:</strong></td><td>${seedItem.Weight || "N/A"}</td>`
+                                 : ""}
+                            ${seedIndex === 4
+                                 ? `<td><strong>ថ្លៃឈ្នួល:</strong></td><td>${seedItem.LabourCost || "N/A"}</td>`
+                                 : ""}
+                            ${seedIndex === 5
+                                 ? `<td><strong>ប្រវែង:</strong></td><td>${seedItem.LabourDesignCost || "N/A"}</td>`
+                                 : ""}
+                        </tr>
+                    `;
+                         tableBody.innerHTML += seedRow;
+                     });
+                 }
+             });
+
+             // After rendering the table, re-attach the click event handlers for images
+             attachImageClickHandler();
+         } else {
+             // Render fallback message when no data is available
+             tableBody.innerHTML = `
+            <tr>
+                <td colspan="13" class="text-center">No data has been imported with this content yet.</td>
+            </tr>
+        `;
+         }
+     }
+    // Function to attach click handler to images
+    function attachImageClickHandler() {
+        const clickableImages = document.querySelectorAll(".clickable-image");
+
+        clickableImages.forEach((image) => {
+            image.addEventListener("click", function () {
+                const imagePath = image.getAttribute("data-image-path");
+
+                if (!imagePath) {
+                    console.error("No image path found.");
+                    alert("No image path found.");
+                    return;
+                }
+
+                console.log("Image clicked:", imagePath);
+
+                // Find Data Associated with Clicked Image
+                const currentImageData = dataList.find((item) => item.ImagePath === imagePath);
+                if (!currentImageData) {
+                    console.error("No data found for this image.");
+                    alert("No data found for this image.");
+                    return;
+                }
+
+                // Set CustomerId and Update Buttons
+                currentCustomerId = currentImageData.CustomerId;
+                currentSaleLabourId = currentImageData.Id;
+                editBtn.setAttribute("data-customer-id", currentCustomerId);
+                deleteBtn.setAttribute("data-customer-id", currentCustomerId);
+                editBtn.setAttribute("data-labour-id", currentSaleLabourId);
+                deleteBtn.setAttribute("data-labour-id", currentSaleLabourId);
+                detailBtn.setAttribute("data-customer-id", currentCustomerId);
+
+                modalImage.src = imagePath;
+                modal.style.display = "flex";
+                modal.classList.add("show");
+            });
+        });
+    }
+
+    // Close Modal Functionality
+    closeBtn.addEventListener("click", closeModal);
+    modal.addEventListener("click", function (event) {
+        if (event.target === modal) closeModal();
+    });
+
+    function closeModal() {
+        modal.classList.remove("show");
+        modal.style.display = "none";
+        modalImage.src = ""; // Clear the image
+    }
+
+    // Edit Button Functionality
+    editBtn.addEventListener("click", function () {
+        const customerId = this.getAttribute("data-customer-id");
+        const saleLabourId = this.getAttribute("data-labour-id");
+        console.log("Edit button clicked. CustomerId:", customerId, "SaleLabourId:", saleLabourId);
+
+        if (customerId && saleLabourId) {
+            const editUrl = `/Sale/EditSaleLabour/${customerId},${saleLabourId}`;
+            window.location.href = editUrl;
+        } else {
+            alert("CustomerId or SaleLabourId is missing. Cannot navigate to Edit.");
+        }
+    });
+
+    // Delete Button Functionality
+    deleteBtn.addEventListener("click", function () {
+        const customerId = this.getAttribute("data-customer-id");
+        const saleLabourId = this.getAttribute("data-labour-id");
+        console.log("Delete button clicked. CustomerId:", customerId);
+
+        if (customerId && saleLabourId) {
+            const deleteUrl = `/Sale/DeleteSaleLabour/${customerId},${saleLabourId}`;
+            window.location.href = deleteUrl;
+        } else {
+            alert("CustomerId or SaleLabourId is missing. Cannot navigate to delete.");
+        }
+    });
+
+    // Detail Button Functionality
+    detailBtn.addEventListener("click", function () {
+        const customerId = this.getAttribute("data-customer-id");
+        console.log("Detail button clicked. CustomerId:", customerId);
+
+        if (customerId) {
+            const detailUrl = `/Sale/DetailSaleLabour/${customerId}`;
+            window.location.href = detailUrl;
+        } else {
+            alert("CustomerId is missing. Cannot navigate to Detail.");
+        }
+    });
+    renderTable(dataList);
+
+    // Search function
+    function searchData() {
+        const customerName = document.getElementById('searchCustomerName').value.trim();
+        const jewelerName = document.getElementById('searchJewelerName').value.trim();
+        const searchDate = document.getElementById('searchDate').value.trim();
+        const searchButton = document.getElementById('searchButton');
+        const loadingIndicator = document.getElementById('loading');
+        const queryString = `?searchCustomerName=${encodeURIComponent(customerName)}&searchJewelerName=${encodeURIComponent(jewelerName)}&searchDate=${encodeURIComponent(searchDate)}`;
+
+        searchButton.disabled = true;
+        searchButton.textContent = 'Searching...';
+        loadingIndicator.style.display = 'block';
+
+        fetch(`/Sale/SearchListDataLD${queryString}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);  
+                }
+                return response.json();
+            })
+            .then(data => {
+                renderTable(data);
+            })
+            .catch(error => {
+                console.error('Error fetching search data:', error);
+            })
+            .finally(() => {
+                searchButton.disabled = false;
+                searchButton.textContent = 'Search';
+                loadingIndicator.style.display = 'none';
+            });
+    }
+    document.getElementById('searchButton').addEventListener('click', function (event) {
+        event.preventDefault();
+        searchData();
+    });
+});
+</script>

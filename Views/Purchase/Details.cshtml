@@ -1,0 +1,249 @@
+﻿@model jotun.Models.tblPurchaseBySupplierViewModel
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@*<script src="~/Scripts/bootstrap.min.js"></script>*@
+@using (Html.BeginForm("Details", "Purchase", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Detail Purchase </h4>
+        <hr />
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary("", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.ID)
+            <div class="modal fade" id="myModal" tabindex="-1" ​​​​​​​​​​​​​​​​data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" ​​​​​​​​​​​​​>
+                <div class="modal-dialog modal-sm" role="document">
+
+                    <div class="modal-content">
+
+
+                        <div class="modal-body">
+                            Are you sure you want to delete?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                            <input type="reset" value="Delete" i class="btn btn-danger" onclick="window.location='/Purchase/Delete/@Html.ValueFor(model => model.ID)';" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12" style="background-color:transparent">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6" style="background-color:transparent">
+                                    <div class="form-group ">
+                                        @Html.Label("Date", new { @class = "col-md-12 control-label" })
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.CreatedDate, new { @class = " form-control", @readonly = "readonly" })
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            <span style=" float:left">
+                                                @Html.Label("Supplier Name", new { @class = "col-md-12 control-label disabled" })
+                                            </span>
+                                            <span style="color:red; float:left; font-size:20px">*</span>
+                                        </span>
+
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.SupplierId, new { @class = " form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                            <div class="row">
+                                <div class="col-md-6" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            <span style=" float:left">
+                                                @Html.Label("Shipper Name", new { @class = "col-md-12 control-label disabled" })
+                                            </span>
+                                            <span style="color:red; float:left; font-size:20px">*</span>
+                                        </span>
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.ShipperId, new { @class = " form-control", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("ShipperAmount", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.ShipperAmount, new { id = "ShipperAmount", @class = "form-control", @readonly = "readonly" })
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                            <div class="row">
+                                <div class="col-md-12" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Description", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+                                        <div class="col-md-12">
+                                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control ", @readonly = "readonly" })
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="row table-responsive col-md-12" style="padding:0 0 0 20px">
+                            <table id="clientlist" class="table table-bordered" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Product</th>
+                                        <th>Unit Type</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Discount</th>
+                                        <th>Discount($)</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int count = 1;
+                                        foreach (var item in Model.GetDetail)
+                                        {
+                                            <tr>
+                                                <td>@count</td>
+                                                <td>@item.ProductId</td>
+                                                <td>@item.UnitTypeId</td>
+                                                <td>@item.Quantity</td>
+                                                <td>@item.Cost</td>
+                                                <td>@item.Discount</td>
+                                                <td>@item.Discountdolar</td>
+                                                <td>@item.Total</td>
+                                            </tr>
+                                            count++;
+                                        }
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="6" style="text-align:right !important;">Sub Total($): </th>
+                                        <th colspan="2">
+                                            @Html.TextBoxFor(m => m.PurchaseAmount, new { @class = "form-control", @readonly = "readonly" })
+
+                                        </th>
+                                    </tr>
+
+                                    <tr>
+                                        <th colspan="6" style="text-align:right !important;">Owe($): </th>
+                                        <th colspan="2">
+                                            @Html.TextBoxFor(m => m.Owe, new { id = "owe", @class = "form-control", @readonly = "readonly" })
+
+                                        </th>
+                                    </tr>
+
+
+
+                                    <tr>
+                                        <th colspan="6" style="text-align:right !important;">DiscountAmount($): </th>
+                                        <th colspan="2">
+                                            @Html.TextBoxFor(m => m.Discount, new { id = "Discount", @class = "form-control", @readonly = "readonly" })
+
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th colspan="6" style="text-align:right !important;">Deposit($):</th>
+                                        <th colspan="2">
+                                            @Html.TextBoxFor(m => m.Deposit, new { id = "Deposit", @class = "form-control", @autocomplete = "off", @readonly = "readonly" })
+
+
+                                        </th>
+                                    </tr>
+
+                                    <tr>
+                                        <th colspan="6" style="text-align:right !important;">New Received($):</th>
+                                        <th colspan="2">
+                                            @Html.TextBoxFor(m => m.Deposit1, "0", new { id = "Deposit1", @class = "form-control", @autocomplete = "off" })
+
+
+                                        </th>
+                                    </tr>
+
+
+
+
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-9">
+                    <input type="submit" value="Save" class="btn btn-info" />
+
+                    <input hidden type="reset" value="Edit" id="kosalid" class="btn btn-info" onclick="window.location='/Purchase/Edit/@Html.ValueFor(model => model.ID)';" />
+                    <input type="reset" value="Delete" id="kosalid" class="btn btn-danger" data-toggle="modal" data-target="#myModal" />
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Purchase';" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+    @section Scripts{
+
+        <script>
+            $('#Deposit1').keyup(function () {
+                var txtVal2 = this.value;
+                if (txtVal2 > parseFloat($('#owe').val())) {
+                    alert("New Recived must less than Owe!");
+                    $('#Deposit1').val('0');
+                    formate_two_digit();
+                }
+            });
+            formate_two_digit();
+            function formate_two_digit() {
+                var purchase = $('#PurchaseAmount').val();
+                var deposite = $('#Deposit').val();
+                var Discount = $('#Discount').val();
+                var shipping = $('#ShipperAmount').val();
+                var owe = $('#owe').val();
+                if (deposite == "") {
+                    deposite = 0;
+                }
+                if (owe == "") {
+                    owe = 0;
+                }
+
+                $('#PurchaseAmount').val(parseFloat(purchase).toFixed(2));
+                $('#Deposit').val(parseFloat(deposite).toFixed(2));
+                $('#Discount').val(parseFloat(Discount).toFixed(2));
+                $('#owe').val(parseFloat(owe).toFixed(2));
+                $('#ShipperAmount').val(parseFloat(shipping).toFixed(2));
+                
+                
+            }
+            
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+   
+    }
+}

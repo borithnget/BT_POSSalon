@@ -1,0 +1,467 @@
+﻿@model jotun.Models.SaleViewModels
+@{
+    ViewBag.Title = "EditNew";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("EditNew", "Sale", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Edit Sale </h4>
+        <hr />
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+            @*@Html.ValidationSummary("", new { @class = "text-danger" })*@
+            @Html.HiddenFor(model => model.Id)
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+
+                        <div class="modal-body">
+                            Are you sure you want to delete?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                            <input type="reset" value="Delete" i class="btn btn-danger" onclick="window.location='/Sale/Delete/@Html.ValueFor(model => model.Id)';" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-8" style="background-color:transparent">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-md-6" style="background-color:transparent">
+                                    <div class="form-group ">
+                                        @Html.Label("Date", new { @class = "col-md-12 control-label" })
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.CreatedDate, new { @class = " form-control", @readonly = "readonly" })
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Customer", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.CustomerName, new { id = "cust", @class = "form-control CustomerName" })
+                                            <input @*type="hidden"*@ id="custid" value="@Model.CustomerId" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6" style="background-color:transparent">
+
+                                </div>
+
+                                <div class="col-md-6" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Customer Location", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+
+                                        <div class="col-md-12">
+                                            @*@Html.TextBoxFor(m => m.CustomerLocation, new { @class = " form-control", })*@
+
+                                            <input type="text" id="loc_id" name="loc_id" class="form-control loc_id" value="@Model.LocationText" />
+                                            <input @*type="hidden"*@ id="location" value="@Model.CustomerLocation" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                            <div class="row">
+                                <div class="col-md-12" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Description", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+                                        <div class="col-md-12">
+                                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control ", })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+            <div class="row table-responsive" style="padding:0 0 0 20px">
+                <table id="clientlist" class="table table-bordered" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Color Code</th>
+                            <td>Unit Type</td>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+
+                            <td>
+                                <input class="form-control" type="text" id="itemName" onchange="Check()" />
+                                <input type="hidden" id="itemid" />
+                                <span class="error" id="st1">ItemName required</span>
+                            </td>
+                            <td>
+                                <input class="form-control" type="text" id="color_code" name="color_code" />
+                            </td>
+                            <td>
+                                @Html.DropDownList("UnitNameEng", new SelectList(" "), "select unit", new { @id = "StateId", @class = "form-control stateclass", onchange = "Check()" })
+                                <input type="hidden" id="StateId" />
+                                <span class="error" id="st2">UnitName required</span>
+                            </td>
+
+                            <td hidden>
+                                <input readonly class="form-control" type="text" id="idunit" />
+
+                            </td>
+                            <td hidden>
+                                <input readonly class="form-control" type="text" id="unitid" />
+                            </td>
+                            <td hidden>
+                                <input class="form-control" type="text" id="itempid" />
+                            </td>
+
+                            <td hidden>
+                                <input class="form-control" type="text" id="qtyunit" />
+                            </td>
+                            <td>
+                                <input class="form-control" type="text" id="quantity" autocomplete="off" onchange="Check()" name='quantity' size=20 maxlength=6 onkeypress="return isNumberKey(event)" />
+                                <input type="hidden" id="quantity" />
+                                <span class="error" id="st3">Quantity required</span>
+                            </td>
+                            <td>
+                                <input class="form-control" type="text" id="rate" name="rate" onchange="Check()" />
+                            </td>
+                            <td>
+                                <label readonly class="form-control" type="text" id="totalss" />
+                            </td>
+                            <td>
+                                <input type="button" id="add" value="Add" class="btn btn-success addd" disabled />
+                            </td>
+
+                        </tr>
+                        @{
+                            int count = 1;
+                            foreach (var item in Model.GetDetail)
+                            {
+
+
+                                <tr>
+                                    <td>
+                                        <input hidden type="text" class='form-control contect-person' value="@item.ProductIdn" />
+
+                                        <input readonly type="text" class='form-control ' value="@item.ProductId" />
+                                    </td>
+                                    <td>
+                                        <input name="color_code" type="text" class='form-control color_code' value="@item.color_code" />
+                                    </td>
+                                    <td>
+                                        <input name="UnitTypeId" type="text" class='form-control Quantity' value="@item.UnitTypeId" />
+                                    </td>
+
+                                    <td>
+                                        <input name="Quantity" type="text" class='form-control Quantity' value="@item.Quantity" />
+                                    </td>
+
+                                    <td>
+                                        <input name="actual_price" type="text" class='form-control actual_price' value="@item.actual_price" />
+
+                                    </td>
+                                    <td class="totals">
+                                        <input readonly type="text" class='form-control ' value="@item.Total" />
+                                    </td>
+
+                                    <td><input type="button" value="Remove" class="btn btn-danger" onclick="deleteRow(this)" /></td>
+                                </tr>
+                                count++;
+
+                            }
+                        }
+                    </tbody>
+
+                    <tfoot>
+                        <tr>
+                            <th colspan="5" style="text-align:right !important;">Sub Total($): </th>
+                            <th colspan="1">
+                                @Html.TextBoxFor(m => m.Amount, new { id = "Total", @class = "form-control", @readonly = "readonly" })
+
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <th colspan="5" style="text-align:right !important;">Owe($): </th>
+                            <th colspan="1">
+                                @Html.TextBoxFor(m => m.Owe, new { id = "Owe", @class = "form-control", @readonly = "readonly" })
+
+                            </th>
+                        </tr>
+
+
+
+                        <tr>
+                            <th colspan="5" style="text-align:right !important;">Discount($):</th>
+                            <th colspan="1">
+                                @*@Html.TextBoxFor(m => m.Discount, new { id = "Discount", @class = "form-control", @readonly = "readonly" })*@
+                                @Html.TextBoxFor(m => m.Discount, new { id = "Discount", @class = "form-control", @type = "number", @min = "0", @step = "0.01", @value = "0" })
+
+                            </th>
+                        </tr>
+
+
+                        <tr>
+                            <th colspan="5" style="text-align:right !important;">Old Received From Customer($):</th>
+                            <th colspan="1">
+                                @Html.TextBoxFor(m => m.RevicedFromCustomer, new { id = "RevicedFromCustomer", @class = "form-control", @readonly = "readonly" })
+                            </th>
+                        </tr>
+                        @if (Convert.ToDecimal(Model.Owe) > 0)
+                        {
+                            <tr>
+                                <th colspan="5" style="text-align:right !important;">New Received From Customer($):</th>
+                                <th colspan="1">
+                                    @Html.TextBoxFor(m => m.RevicedFromCustomer1, new { id = "RevicedFromCustomer1", @class = "form-control", @autocomplete = "off", @type = "number", @step = "0.01", @value = "0" })
+                                </th>
+                            </tr>
+                        }
+
+                    </tfoot>
+
+                </table>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-9">
+                    @*@if (Convert.ToDecimal(Model.Owe) > 0)
+                        {
+                            <input type="submit" id="btnsave" value="Save" class="btn btn-info" />
+                        }*@
+                    <input type="submit" id="btnsave" value="Save" class="btn btn-info" />
+                    <input type="reset" value="Delete" id="kosalid" class="btn btn-danger" data-toggle="modal" data-target="#myModal" />
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Sale';" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.css" />*@
+
+    @section Scripts {
+        <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+        <script src="~/Scripts/jquery-ui.js"></script>
+        <link rel="stylesheet" href="~/Content/jquery-ui.css" />
+        <script>
+            $('#Owe').val((parseFloat($('#Total').val()) - parseFloat($('#Discount').val()) - parseFloat($('#RevicedFromCustomer').val())).toFixed(2));
+            $('#subTotal').click(function () {
+
+                var subTotal = 0;
+                var totals = $('.totals');
+                for (var i = 0; i < totals.length; i++) {
+                    var total = totals[i].value;
+                    subTotal = subTotal + Number(total);
+                }
+                $('#subTotal').text(subTotal);
+            });
+            $('#RevicedFromCustomer1').keyup(function () {
+                var own = (parseFloat($('#Total').val()) - parseFloat($('#RevicedFromCustomer').val()) - parseFloat($('#Discount').val()));
+                var txtVal2 = this.value;
+                if (txtVal2 > own) {
+                    alert("New Recived must less than Owe!");
+                    $('#RevicedFromCustomer1').val('0');
+                }
+            });
+
+            $('#Discount').keyup(function () {
+                if ($('#Discount').val() == "") {
+                    $('#Discount').val('0');
+                }
+                if ($('#RevicedFromCustomer1').val() == "") {
+                    var own = parseFloat($('#Total').val()) - parseFloat($('#RevicedFromCustomer').val());
+                }
+                else {
+                    var own = parseFloat($('#Total').val()) - parseFloat($('#RevicedFromCustomer').val()) - parseFloat($('#RevicedFromCustomer1').val());
+                }
+                var txtVal2 = this.value;
+                if (txtVal2 > own) {
+                    alert("New Received must less than Owe!");
+                    $('#Discount').val('0');
+                    $('#Owe').val(parseFloat($('#Total').val()) - parseFloat($('#Discount').val()) - parseFloat($('#RevicedFromCustomer').val()));
+
+                }
+                else {
+                    //$('#Owe').val(parseFloat($('#Owe').val()) - parseFloat($('#Discount').val()));
+                    $('#Owe').val((parseFloat($('#Total').val()) - parseFloat($('#Discount').val()) - parseFloat($('#RevicedFromCustomer').val())).toFixed(2));
+
+                }
+
+
+            });
+
+
+            $('#btnsave').click(function () {
+                var isAllValid = true;
+
+                if (orderItems.length == 0) {
+                    alert('Please add order item!');
+                    isAllValid = false;
+                }
+                if ($('#cust').val().trim() == '') {
+                    isAllValid = false;
+                    $('#cust').siblings('span.error').css('visibility', 'visible');
+
+                }
+
+                else {
+                    if ($('#custid').val().trim() == '') {
+                        isAllValid = false;
+                        alert("Please select Customer in list!");
+                    }
+                    $('#cust').siblings('span.error').css('visibility', 'hidden');
+
+                }
+
+                if ($('#loc_id').val().trim() == '') {
+                    isAllValid = false;
+                    $('#loc_id').siblings('span.error').css('visibility', 'visible');
+                }
+                else {
+                    $('#loc_id').siblings('span.error').css('visibility', 'hidden');
+                }
+
+
+                var GetDetail = [];
+                var contactpersons = $('.contect-person');
+                var contactphones = $('.phone');
+                var color_codes = $('.color_code');
+                var contactpositions = $('.position');
+                //var contactquantity = $('.quantity');
+                var actual_prices = $('.rate');
+                var UnitEng = $('.UnitEng');
+                var UNit = $('.UNit');
+
+
+                if (contactpersons.length > 0) {
+                    for (var i = 0; i < contactpersons.length; i++) {
+                        item_element = {};
+                        item_element.ProductId = contactpersons[i].value;
+                        item_element.color_code = color_codes[i].value;
+                        item_element.UnitTypeId = UnitEng[i].value;
+                        item_element.UNit = UNit[i].value;
+                        item_element.ProductName = contactphones[i].value;
+                        item_element.Quantity = contactpositions[i].value;
+                        item_element.actual_price = actual_prices[i].value;
+                        GetDetail.push(item_element);
+                    }
+                }
+
+
+
+                //Save if valid
+                if (isAllValid) {
+                    var data = {
+                        //ID: $('#orderNo').val().trim(),
+                        Amount: $('#subTotal').text(),
+                        CreatedDate: $('#orderDate').val().trim(),
+                        CustomerId: $('#custid').val().trim(),
+                        customer_location: $('#location').val().trim(),
+                        LocationText: $('#loc_id').val().trim(),
+                        RevicedFromCustomer: $('#RevicedFromCustomer').val().trim(),
+                        Discount: $('#Discount').val().trim(),
+                        Description: $('#description').val().trim(),
+                        GetDetail: GetDetail
+
+                    }
+                    console.log(data);
+                    $(this).val('Please wait...');
+
+                    $.ajax({
+                        url: '/Sale/EditNew',
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        dataType: "JSON",
+                        contentType: "application/json",
+                        success: successFunc,
+                        error: errorFunc
+                    });
+                    function successFunc(data, status) {
+                        window.location = '/Sale'
+                    }
+                    function errorFunc() {
+                        window.location = '/Sale'
+                    }
+                }
+            });
+
+            $(document).ready(function () {
+                autocompleteLocation();
+                $(function () {
+                    $('#cust').autocomplete({
+
+                        source: '@Url.Action("getCust", "Sale")',
+                        select: function (event, ui) {
+                            var selectedObj = ui.item;
+
+                            var id = selectedObj.id;
+                            var pn = selectedObj.label;
+                            var status = selectedObj.status;
+                            //console.log(selectedObj);
+                            $('#custid').val(pn);
+                            $('#custid').val(id);
+                            $('#location').val("");
+                            $('#loc_id').val("");
+
+                            autocompleteLocation($('#custid').val());
+                            //$('#history_block').show();
+
+                            //    $('#cus_history').attr("href", "/Sale/CustomerHistory/" + $('#custid').val() + "?old_record=" + status);
+
+                        }
+                    })
+                });
+                function autocompleteLocation(customer) {
+                    if (customer == "undefined" || customer == null || customer == "") {
+                        customer = $('#custid').val().trim();
+                    }
+                    //alert(customer);
+                    $('#loc_id').autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                url: "/Sale/get_Location/",
+                                dataType: "json",
+                                data: { term: request.term, customer_id: customer },
+                                success: function (data) {
+                                    response(data);
+                                }
+                            });
+                        },
+                        select: function (event, ui) {
+                            var selectedObj = ui.item;
+                            var id = selectedObj.id;
+                            var pn = selectedObj.label;
+                            $('#location').val(pn);
+                            $('#location').val(id);
+                        }
+                    })
+                }
+            });
+        </script>
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+}
+

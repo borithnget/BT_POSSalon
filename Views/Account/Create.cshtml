@@ -1,0 +1,192 @@
+﻿@model jotun.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Create";
+}
+
+@*<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="/resources/demos/style.css">
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+
+
+@using (Html.BeginForm("Create", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Add New User</h4>
+        <hr />
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary("", new { @class = "text-danger" })
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            <span style=" float:left">
+                                @Html.Label("Email", new { @class = "col-md-12 control-label" })
+                            </span>
+                            <span style="color:red; float:left; font-size:20px">*</span>
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @autocomplete = "off", id = "Username1", onkeyup = "UserCheck1()" })
+                                @*@Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger Status1" })*@
+                                <span class="Status1"></span>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            <span style=" float:left">
+                                @Html.Label("UserName", new { @class = "col-md-12 control-label" })
+                            </span>
+                            <span style="color:red; float:left; font-size:20px">*</span>
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", id = "Username", onkeyup = "UserCheck()", @autocomplete = "off" })
+                                @*@Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger Status" })*@
+                                <span class="Status"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            <span style=" float:left">
+                                @Html.Label("Password", new { @class = "col-md-12 control-label" })
+                            </span>
+                            <span style="color:red; float:left; font-size:20px">*</span>
+                            <div class="col-md-12">
+                                @Html.PasswordFor(m => m.Password, new { @class = "form-control", @autocomplete = "off" })
+                                @*@Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })*@
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            <span style=" float:left">
+                                @Html.Label("ConfirmPassword", new { @class = "col-md-12 control-label" })
+                            </span>
+                            <span style="color:red; float:left; font-size:20px">*</span>
+                            <div class="col-md-12">
+                                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control", @autocomplete = "off" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            @Html.Label("User Role", new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @*@Html.DropDownList("Name")*@
+                                @*            @Html.DropDownList("UserRoles", (SelectList)ViewBag.Name, " ")*@
+                                @Html.DropDownList("UserRoles", (SelectList)ViewBag.Name, new { @class = "form-control" })
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-9">
+                    <input type="submit" class="btn btn-primary kkkk" value="Register" />
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Account';" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+
+        <script>
+    function UserCheck() {
+        $.post("@Url.Action("CheckUsernameAvailability", "Account")",
+            {
+                userdata: $("#Username").val()
+            },
+        function (data) {
+            if (data == 0) {
+                $("#Username").css("border-color", "Green");
+                $('.kkkk').removeAttr('disabled');
+                $(".Status").html('');
+            }
+            else {
+                $(".Status").html('<font color="Red">That name is taken.Try Another.</font>');
+                $("#Username").css("border-color", "Red");
+                $('.kkkk').attr('disabled', 'disabled');
+            }
+        });
+            }
+
+        function UserCheck1() {
+        $.post("@Url.Action("CheckUsernameAvailability1", "Account")",
+            {
+                userdata: $("#Username1").val()
+            },
+        function (data) {
+            if (data == 0) {
+                $("#Username1").css("border-color", "Green");
+                $('.kkkk').removeAttr('disabled');
+                $(".Status1").html('');
+            }
+            else {
+                $(".Status1").html('<font color="Red">That Email is taken.Try Another.</font>');
+                $("#Username1").css("border-color", "Red");
+                $('.kkkk').attr('disabled', 'disabled');
+            }
+        });
+            }
+
+        </script>
+        
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

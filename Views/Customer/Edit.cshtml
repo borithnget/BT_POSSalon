@@ -1,0 +1,382 @@
+﻿@model jotun.Models.CustomerViewModels
+@{
+    ViewBag.Title = "Edit";
+}
+
+@*<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+
+
+@using (Html.BeginForm("Edit", "Customer", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Edit Customer</h4>
+        <hr />
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.Id)
+            @Html.HiddenFor(model => model.CreatedDate)
+
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group ">
+                            @Html.Label("Date Updated", new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @Html.LabelFor(m => m.UpdatedDate, DateTime.Now.ToString("dd-MMM-yyyy"), new { @class = " form-control", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            @Html.Label("Customer No", new { @class = "col-md-12 control-label disabled" })
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.CustomerNo, new { @class = "form-control getAutoCustomerNo", @readonly = "readonly" })
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            <span style=" float:left">
+                                @Html.Label("Customer Name", new { @class = "col-md-12 control-label disabled" })
+                            </span>
+                            <span style="color:red; float:left; font-size:20px">*</span>
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.CustomerName, new { @class = "form-control", @autocomplete = "off", id = "Username" })
+                                @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
+                                <p id="Status" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            <span style=" float:left">
+                                @Html.Label("Phone Number", new { @class = "col-md-12 control-label disabled" })
+                            </span>
+                            <span style="color:red; float:left; font-size:20px">*</span>
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", @autocomplete = "off", onkeyup = "UserCheck()", id = "ph" })
+                                @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                                <p id="Status1" />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    @*<div class="col-md-4" style="background-color:transparent">
+                            <div class="form-group">
+                                @Html.Label("Gender", new { @class = "col-md-12 control-label" })
+                                <div class="col-md-12">
+                                    @Html.TextBoxFor(m => m.Gender, new { @class = "form-control" })
+
+                                </div>
+                            </div>
+                        </div>*@
+
+
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            @Html.Label("Gender", new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @Html.DropDownList("Gender", new List<SelectListItem>{
+
+                                     new SelectListItem{ Text="Male", Value="Male"},
+                                     new SelectListItem{ Text="Female", Value="Female"},
+                                     new SelectListItem{ Text="Other", Value="Other"},
+                                     }, "--- Select ---", new { @class = "form-control" }
+                                     )
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent">
+
+                        <div class="form-group">
+                            @Html.Label("Project Location", new { @class = "col-md-12 control-label" })
+                            <div class="col-md-12">
+                                @*@Html.TextBoxFor(m => m.ProjectLocation, new { @class = "form-control", @autocomplete = "off" })*@
+                                <table style="margin-top:15px" id="project_location_table" class="table" cellpadding="0" cellspacing="0" align="center">
+                                    @*<tbody>
+                                        @{
+                                            int count = 0;
+                                            if (count == Model.locations.Count - 1)
+                                            {
+                                                foreach (var l in Model.locations)
+                                                {
+                                                    string rowId = count.ToString();
+                                                    <tr id="@rowId">
+                                                        <td>
+                                                            <input class="form-control" type="text" id="locations" name="locations" autocomplete="off" value="@l.location" />
+
+                                                        </td>
+                                                        <td style="width:30px !important;">
+                                                            @if (count == Model.locations.Count - 1)
+                                                            {
+                                                                <button type="button" onclick="addTableRow(this)" class="btn btn-sm btn-circle btn-outline-info mr-5 mb-5"><i class="fa fa-plus"></i></button>
+
+
+                                                            }
+                                                            else
+                                                            {
+                                                                <button type="button" onclick="removeTableRow(this)" class="btn btn-sm btn-circle btn-outline-danger mr-5 mb-5"><i class="fa fa-trash"></i></button>
+
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                    count++;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr id="1">
+                                                    <td>
+                                                        <input class="form-control" type="text" id="locations" name="locations" autocomplete="off" />
+
+                                                    </td>
+                                                    <td style="width:30px !important;">
+
+                                                        <button type="button" onclick="addTableRow(this)" class="btn btn-sm btn-circle btn-outline-info mr-5 mb-5"><i class="fa fa-plus"></i></button>
+
+
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>*@
+                                    <tbody>
+                                        @{
+                                            int count = 0;
+                                            if (Model.locations.Count() > 0)
+                                            {
+                                                foreach (var l in Model.locations)
+                                                {
+
+                                                    string rowId = count.ToString();
+                                                    <tr id="@rowId">
+                                                        <td>
+                                                            <input class="form-control" type="text" id="locations" name="locations" autocomplete="off" value="@l.location" />
+
+                                                        </td>
+                                                        <td style="width:30px !important;">
+                                                            @if (count == Model.locations.Count - 1)
+                                                            {
+                                                                <button type="button" onclick="addTableRow(this)" class="btn btn-sm btn-circle btn-outline-info mr-5 mb-5"><i class="fa fa-plus"></i></button>
+
+
+                                                            }
+                                                            else
+                                                            {
+                                                                <button type="button" onclick="removeTableRow(this)" class="btn btn-sm btn-circle btn-outline-danger mr-5 mb-5"><i class="fa fa-trash"></i></button>
+
+                                                            }
+                                                        </td>
+                                                     
+                                                    </tr>
+                                                    count++;
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                <tr id="1">
+                                                    <td>
+                                                        <input class="form-control" type="text" id="locations" name="locations" autocomplete="off" />
+
+                                                    </td>
+                                                    <td style="width:30px !important;">
+
+                                                        <button type="button" onclick="addTableRow(this)" class="btn btn-sm btn-circle btn-outline-info mr-5 mb-5"><i class="fa fa-plus"></i></button>
+
+
+                                                    </td>
+                                                </tr>
+                                            }
+
+
+
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-4" style="background-color:transparent">
+                        <div class="form-group">
+                            @Html.Label("Noted", new { @class = "col-md-3 control-label" })
+                            <div class="col-md-12">
+                                @Html.TextAreaFor(m => m.Noted, new { @class = "form-control", @autocomplete = "off" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" style="background-color:transparent" hidden>
+                        <div class="form-group">
+                            @Html.Label("Status", new { @class = "col-md-3 control-label" })
+                            <div class="col-md-12">
+                                @Html.TextBoxFor(m => m.Status, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-9">
+                    <input type="submit" class="btn btn-primary kkkk" value="Save" />
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Customer';" />
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    @section Scripts {
+        <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+        <link href="~/Content/vendor/jquery/jquery-ui.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-3.4.1.js"></script>
+        <script src="~/Scripts/jquery-ui.js"></script>
+        <script type="text/javascript">
+            function initialRow(rowIdNumber, rowIndex) {
+                $('#project_location_table tr').eq(rowIndex).after("" +
+                    "<tr id='row" + rowIdNumber + "'>" +
+
+                    "<td><input class='form-control' type='text' id='locations'  name='locations' autocomplete = 'off'  /></td>" +
+                    '<td style="width:30px !important;"><button type="button" onclick="addTableRow(this)" class="btn btn-sm btn-circle btn-outline-info mr-5 mb-5"><i class="fa fa-plus"></i></button></td>' +
+                    "</tr>"
+                );
+
+            }
+            function addTableRow(row) {
+                var index = row.parentNode.parentNode.rowIndex;
+                var rowId = $('#project_location_table tr').eq(index).attr('id').replace(/[^\d]/g, '');
+                initialRow(Number(rowId) + 1, index);
+                $('#project_location_table tr').eq(index).find('td:nth-child(2)').html('<button type="button" onclick="removeTableRow(this)" class="btn btn-sm btn-circle btn-outline-danger mr-5 mb-5"><i class="fa fa-trash"></i></button>');
+
+            }
+            function removeTableRow(row) {
+                var arrItemId = [];
+                var index = row.parentNode.parentNode.rowIndex;
+                //var isLastChild = $('#service_order_table tr').eq(index).find('td:nth-child(10) button').length == 0 ? false : true;
+                var isLastChild = index == 1 ? true : false;
+                var rowId = $('#project_location_table tr').eq(index).attr('id');
+                var countTableRow = $('#project_location_table tr').length;
+                for (var i = 1; i <= countTableRow; i++) {
+                    var rId = $('#project_location_table tr').eq(i).attr('id');
+                    if (rId != undefined)
+                        arrItemId.push(rId);
+                }
+                if (arrItemId.length == 1)
+                    return;
+                document.getElementById('project_location_table').deleteRow(index);
+                if (isLastChild)
+                    $('#project_location_table tr#' + arrItemId[arrItemId.length - 2]).find('td:nth-child(2)').html("<button type='button' class='btn btn-sm btn-outline-primary' onclick='addTableRow(this)'><i class='fa fa-plus' aria-hidden='true'></i></button>");
+                else {
+                    var deleted_index = arrItemId.indexOf(rowId);
+                    arrItemId.splice(deleted_index, 1);
+                }
+
+            }
+
+        </script>
+
+        @*<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+            <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+            <link rel="stylesheet" href="/resources/demos/style.css">
+            <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+            <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
+        <script>
+            $(function () {
+                $("#SelectedDate").datepicker({ disabled: true, }).datepicker("setDate", new Date());
+
+            });
+
+             function UserCheck() {
+        $.post("@Url.Action("CheckUsernameAvailability", "Customer")",
+            {
+                userdata: $("#ph").val()
+            },
+        function (data) {
+            if (data == 0) {
+                $("#ph").css("border-color", "Green");
+                $('.kkkk').removeAttr('disabled');
+                $("#Status").html('');
+                $("#Status1").html('');
+            }
+            else {
+                $("#Status").html('<font color="Red">This Customer is already use!</font>');
+                $("#Status1").html('<font color="Red">Please Add New Number!</font>');
+                $("#ph").css("border-color", "Red");
+                $('.kkkk').attr('disabled', 'disabled');
+            }
+        });
+    }
+
+
+
+
+        </script>
+
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

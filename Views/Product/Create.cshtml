@@ -1,0 +1,777 @@
+﻿@model jotun.Models.ProductViewModels
+@{
+    ViewBag.Title = "Create";
+
+}
+
+@using (Html.BeginForm("Create", "Product", FormMethod.Post, new { @class = "form-horizontal", role = "form", @enctype = "multipart/form-data" }))
+{
+
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4>Add New Product</h4>
+        <hr />
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+
+            <div class="form-group" hidden>
+                @Html.Label("Id", new { @class = "col-md-3 control-label" })
+                <div class="col-md-9" readonly="readonly">
+                    @*@Html.TextBoxFor(m => m.Id, new { disabled = "disabled", @class = "form-control getAutoCustomerId " })*@
+                    @Html.TextBoxFor(m => m.Id, new { @class = "form-control getAutoProductId ", @readonly = "readonly" })
+
+                </div>
+            </div>
+
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-8" style="background-color:transparent">
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6" style="background-color:transparent">
+                                <div class="form-group ">
+                                    @Html.Label("Type", new { @class = "col-md-12 control-label" })
+                                    <div class="col-md-12">
+                                        @*@Html.LabelFor(m => m.CreatedDate, DateTime.Now.ToString("dd-MMM-yyyy"), new { @id = "createdate", @class = " form-control", @readonly = "readonly" })*@
+                                        <select class="form-control" id="Type" name="Type">
+                                            <option value="0">Product</option>
+                                            <option value="1">Service</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-6" style="background-color:transparent; ">
+                                <div class="row">
+
+                                    <div class="col-12">
+                                        <span style=" float:left">
+                                            @Html.Label("Category Name", new { @class = "col-md-12 control-label" })
+                                        </span>
+                                        <span style="color:red; float:left; font-size:20px">*</span>
+
+                                        <div class="form-group">
+                                            <div>
+                                                <div class="col-md-12 col-sm-12" style="float:left">
+                                                    @Html.DropDownList("CategoryName", (SelectList)ViewBag.CategoryNamesEng, "--- Select Category ---", new { @id = "categoryname", @class = "form-control categoryeng"})
+                                                    <input type="hidden" id="categoryname" />
+                                                    <span class="error" id="st5">CategoryName required</span>
+                                                </div>
+
+
+                                            </div>
+                                            <div>
+                                                @Html.ValidationMessageFor(model => model.CategoryName, "", new { @class = "text-danger", @style = "margin-left:15px" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                        <div class="row">
+                            <div class="col-md-6" style="background-color:transparent;">
+                                <div class="form-group">
+                                    <span style="float:left">
+                                        @Html.Label("Product Name", new { @class = "col-md-12 control-label disabled" })
+                                    </span>
+                                    <span style="color:red; float:left; font-size:20px">*</span>
+                                    <div class="col-md-12">
+                                        @Html.TextBoxFor(m => m.ProductName, new { @class = "form-control", @id = "productname", @autocomplete = "off" })
+                                        <span id="Status"></span>
+                                        <input type="hidden" id="productname" />
+                                        <span class="error" id="st3">Product Name required</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6" style="background-color:transparent;">
+                                <div class="form-group">
+                                    <span style="float:left">
+                                        @Html.Label("Price", new { @class = "col-md-12 control-label disabled" })
+                                    </span>
+                                    <span style="color:red; float:left; font-size:20px">*</span>
+                                    <div class="col-md-12">
+                                        @Html.TextBoxFor(m => m.PriceInStock, new { @id = "PriceInStock", @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.PriceInStock, "", new { @class = "text-danger" })
+                                        <span class="error" id="st10">Quantity required</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                        <div class="row">
+                            <div class="col-md-6" style="background-color:transparent;">
+                                <div class="form-group">
+
+                                    <span style=" float:left">
+                                        @Html.Label("Default Unit Type", new { @class = "col-md-12 control-label disabled" })
+                                    </span>
+                                    <span style="color:red; float:left; font-size:20px">*</span>
+
+                                    <div class="col-md-12">
+                                        @Html.DropDownList("UnitName", (SelectList)ViewBag.UnitNamesEng, "--- Select Unit ---", new { @id = "Unitid", @class = "form-control Unitid" })
+                                        <input type="hidden" id="Unitid" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6" style="background-color:transparent;">
+                                <div class="form-group">
+
+                                    <span style=" float:left">
+                                        @Html.Label("Quantity In Stock (Unit)", new { @class = "col-md-12 control-label disabled" })
+                                    </span>
+                                    <span style="color:red; float:left; font-size:20px">*</span>
+
+                                    <div class="col-md-12">
+                                        @Html.TextBoxFor(m => m.QuantityInStock, new { @id = "quantityinstock", @class = "form-control ", type = "number", step = "1.00", pattern = "[0-9]+([.][0-9]+)?", min = "1", max = "99999999", onchange = "Check1()", @autocomplete = "off", maxlength = 8 })
+                                        <input type="hidden" id="quantityinstock" />
+                                        <span class="error" id="st4">QuantityInStock required</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--<div class="form-group" style="background-color:transparent; margin-top:-15px">
+        <div class="row">-->
+                    <!-- Size Section -->
+                    <!--<div class="col-md-6" style="background-color:transparent;">
+        <div class="form-group">
+            <div class="d-flex align-items-center mb-2">
+                @Html.Label("Size", new { @class = "col-md-12 control-label disabled mb-0" })
+                <span style="color:red; font-size:20px; margin-left:5px"></span>
+            </div>
+            <div class="col-md-12">
+                <div class="form-check d-flex align-items-center">
+                    <input class="form-check-input me-2 all" type="checkbox" id="selectAllSizes" onclick="toggleAll('size', this)" />
+                    <label class="form-check-label" for="selectAllSizes"><strong>Select All Sizes</strong></label>
+                </div>
+                <div class="form-check d-flex align-items-center">
+                    <input class="form-check-input me-2 size" type="checkbox" value="Small" id="sizeSmall" />
+                    <label class="form-check-label" for="sizeSmall">Small</label>
+                </div>
+                <div class="form-check d-flex align-items-center">
+                    <input class="form-check-input me-2 size" type="checkbox" value="Medium" id="sizeMedium" />
+                    <label class="form-check-label" for="sizeMedium">Medium</label>
+                </div>
+                <div class="form-check d-flex align-items-center">
+                    <input class="form-check-input me-2 size" type="checkbox" value="Large" id="sizeLarge" />
+                    <label class="form-check-label" for="sizeLarge">Large</label>
+                </div>
+            </div>
+        </div>
+    </div>-->
+                    <!-- Sugar Level Section -->
+                    <!--<div class="col-md-6" style="background-color:transparent;">
+                <div class="form-group">
+                    <div class="d-flex align-items-center mb-2">
+                        @Html.Label("Sugar Level", new { @class = "col-md-12 control-label disabled mb-0" })
+                        <span style="color:red; font-size:20px; margin-left:5px"></span>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input me-2 all" type="checkbox" id="selectAllSugars" onclick="toggleAll('sugar', this)" />
+                            <label class="form-check-label" for="selectAllSugars"><strong>Select All Sugar Levels</strong></label>
+                        </div>
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input me-2 sugar" type="checkbox" value="No Sugar" id="sugarNo" />
+                            <label class="form-check-label" for="sugarNo">No Sugar</label>
+                        </div>
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input me-2 sugar" type="checkbox" value="Less Sugar" id="sugarLess" />
+                            <label class="form-check-label" for="sugarLess">Less Sugar</label>
+                        </div>
+                        <div class="form-check d-flex align-items-center">
+                            <input class="form-check-input me-2 sugar" type="checkbox" value="Full Sugar" id="sugarFull" />
+                            <label class="form-check-label" for="sugarFull">Full Sugar</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>-->
+
+                </div>
+                <div class="col-md-4" style="background-color:transparent; ">
+                    <div class="col-md-8">
+                        <div>
+                            @Html.TextBoxFor(m => m.ProductImage, new { @id = "productImage", @class = "form-control imageBrowes", @Type = "file", @name = "file_name", @onchange = "theimage();" })
+                            @*<input type="file" class="form-control" id="productImage" name="file_name" onchange="theimage();">*@
+                            <input hidden type="text" class="form-control" name="file_path" id="file-path">
+
+
+                        </div>
+
+                        <div id="imgPreview" class="thumbnail">
+                            <img src="@Url.Content("~/Images/defaultimage.png")" style=" background-color:white; width: 100%;height: auto;" class="img-responsive" id="targetImg" />
+                            <div class="caption">
+                                <a href="#" onclick="ClearPreview()"><i class="glyphicon glyphicon-trash"></i></a>
+                                <span id="descriptionimage"></span>
+                            </div>
+                            <br />
+                            <br />
+
+                            @*   <a href="#" class="btn btn-default kosalmoreclick" onclick="Uploadimage()">Upload</a>*@
+                        </div>
+
+                    </div>
+                    <div class="col-md-2 thumbnail" id="uploadedImage"></div>
+                </div>
+            </div>
+        </div>
+        @*<button id="add" class="btn btn-success my-3">Add to list</button>
+        <table class="table table-bordered" id="productTable">
+            <thead class="thead-gray">
+                <tr>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Product Image</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>*@
+        <div class="form-group">
+            <input type="button" id="submit" class="btn btn-success" value="Save" />
+            @*<input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Coffee/Index';" />*@
+        </div>
+    </div>
+
+    <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+    @section Scripts {
+        <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+        <link href="~/Content/vendor/jquery/jquery-ui.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-1.12.4.js"></script>
+        <script src="~/Scripts/jquery-ui.js"></script>
+        <link href="~/Content/vendor/jquery/jquery-ui.css" rel="stylesheet" />
+        <script src="~/Scripts/datatables.min.js"></script>
+        <script>
+            function toggleAll(type, masterCheckbox) {
+                $("." + type).prop('checked', $(masterCheckbox).is(':checked'));
+            }
+            function theimage() {
+
+                var filename = document.getElementById("productImage").files[0].name;
+                document.getElementById('file-path').value = filename;
+            }
+
+
+            $(function () {
+                
+
+                $(".hiddenclass").hide();
+                //$("#SelectedDate").datepicker({ dateFormat: 'dd/mm/yy' });
+                $("#SelectedDate").datepicker({ disabled: true, }).datepicker("setDate", new Date());
+
+            });
+
+            var orderItems = [];
+            var productAttributes = [];
+            var createDate = new Date().toISOString();
+            var uploadedImagePath = "";
+            var base64ImagePreview = ""; 
+
+            $(document).ready(function () {
+                $('#add').click(function () {
+                    var Id = generateRandomId();
+                    var productName = $('#productname').val().trim();
+                    var categoryName = $('#categoryname').val().trim();
+                    var priceInStock = $('#PriceInStock').val().trim();
+                    var productImage = $('#imgPreview').attr('src');
+
+                    var selectedSizes = $(".form-check-input.size:checked").map(function () {
+                        return {
+                            ProductId: Id, 
+                            AttributeName: "Size",
+                            AttributeValue: $(this).val()
+                        };
+                    }).get();
+
+                    var selectedSugars = $(".form-check-input.sugar:checked").map(function () {
+                        return {
+                            ProductId: Id, 
+                            AttributeName: "Sugar",
+                            AttributeValue: $(this).val()
+                        };
+                    }).get();
+
+                    var isValid = true;
+
+                    // Validation
+                    if (!productName) {
+                        $('#st3').show();
+                        isValid = false;
+                    } else {
+                        $('#st3').hide();
+                    }
+
+                    if (!categoryName) {
+                        $('#st5').show();
+                        isValid = false;
+                    } else {
+                        $('#st5').hide();
+                    }
+
+                    if (!priceInStock) {
+                        $('#st10').show();
+                        isValid = false;
+                    } else {
+                        $('#st10').hide();
+                    }
+
+                    //if (selectedSizes.length === 0) {
+                    //    alert("Please select at least one size.");
+                    //    isValid = false;
+                    //}
+                    //if (selectedSugars.length === 0) {
+                    //    alert("Please select at least one sugar level.");
+                    //    isValid = false;
+                    //}
+
+                    if (isValid) {
+                        //productAttributes = [...selectedSizes, ...selectedSugars];
+                        orderItems.push({
+                            Id: Id,
+                            productName: productName,
+                            categoryName: categoryName,
+                            priceInStock: priceInStock,
+                            productImagePath: uploadedImagePath,
+                            productImageBase64: base64ImagePreview,
+                            ProductAttributes: productAttributes
+                        });
+
+                        GeneratedItemsTable();
+
+                        $('#productname, #categoryname, #PriceInStock').val('');
+                        $('#imgPreview').attr('src', '').hide();
+                        uploadedImagePath = "";
+                        base64ImagePreview = "";
+                        $('.imageBrowes').val('');
+                        $('.form-check-input.size, .form-check-input.sugar,.form-check-input.all').prop('checked', false);
+                    }
+                });
+
+                $('#submit').click(function () {
+                    //if (!orderItems.length) {
+                    //    alert('Please add at least one product!');
+                    //    return;
+                    //}
+
+                    //var data = {
+                    //    CreateDate: createDate,
+                    //    Products: orderItems.map(function (item) {
+                    //        return {
+                    //            Id: item.Id,
+                    //            ProductName: item.productName,
+                    //            CategoryName: item.categoryName,
+                    //            PriceInStock: item.priceInStock,
+                    //            ProductImage: item.productImagePath,
+
+
+                    //        };
+                    //    }),
+                    //    GetDetail: orderItems.map(function (item) {
+                    //        return {
+                    //            ProductId: item.Id,
+                    //            categoryName: item.categoryName,
+                    //            priceInStock: item.priceInStock
+                    //        };
+                    //    }),
+                    //    ProductAttributes: orderItems.map(function (item) {
+                    //        return item.ProductAttributes.map(function (attr) {
+                    //            return {
+                    //                ProductId: attr.ProductId,
+                    //                AttributeName: attr.AttributeName,
+                    //                AttributeValue: attr.AttributeValue
+                    //            };
+                    //        });
+                    //    }).flat()
+                    //};
+
+
+                    var data = {
+                        Id: $('.getAutoProductId').val().trim(),
+                        //CreateDate: $('#createdate').val().trim(),
+                        //ProductCode: $('#productcode').val().trim(),
+                        ProductName: $('#productname').val().trim(),
+                        //QuantityInStockRetail: $('#QuantityInStockRetail').val().trim(),
+                        QuantityInStock: $('#quantityinstock').val().trim(),
+                        CategoryId: $('#categoryname').val().trim(),
+                        //Description: $('#description').val().trim(),
+                        ProductImage: $('#file-path').val(),
+                        UnitId: $('#Unitid').val(),
+                        isService: $('#Type').val(),
+                        PriceInStock: $('#PriceInStock').val()
+                        //quantity_alert: $('#quantity_alert').val(),
+                        //GetDetail: GetDetail
+
+                    }
+                    console.log(data);
+                    //return;
+                    $(this).val('Saving...').prop('disabled', true);
+
+                    $.ajax({
+                        url: '/Product/Create',
+                        type: "POST",
+                        data: JSON.stringify(data),
+                        dataType: "JSON",
+                        contentType: "application/json",
+                        success: function (response) {
+                            if (response.success) {
+                                alert('Products saved successfully.');
+                                //window.location.href = '/Coffee/Index';;
+                                window.location.reload();
+                            } else {
+                                alert('Error: ' + response.message);
+                            }
+                        },
+                        error: function (xhr) {
+                            console.error(xhr.responseText);
+                            alert('Error saving products.');
+                            $('#submit').val('Save').prop('disabled', false);
+                        }
+                    });
+                });
+
+                function GeneratedItemsTable() {
+                    var lastItem = orderItems[orderItems.length - 1];
+                    var attributesText = lastItem.ProductAttributes.map(attr => `${attr.AttributeName}: ${attr.AttributeValue}`).join(", ");
+
+                    $('#productTable tbody').append(`
+        <tr>
+            <td><input type="text" class="form-control" value="${lastItem.productName}" readonly /></td>
+            <td><input type="text" class="form-control" value="${lastItem.categoryName}" readonly /></td>
+            <td><input type="text" class="form-control" value="${lastItem.priceInStock}" readonly /></td>
+            <td><img src="${lastItem.productImageBase64}" alt="Product Image" style="width: 50px; height: auto;" /></td>
+            <td><button class="btn btn-danger removeProductBtn">Remove</button></td>
+        </tr>
+    `);
+                    $('#productTable tbody').append(`
+        <tr class="attributes-row">
+            <td colspan="5">
+                <input type="text" class="form-control" value="${attributesText}" readonly />
+            </td>
+        </tr>
+    `);
+                    $('.removeProductBtn').off('click').on('click', function () {
+                        var rowIndex = $(this).closest('tr').index();
+                        orderItems.splice(rowIndex, 1);
+                        $(this).closest('tr').next().remove(); 
+                        $(this).closest('tr').remove();
+                    });
+                }
+                $(".imageBrowes").change(function () {
+                    var file = this.files[0];
+                    if (file) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            base64ImagePreview = e.target.result;
+                            $("#targetImg").attr('src', base64ImagePreview).show();
+                        };
+                        reader.readAsDataURL(file);
+                        $("#imgPreview").show();
+                        //ReadImage(File[0]);
+
+                        Uploadimage();
+                    }
+                });
+
+                var ReadImage = function (file) {
+
+                    var reader = new FileReader;
+                    var image = new Image;
+
+                    reader.readAsDataURL(file);
+                    reader.onload = function (_file) {
+
+                        image.src = _file.target.result;
+                        image.onload = function () {
+
+                            var height = this.height;
+                            var width = this.width;
+                            var type = file.type;
+                            var size = ~~(file.size / 1048576) + " MB";
+
+                            $("#targetImg").attr('src', _file.target.result);
+                            $("#descriptionimage").text("Size:" + size + ", " + height + "X " + width + ", " + type + "");
+                            $("#imgPreview").show();
+                        }
+                    }
+
+                }
+
+
+                var ClearPreview = function () {
+                    $(".imageBrowes").val('');
+                    $("#description").text('');
+                    $("#imgPreview").hide();
+
+                }
+
+                var Uploadimage = function () {
+
+                    var file = $(".imageBrowes").get(0).files;
+
+                    var data = new FormData;
+                    data.append("ImageFile", file[0]);
+                    data.append("ProductName", "SamsungA8");
+
+                    $.ajax({             
+                        url: '@Url.Action("ImageUpload", "Product")',
+                        type: "Post",
+                        data: data,
+                        contentType: false,
+                        processData: false,
+                        success: function (imgID) {
+                            
+                            $("#uploadedImage").append('<img src="/Images/ImageRetrieve?imgID=' + imgID + '" class="img-responsive thumbnail" style="display: none;/>');
+                            //ClearPreview();
+                            //$("#uploadedImage").append('<img src="/UploadedImage/' + response + '" class="img-responsive thumbnail"/>');
+                        }
+
+                    })
+                }
+
+                $('.getAutoProductCo').val('Co-P' + generateRandomCode());
+                $('.getAutoProductId').val(generateRandomId());
+
+                function generateRandomCode() {
+                    return (
+                        randomDigits(3) + randomChar("ABCDEFGHIJKLMNOPQRSTUVWXYZ") + randomDigits(2) + '-' + randomDigits(3)
+                    );
+                }
+
+                function generateRandomId() {
+                    return (
+                        randomChar("zyxwvutsrqpnmlkjihgfedcba") +
+                        randomChar("123456789") +
+                        randomDigits(1) +
+                        randomChar("abcdefghijklmnopqrstuvwxyz") + '-' +
+                        randomChar("zyxwvutsrqpnmlkjihgfedcba") +
+                        randomChar("123456789") +
+                        randomDigits(1) +
+                        randomChar("abcdefghijklmnopqrstuvwxyz") + '-' +
+                        randomDigits(4)
+                    );
+                }
+
+                function randomDigits(length) {
+                    return Array.from({ length }, () => Math.floor(Math.random() * 10)).join('');
+                }
+
+                function randomChar(chars) {
+                    return chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+            });
+        </script>
+        <script>
+         function UserCheck() {
+                $.post("@Url.Action("CheckUsernameAvailability", "Product")",
+            {
+                userdata: $("#productname").val()
+            },
+        function (data) {
+            if (data == 0) {
+                $("#productname").css("border-color", "Green");
+                $('.kkkk').removeAttr('disabled');
+                $("#Status").html('');
+                $("#st3").html('');
+
+            }
+            else {
+                isAllValid = false;
+                $("#Status").html('<font color="Red">That name is taken.Try Another.</font>');
+                $("#st3").html('');
+                $("#productname").css("border-color", "Red");
+                $('.kkkk').attr('disabled', 'disabled');
+            }
+            if ($("#productname").val().trim() != "") {
+                $("#st3").html('');
+                 $("#productname").css("border-color", "Green");
+            }
+            else {
+                $("#st3").html('<font color="Red">Product Name required</font>');
+                 $("#productname").css("border-color", "Red");
+            }
+
+        });
+    }
+        </script>
+        <script>
+            function isNumberKey(evt) {
+                var charCode = (evt.which) ? evt.which : event.keyCode
+                if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46)
+                    return false;
+                else {
+                    var len = document.getElementById("cost").value.length;
+                    var index = document.getElementById("cost").value.indexOf('.');
+
+                    if (index > 0 && charCode == 46) {
+                        return false;
+                    }
+                    if (index > 0) {
+                        var CharAfterdot = (len + 1) - index;
+                        if (CharAfterdot > 3) {
+                            return false;
+                        }
+                    }
+
+                }
+                return true;
+            }
+            function isNumberKey11(evt) {
+                var charCode = (evt.which) ? evt.which : event.keyCode
+                if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46)
+                    return false;
+                else {
+                    var len = document.getElementById("price").value.length;
+                    var index = document.getElementById("price").value.indexOf('.');
+
+                    if (index > 0 && charCode == 46) {
+                        return false;
+                    }
+                    if (index > 0) {
+                        var CharAfterdot = (len + 1) - index;
+                        if (CharAfterdot > 3) {
+                            return false;
+                        }
+                    }
+
+                }
+                return true;
+            }
+            function Check() {
+                if ($('#unitname').val().trim() != '') {
+                    $("#unitname").css("border-color", "Green");
+                    $("#st").html('');
+                }
+                else {
+                    $("#st").html('<font color="Red">Unitname required</font>');
+                    $("#unitname").css("border-color", "Red");
+
+                }
+                if ($('#cost').val().trim() != '') {
+                    $("#cost").css("border-color", "Green");
+                    $("#st1").html('');
+                }
+                else {
+                    $("#st1").html('<font color="Red">Cost required</font>');
+                    $("#cost").css("border-color", "Red");
+
+                }
+                if ($('#price').val().trim() != '') {
+                    $("#price").css("border-color", "Green");
+                    $("#st2").html('');
+                }
+                else {
+                    $("#st2").html('<font color="Red">Price required</font>');
+                    $("#price").css("border-color", "Red");
+
+                }
+                if ($('#categoryname').val().trim() != '') {
+                    $('#categoryname').css("border-color", "Green");
+                    $("#st5").html('');
+                }
+                else {
+                    $("#st5").html('<font color="Red">CategoryName required</font>');
+                    $("#categoryname").css("border-color", "Red");
+
+                }
+                if ($('#unitname').val().trim() && $('#cost').val().trim() && $('#price').val().trim() != '') {
+
+                    $('.bbb').removeAttr('disabled');
+
+
+                }
+
+            }
+            $(document).ready(function () {
+                $('#price').keyup(function () {
+                    if ($('#unitname').val().trim() && $('#cost').val().trim() && $('#price').val().trim() != '') {
+                        $('.bbb').prop('disabled', false);
+                    } else {
+                        $('.bbb').prop('disabled', true);
+                    }
+                });
+            });
+            $(document).ready(function () {
+                $('#cost').keyup(function () {
+                    if ($('#unitname').val().trim() && $('#cost').val().trim() && $('#price').val().trim() != '') {
+                        $('.bbb').prop('disabled', false);
+                    } else {
+                        $('.bbb').prop('disabled', true);
+                    }
+                });
+            });
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }
+
+}
+
+<style>
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+
+    .container td {
+        vertical-align: top;
+    }
+
+    .tablecontainer table {
+        width: 100%;
+        border-collapse: collapse;
+        border-top: 1px solid #BFAEAE;
+        border-right: 1px solid #BFAEAE;
+    }
+
+    .tablecontainer th {
+        border-bottom: 2px solid #BFAEAE !important;
+    }
+
+    .tablecontainer th, .tablecontainer td {
+        text-align: left;
+        border-left: 1px solid #BFAEAE;
+        padding: 5px;
+        border-bottom: 1px solid #BFAEAE;
+    }
+
+    .ui-widget {
+        font-size: 12px !important;
+    }
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

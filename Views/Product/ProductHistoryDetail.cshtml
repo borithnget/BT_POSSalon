@@ -1,0 +1,55 @@
+﻿@model jotun.Models.ProductHistoryViewModel
+
+<div style="background-color:#e9ecef; padding:15px">
+    <h4>Product History Detail</h4>
+    <div class="container">
+        <form>
+            <div class="row">
+                <!-- Column 1 -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="ProductCode"><strong>Product Code:</strong></label>
+                        <input type="text" class="form-control" id="ProductCode" value="@Model.ProductCode" readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ProductName"><strong>Product Name:</strong></label>
+                        <input type="text" class="form-control" id="ProductName" value="@Model.ProductName" readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="LastAction"><strong>Last Action:</strong></label>
+                        <input type="text" class="form-control" id="LastAction" value="@Model.LastAction" readonly />
+                    </div>
+                </div>
+
+                <!-- Column 2 -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="LastModified"><strong>Last Modified:</strong></label>
+                        <input type="text" class="form-control" id="LastModified" value="@Model.LastModified" readonly />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ModifiedBy"><strong>Modified By:</strong></label>
+                        <input type="text" class="form-control" id="ModifiedBy" value="@Model.ModifiedBy" readonly />
+                    </div>
+                </div>
+            </div>
+        </form>
+        <style>
+            .btn-spacing {
+                margin-right: 10px;
+            }
+        </style>
+
+        <div class="form-group">
+            <div class="d-flex justify-content-start">
+                <form action="@Url.Action("Delete", new { id = Model.ProductCode })" method="post" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                    <button type="submit" class="btn btn-danger btn-spacing">Delete</button>
+                </form>
+                <a href="@Url.Action("ProductHistory", "Product")" class="btn btn-secondary btn-spacing">Cancel</a>
+            </div>
+        </div>
+    </div>
+</div>

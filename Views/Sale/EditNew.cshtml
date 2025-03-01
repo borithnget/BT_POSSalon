@@ -1,0 +1,1246 @@
+﻿@model jotun.Models.SaleViewModels
+
+@{
+    /**/
+
+    ViewBag.Title = "Edit";
+
+}
+<p hidden>@ViewBag.message</p>
+<style>
+    #printerDiv iframe {
+        position: absolute;
+        top: -1000px;
+    }
+</style>
+
+@using (Html.BeginForm("EditNew", "Sale", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+
+
+    <div style="background-color:#e9ecef; padding:15px;">
+        <h4> Edit Sale </h4>
+        <hr />
+        <div id="divPDF">
+            <div id="printerDiv"><iframe id="frmPDF"></iframe></div>
+        </div>
+        <div class="center-block" style="background-color:transparent">
+            @Html.AntiForgeryToken()
+            @*@Html.ValidationSummary("", new { @class = "text-danger" })*@
+            @Html.HiddenFor(model => model.Id)
+
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-md-12" style="background-color:transparent">
+                        <div class="form-group">
+                            <div class="row">
+                                <div hidden class="col-md-6" style="background-color:transparent">
+                                    <div class="form-group ">
+                                        @Html.Label("ID", new { @class = "col-md-12 control-label" })
+                                        <div class="col-md-12">
+                                            @Html.TextBoxFor(m => m.Id, new { id = "orderNo", @class = "form-control  Id", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3" style="background-color:transparent">
+                                    <div class="form-group ">
+                                        @Html.Label("Date", new { @class = "col-md-12 control-label" })
+                                        <div class="col-md-12">
+                                            @Html.LabelFor(m => m.CreatedDate, DateTime.Now.ToString("dd-MMM-yyyy"), new { id = "orderDate", @class = " form-control CreatedDate", @readonly = "readonly" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <div class="row">
+                                                <div class="form-group row col-md-12">
+                                                    <span style=" float:left; margin-left:15px">
+                                                        @Html.Label("Customer Name", new { @class = "col-md-12 control-label disabled" })
+                                                    </span>
+                                                    <span style="color:red; float:left; font-size:20px">*</span>
+                                                    <div class="col-md-10" style="padding:0 0 0 30px">
+                                                        @Html.TextBoxFor(m => m.CustomerName, new { id = "cust", @class = "form-control CustomerName", onchange = "Check()" })
+                                                        <input type="hidden" id="custid" value="@Model.CustomerId" />
+                                                        <span class="error" id="st">CustomerName required</span>
+                                                    </div>
+                                                    <div class="col-md-1">
+                                                        <button data-toggle="modal" data-target="#myModal" type="button" id="button-add-new-client" class="btn btn-primary"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <div class="col-md-12" style="">
+                                            <div class="row">
+                                                <div class="form-group row col-md-12">
+                                                    <span style=" float:left; margin-left:15px">
+                                                        <label style="margin-left:8px  ">Customer Location</label>
+                                                    </span>
+                                                    <span style="color:red; float:left; font-size:20px">*</span>
+
+                                                    <div class="col-md-10" style="padding:0 0 0 30px">
+
+                                                        <input type="text" id="loc_id" name="loc_id" class="form-control loc_id" onchange="Check()" autocomplete="off" value="@Model.LocationText" />
+                                                        <input type="hidden" id="location" value="@Model.CustomerLocation" />
+                                                        <span class="error" id="st2">Customer Location is required</span>
+
+                                                    </div>
+                                                    <div class="col-md-10" style="padding:0 0 0 30px" id="history_block">
+                                                        <a href="#" id="cus_history" target="_blank">View Customer History</a> <span hidden>|</span>
+                                                        <a href="#" id="cus_history_report" onclick="funExportToPDF()" hidden>View Customer History Report</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="form-group" style="background-color:transparent; margin-top:-40px">
+                            <div class="row">
+                                <div class="col-md-8" style="background-color:transparent;">
+                                    <div class="form-group">
+                                        <span style=" float:left">
+                                            @Html.Label("Description", new { @class = "col-md-12 control-label disabled" })
+                                        </span>
+                                        <div class="col-md-12">
+                                            @Html.TextAreaFor(m => m.Description, new { id = "description", @class = "form-control" })
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row table-responsive" style="padding:0 0 0 20px">
+                <table style="margin-top:0px" id="hello" class="table table-bordered" cellpadding="0" cellspacing="0" align="center">
+
+                    <thead>
+                        <tr>
+                            <th hidden>Id</th>
+                            <th>Item</th>
+                            <td>Color Code</td>
+                            <td>Unit Type</td>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+
+                            <td>
+                                <input class="form-control" type="text" id="itemName" onchange="Check()" />
+                                <input type="hidden" id="itemid" />
+                                <span class="error" id="st1">ItemName required</span>
+                            </td>
+                            <td>
+                                <input class="form-control" type="text" id="color_code" name="color_code" />
+                            </td>
+                            <td>
+                                @Html.DropDownList("UnitNameEng", new SelectList(" "), "select unit", new { @id = "StateId", @class = "form-control stateclass", onchange = "Check()" })
+                                <input type="hidden" id="StateId" />
+                                <span class="error" id="st2">UnitName required</span>
+                            </td>
+
+                            <td hidden>
+                                <input readonly class="form-control" type="text" id="idunit" />
+                            </td>
+                            <td hidden>
+                                <input readonly class="form-control" type="text" id="unitid" />
+                            </td>
+                            <td hidden>
+                                <input class="form-control" type="text" id="itempid" />
+                            </td>
+                            <td hidden>
+                                <input class="form-control" type="text" id="qtyunit" />
+                            </td>
+                            <td>
+                                <input class="form-control" type="text" id="quantity" autocomplete="off" onchange="Check()" name='quantity' size=20 maxlength=6 onkeypress="return isNumberKey(event)" />
+                                <input type="hidden" id="quantity" />
+                                <span class="error" id="st3">Quantity required</span>
+                            </td>
+                            <td>
+                                <input class="form-control" type="text" id="rate" name="rate" onchange="Check()" />
+
+                            </td>
+                            <td>
+                                <label readonly class="form-control" type="text" id="totalss" />
+                            </td>
+                            <td>
+                                <input type="button" id="add" value="Add" class="btn btn-success addd" disabled />
+                            </td>
+
+                        </tr>
+                        @{
+                            int count = 1;
+                            foreach (var item in Model.GetDetail)
+                            {
+                                <tr>
+                                    <td hidden class="txt"><input type="text" class="txt form-control contect-person" value="@item.ProductId" /></td>
+                                    <td class="txt"><input readonly type="text" class="txt form-control phone" value=" @item.ProductIdn " /></td>
+                                    <td class="txt"><input readonly type="text" class="txt form-control color_code" value="@item.color_code" /></td>
+                                    <td><input readonly type="text" class="form-control UnitEng" value="@item.UNit" /></td>
+                                    <td hidden><input type="hidden" class="form-control UNit" value="@item.UnitTypeId" /></td>
+                                    <td class="txt"><input readonly type="text" class="txt form-control position" value="@item.Quantity" /></td>
+                                    <td class="txt"><input readonly type="text" class="txt form-control rate" id="rate' + index + '" value=" @item.actual_price" /></td>
+                                    <td class="txt"><input readonly type="text" class="txt form-control totals" value="@item.Total" /></td>
+                                    <td><input type="button" value="Remove" class="btn btn-danger" onclick="deleteRow(this)" /></td>
+                                </tr>
+                                count++;
+                            }
+                        }
+
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="5" style="text-align:right !important;">Sub Total: </th>
+                            <th colspan="1">
+                                @Html.TextBoxFor(m => m.Amount, new { id = "subTotal", @class = "form-control", @readonly = "readonly" })
+
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="5" style="text-align:right !important;">Owe($): </th>
+                            <th colspan="1">
+                                @Html.TextBoxFor(m => m.Owe, new { id = "Owe", @class = "form-control", @readonly = "readonly" })
+
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <th colspan="5" style="text-align:right !important;">Discount ($):</th>
+                            <th colspan="1">
+                                @Html.TextBoxFor(m => m.Discount, new { id = "Discount", @class = "form-control", autocomplete = "off", @type = "number", @min = "0", @step = "0.01", @value = "0" })
+
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <th colspan="5" style="text-align:right !important;">Old Received From Customer($):</th>
+                            <th colspan="1">
+                                @Html.TextBoxFor(m => m.RevicedFromCustomer, new { id = "RevicedFromCustomer", @class = "form-control", @readonly = "readonly" })
+                            </th>
+                        </tr>
+                        @if (Convert.ToDecimal(Model.Owe) > 0)
+                        {
+                            <tr>
+                                <th colspan="5" style="text-align:right !important;">New Received From Customer($):</th>
+                                <th colspan="1">
+                                    @Html.TextBoxFor(m => m.RevicedFromCustomer1, new { id = "RevicedFromCustomer1", @class = "form-control", @autocomplete = "off", @type = "number", @step = "0.01", @value = "0" })
+                                </th>
+                            </tr>
+                        }
+                    </tfoot>
+                </table>
+
+                <input type="hidden" id="productss" />
+                <input type="hidden" id="stock" />
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-9">
+                    <input type="button" id="btnsave" class="btn btn-primary savee" value="Save" />
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Sale';" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class=" modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog " role="document">
+            <div class="modal-content">
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary("", new { @class = "text-danger" })
+                <div class="modal-body col-12">
+                    <div class="form-group" hidden>
+                        @Html.Label("Id", new { @class = "col-md-3 control-label" })
+                        <div class="col-md-9" readonly="readonly">
+                            @*@Html.TextBoxFor(m => m.Id, new { disabled = "disabled", @class = "form-control getAutoCustomerId " })*@
+                            @Html.TextBoxFor(m => m.Id, new { @class = "form-control getAutoCustomerId Id", @readonly = "readonly" })
+
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6" style="background-color:transparent">
+                                <div class="form-group ">
+                                    @Html.Label("Date", new { @class = "col-md-12 control-label" })
+                                    <div class="col-md-12">
+                                        @Html.LabelFor(m => m.CreatedDate, DateTime.Now.ToString("dd-MMM-yyyy"), new { @class = " form-control CreatedDate", @readonly = "readonly" })
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="col-md-6" style="background-color:transparent;">
+                                <div class="form-group">
+                                    @Html.Label("Customer No", new { @class = "col-md-12 control-label disabled" })
+                                    <div class="col-md-12">
+                                        @Html.TextBoxFor(m => m.CustomerNo, new { @class = "form-control getAutoCustomerNo CustomerNo", @readonly = "readonly" })
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                        <div class="row">
+                            <div class="col-md-6" style="background-color:transparent">
+                                <div class="form-group">
+                                    <span style=" float:left">
+                                        @Html.Label("Customer Name", new { @class = "col-md-12 control-label" })
+                                    </span>
+                                    <span style="color:red; float:left; font-size:20px">*</span>
+                                    <div class="col-md-12">
+                                        @Html.TextBoxFor(m => m.CustomerName, new { @class = "form-control CustomerName1", @autocomplete = "off", id = "cust1" })
+                                        <input type="hidden" id="cust1" />
+                                        <p class="error" id="stcust"></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6" style="background-color:transparent">
+                                <div class="form-group">
+                                    <span style=" float:left">
+                                        @Html.Label("Phone Number", new { @class = "col-md-12 control-label" })
+                                    </span>
+                                    <span style="color:red; float:left; font-size:20px">*</span>
+                                    <div class="col-md-12">
+                                        @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control PhoneNumber1", @autocomplete = "off", id = "phone", onkeyup = "UserCheck()" })
+
+                                        <input type="hidden" id="phone" />
+                                        <p class="error" id="stphone"></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                        <div class="row">
+                            <div class="col-md-6" style="background-color:transparent">
+                                <div class="form-group">
+                                    @Html.Label("Gender", new { @class = "col-md-12 control-label" })
+                                    <div class="col-md-12">
+                                        @Html.DropDownList("Gender", new List<SelectListItem>{
+
+                                             new SelectListItem{ Text="Male", Value="Male"},
+                                             new SelectListItem{ Text="Female", Value="Female"},
+                                             new SelectListItem{ Text="Other", Value="Other"},
+                                             }, "--- Select ---", new { @class = "form-control Gender" }
+                                             )
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6" style="background-color:transparent">
+
+                                <div class="form-group">
+                                    @Html.Label("Project Location", new { @class = "col-md-12 control-label" })
+                                    <div class="col-md-12">
+                                        @*@Html.TextBoxFor(m => m.ProjectLocation, new { @class = "form-control ProjectLocation" })*@
+                                        <table style="margin-top:15px" id="project_location_table" class="table" cellpadding="0" cellspacing="0" align="center">
+                                            <tbody>
+                                                <tr id="0">
+                                                    <td>
+                                                        <input class="form-control locations" type="text" id="locations" name="locations" autocomplete="off" />
+
+                                                    </td>
+
+                                                    <td style="width:30px !important;"><button type="button" onclick="addTableRow(this)" class="btn btn-sm btn-circle btn-outline-info mr-5 mb-5"><i class="fa fa-plus"></i></button></td>
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="form-group" style="background-color:transparent; margin-top:-15px">
+                        <div class="row">
+                            <div class="col-md-12" style="background-color:transparent">
+                                <div class="form-group">
+                                    @Html.Label("Noted", new { @class = "col-md-3 control-label" })
+                                    <div class="col-md-12">
+                                        @Html.TextAreaFor(m => m.Noted, new { @class = "form-control Noted1" })
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <input type="button" id="submitnewcustomerid" class="btn btn-primary submitnewcustomerid" value="Save" />
+                    <input type="reset" value="Cancel" id="footer-cancel" class="btn btn-danger" data-toggle="modal" data-target="#myModal" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+}
+@section Scripts {
+
+
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <link rel="stylesheet" href="~/Content/jquery-ui.css" />
+    <script>
+
+        function funExportToPDF() {
+        //alert(document.getElementById("getfram").getElementsByTagName("iframe"));
+            $.ajax({
+                url: '@Url.Action("ExportToPDFSaleDetailHistoryByCustomer", "Report")',
+                type: 'GET',
+                data: { customerid: $('#custid').val(),  },
+                contentType: 'application/json; charset=utf-8',
+                success: function (result) {
+                    $('#frmPDF').attr('src', '@Url.Content("~/")' + result);
+                    setTimeout(function () {
+                        frame = document.getElementById("frmPDF");
+                        frameframedoc = frame.contentWindow;
+                        console.log(frameframedoc);
+                        console.log(frame);
+                        frameframedoc.focus();
+                        frameframedoc.print();
+
+                        $.ajax({
+                            url: '@Url.Action("ExportToPDFRemove", "Report")',
+                            data: { id: '@Url.Content("~/")' + result },
+                            type: 'GET',
+                        });
+                    }, 3000);
+
+                },
+                error: function (xhr, status, err) {
+                    alert(err);
+                    $.ajax({
+                         url: '@Url.Action("ExportToPDFRemove", "Report")',
+                         data: { id: '@Url.Content("~/")' + result },
+                         type: 'GET',
+                     });
+                }
+            });
+            return false;
+        }
+            var orderItems = [];
+            $(function () {
+                $("#SelectedDate").datepicker({ disabled: true, }).datepicker("setDate", new Date());
+
+            });
+            var sum = 0;
+
+            function initialRow(rowIdNumber, rowIndex) {
+            $('#project_location_table tr').eq(rowIndex).after("" +
+                "<tr id='row" + rowIdNumber + "'>" +
+
+                    "<td><input class='form-control locations' type='text' id='locations'  name='locations' autocomplete = 'off'  /></td>" +
+                    '<td style="width:30px !important;"><button type="button" onclick="addTableRow(this)" class="btn btn-sm btn-circle btn-outline-info mr-5 mb-5"><i class="fa fa-plus"></i></button></td>' +
+                "</tr>"
+                );
+
+            }
+            function addTableRow(row) {
+            var index = row.parentNode.parentNode.rowIndex;
+            var rowId = $('#project_location_table tr').eq(index).attr('id').replace(/[^\d]/g, '');
+            initialRow(Number(rowId) + 1, index);
+            $('#project_location_table tr').eq(index).find('td:nth-child(2)').html('<button type="button" onclick="removeTableRow(this)" class="btn btn-sm btn-circle btn-outline-danger mr-5 mb-5"><i class="fa fa-trash"></i></button>');
+
+            }
+            function removeTableRow(row) {
+            var arrItemId = [];
+            var index = row.parentNode.parentNode.rowIndex;
+            //var isLastChild = $('#service_order_table tr').eq(index).find('td:nth-child(10) button').length == 0 ? false : true;
+            var isLastChild = index == 1 ? true : false;
+            var rowId = $('#project_location_table tr').eq(index).attr('id');
+            var countTableRow = $('#project_location_table tr').length;
+            for (var i = 1; i <= countTableRow; i++) {
+                var rId = $('#project_location_table tr').eq(i).attr('id');
+                if (rId != undefined)
+                    arrItemId.push(rId);
+            }
+            if (arrItemId.length == 1)
+                return;
+            document.getElementById('project_location_table').deleteRow(index);
+            if (isLastChild)
+                $('#project_location_table tr#' + arrItemId[arrItemId.length - 2]).find('td:nth-child(2)').html("<button type='button' class='btn btn-sm btn-outline-primary' onclick='addTableRow(this)'><i class='fa fa-plus' aria-hidden='true'></i></button>");
+            else {
+                var deleted_index = arrItemId.indexOf(rowId);
+                arrItemId.splice(deleted_index, 1);
+            }
+
+        }
+
+            $(document).ready(function () {
+
+                var possible2 = "123456789";
+                var possible1 = "abcdefghijklmnopqrstuvwxyz";
+                var possible = "zyxwvutsrqpnmlkjihgfedcba";
+                $('.getAutoCustomerNo').val('No-C'
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + (Math.floor(Math.random() * 100) + 1) + '-'
+                    + (Math.floor(Math.random() * 100) + 1)
+                    + (Math.floor(Math.random() * 100) + 1)
+                    + (Math.floor(Math.random() * 100) + 1));
+
+                $('.getAutoCustomerId').val('' + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + possible2.charAt(Math.floor(Math.random() * possible2.length))
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + possible2.charAt(Math.floor(Math.random() * possible2.length))
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 1000) + 1)
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 1000) + 1)
+
+                    + possible1.charAt(Math.floor(Math.random() * possible1.length)) + '-'
+                    + (Math.floor(Math.random() * 10000) + 1));
+
+
+                $('#changsearchidcateng').on('change', function () {
+                    t.search(this.value).draw();
+                    //t.columns(0).search(this.value).draw();
+
+                });
+
+                $('#changsearchidcatkh').on('change', function () {
+                    t.search(this.value).draw();
+                    //t.columns(0).search(this.value).draw();
+
+                });
+
+
+
+                $('#producttable').on('click', 'td button.ajaxresub', function (e) {
+                    passedID = $(this).attr('id');//get the id of the selected button
+                    nd = $(this).attr('n');//get the id of the selected button
+                    pd = $(this).attr('p');//get the id of the selected button
+                    $('#n').val(nd);
+                    $('#p').val(pd);
+                    $('#id').val(passedID);//set the id to the input on the modal
+                });
+                autocompleteLocation();
+
+                $('#history_block').hide();
+                //Add button click function
+                $(function () {
+                    $('#cust').autocomplete({
+
+                        source: '@Url.Action("getCust", "Sale")',
+                        select: function (event, ui) {
+                            var selectedObj = ui.item;
+
+                            var id = selectedObj.id;
+                            var pn = selectedObj.label;
+                            var status = selectedObj.status;
+                            //console.log(selectedObj);
+                            $('#custid').val(pn);
+                            $('#custid').val(id);
+                            $('#location').val("");
+                            $('#loc_id').val("");
+                            autocompleteLocation($('#custid').val());
+                            $('#history_block').show();
+
+                                $('#cus_history').attr("href", "/Sale/CustomerHistory/" + $('#custid').val() + "?old_record=" + status);
+
+                        }
+                    })
+                });
+
+                function autocompleteLocation(customer) {
+                    if (customer == "undefined" || customer == null || customer == "") {
+                        customer = $('#custid').val().trim();
+                    }
+                        $('#loc_id').autocomplete({
+                        source: function (request, response) {
+                                $.ajax({
+                                    url: "/Sale/get_Location/",
+                                    dataType: "json",
+                                    data: { term: request.term, customer_id: customer },
+                                    success: function (data) {
+                                        response(data);
+                                    }
+                                });
+                            },
+
+
+
+                        select: function (event, ui) {
+                            var selectedObj = ui.item;
+
+                            var id = selectedObj.id;
+                            var pn = selectedObj.label;
+                            //console.log(selectedObj);
+                            $('#location').val(pn);
+                            $('#location').val(id);
+
+                        }
+                    })
+                }
+
+                $(function () {
+                    $('#itemName').autocomplete({
+
+                        source: '@Url.Action("getpro", "Sale")',
+                        select: function (event, ui) {
+                            var selectedObj = ui.item;
+                            var id = selectedObj.id;
+                            var pr = selectedObj.pr;
+                            var pid = selectedObj.pid;
+                            var pn = selectedObj.pn;
+                            var qs = selectedObj.qs;
+                            var qsn = selectedObj.qsn;
+
+                            //console.log(selectedObj);
+                            $('#itemName').change(function () {
+                                $('#itemName').val(pn);
+
+                                var isAllValid = true;
+                                $.get("/Sale/GetStateList", { UnId: $('#itemid').val().trim() }, function (data) {
+                                    $("#StateId").empty();
+                                    // $("#StateId").remove.index[0];
+
+                                    $.each(data, function (index, row) {
+                                        // $("#StateId").val("-- please select -- ")
+                                        $("#StateId").append("<option value='" + $('#itemName').val() + '^' + row.Id + "'>" + row.UnitNameEng + "</option>");
+                                        if ($('.stateclass').val().trim() != '') {
+                                            $.ajax({
+                                                url: '/Sale/GetUnit/',
+                                                type: "get",
+                                                dataType: "json",
+                                                async: false,
+                                                data: { id: $(".stateclass").val() },
+                                                //data: JSON.stringify(model),
+                                                success: function (data) {
+                                                    console.log(data);
+                                                    if (data.result = "success") {
+                                                        $('#rate').val(data.data);
+                                                        $('#unitid').val(data.data1);
+                                                        $('#idunit').val(data.data3);
+                                                    }
+                                                },
+                                                error: function (e) { }
+                                            });
+                                        }
+
+                                    });
+                                });
+
+
+                            });
+                            $('#itemid').val(pn);
+                            $('#itempid').val(pid);
+                            $('#rate').val(pr);
+                            $('#productss').val(qs);
+                            $('#stock').val(qsn);
+                        }
+                    });
+
+
+                    $("#itemName").click(function (e) {
+
+                        $("#StateId").text();
+                        // $("#StateId").append("<option value='" + pn + '^' + row.Id + "'>" + "" + "</option>");
+
+                        $('#rate').val('');
+                    });
+
+
+
+
+                    $(".stateclass").click(function (e) {
+                        //alert($(".stateclass").val());
+                        $.ajax({
+                            url: '/Sale/GetUnit/',
+                            type: "get",
+                            dataType: "json",
+                            async: false,
+                            data: { id: $(".stateclass").val() },
+                            //data: JSON.stringify(model),
+                            success: function (data) {
+                                //console.log(data);
+                                if (data.result = "success") {
+                                    $('#rate').val(data.data);
+                                    $('#unitid').val(data.data1);
+                                    $('#idunit').val(data.data3)
+                                    $('#qtyunit').val(data.data2);
+                                }
+
+                            },
+                            error: function (e) { }
+                        });
+
+                    });
+
+
+            });
+
+                $('#add').click(function () {
+                    //Check validation of order item
+                    var isValidItem = true;
+                    if ($('#itemName').val().trim() == '') {
+                        isValidItem = false;
+                        $('#itemName').siblings('span.error').css('visibility', 'visible');
+                    }
+                    else {
+                        $('#itemName').siblings('span.error').css('visibility', 'hidden');
+                    }
+                    if ($('#StateId').val().trim() == '') {
+                        isValidItem = false;
+                        $('#StateId').siblings('span.error').css('visibility', 'visible');
+                    }
+                    else {
+                        $('#StateId').siblings('span.error').css('visibility', 'hidden');
+                    }
+
+                    if (!($('#quantity').val().trim() != '' && !isNaN($('#quantity').val().trim()))) {
+                        isValidItem = false;
+                        $('#quantity').siblings('span.error').css('visibility', 'visible');
+                    }
+                    else {
+                        $('#quantity').siblings('span.error').css('visibility', 'hidden');
+                    }
+
+                    if (!($('#rate').val().trim() != '' && !isNaN($('#rate').val().trim()))) {
+                        isValidItem = false;
+                        $('#rate').siblings('span.error').css('visibility', 'visible');
+                    }
+                    else {
+                        $('#rate').siblings('span.error').css('visibility', 'hidden');
+                    }
+                    //Add item to list if valid
+                    if (isValidItem) {
+                        orderItems.push({
+                            //PurchaseBySupplierId: $('#orderNo').val().trim(),
+                            color_codes: $('#color_code').val().trim(),
+                            UnitTypeId: $('#idunit').val().trim(),
+                            UNit: $('#unitid').val().trim(),
+                            ProductName: $('#itemid').val().trim(),
+                            ProductId: $('#itempid').val().trim(),
+                            actual_price: parseFloat($('#rate').val().trim()).toFixed(2),
+                            Quantity: $('#quantity').val().trim(),
+                            Price: parseFloat($('#rate').val().trim()),
+                        });
+                        //Clear fields
+                        $('#itemName').val('').focus();
+                        $('#quantity,#rate,#UnitNameEng,#color_code').val('');
+                        $('#StateId').text('');
+                        $('#totalss').text('');
+                        $('.savee').removeAttr('disabled');
+                        $('.addd').attr('disabled', 'disabled');
+                    }
+                    GeneratedItemsTable2(orderItems.length - 1);
+                    //console.log(orderItems);
+
+                });
+
+
+
+                $('#id').val('');
+                $('#n').val('');
+                $('#quantity').val('');
+                $('#p').val('');
+                function GeneratedItemsTable2(index) {
+                    var subTotal = 0;
+                    /*
+                    var total = (orderItems[orderItems.length - 1].Price) * (orderItems[orderItems.length - 1].Quantity) ;
+                    subTotal = subTotal + total;
+                    console.log(orderItems[orderItems.length - 1]);
+                    */
+                    console.log(orderItems[index]);
+                    $('#hello tbody').append("" +
+                        "<tr>" +
+                        '<td hidden class="txt"><input type="text"  class="txt form-control contect-person" value="' + orderItems[index].ProductId + '" /></td>' +
+                        '<td class="txt"><input readonly type="text"  class="txt form-control phone"  value="' + orderItems[index].ProductName + '" /></td>' +
+                        '<td class="txt"><input readonly type="text"  class="txt form-control color_code"  value="' + orderItems[index].color_codes + '" /></td>' +
+                        '<td ><input readonly type="text"  class="form-control UnitEng"  value="' + orderItems[index].UnitTypeId + '" /></td>' +
+                        '<td hidden><input type="hidden"  class="form-control UNit"  value="' + orderItems[index].UNit + '" /></td>' +
+
+                        '<td class="txt"><input readonly type="text"  class="txt form-control position" value="' + parseFloat(orderItems[index].Quantity).toFixed(2) + '" /></td>' +
+                        '<td class="txt"><input readonly type="text"  class="txt form-control rate" id="rate' + index + '" value="' + orderItems[index].actual_price + '" /></td>' +
+                        '<td class="txt"><input readonly type="text"  class="txt form-control totals" value="' + parseFloat((orderItems[index].actual_price) * (orderItems[index].Quantity)).toFixed(2) + '" /></td>' +
+                        '<td><input type="button" value="Remove" class="btn btn-danger" onclick="deleteRow(this)" /></td>' +
+                        "</tr>"
+                        );
+
+                    var totals = $('.totals');
+                    for (var i = 0; i < totals.length; i++) {
+                        var total = totals[i].value;
+                        subTotal = subTotal + Number(total);
+
+                        if ($('#Discount').val() == '') {
+                            if ($('#RevicedFromCustomer').val() == '') {
+                                gtl = parseFloat(subTotal);
+                            }
+                            else {
+                                gtl = parseFloat(subTotal) - parseFloat($('#RevicedFromCustomer').val().trim());
+                            }
+
+
+                        } else {
+                            if ($('#RevicedFromCustomer').val() == '') {
+                                gtl = parseFloat(subTotal) - parseFloat($('#Discount').val().trim());
+                            }
+                            else {
+                                gtl = parseFloat(subTotal) - parseFloat($('#Discount').val().trim()) - parseFloat($('#RevicedFromCustomer').val().trim());
+                            }
+
+                        }
+
+
+                    }
+                    $('#subTotal').val(subTotal.toFixed(2));
+                    Discount();
+                    RevicedFromCustomer1();
+
+
+                }
+
+                function GeneratedItemsTable(item) {
+                    var subTotal = 0;
+                    /*
+                    var total = (orderItems[orderItems.length - 1].Price) * (orderItems[orderItems.length - 1].Quantity) ;
+                    subTotal = subTotal + total;
+                    console.log(orderItems[orderItems.length - 1]);
+                    */
+
+                    $('#hello tbody').append("" +
+                        "<tr>" +
+                        '<td hidden class="txt"><input type="text"  class="txt form-control contect-person" value="' + orderItems[orderItems.length - 1].ProductId + '" /></td>' +
+                        '<td class="txt"><input readonly type="text"  class="txt form-control phone"  value="' + orderItems[orderItems.length - 1].ProductName + '" /></td>' +
+                        '<td class="txt"><input readonly type="text"  class="txt form-control color_code"  value="' + orderItems[orderItems.length - 1].color_codes + '" /></td>' +
+                        '<td ><input readonly type="text"  class="form-control UnitEng"  value="' + orderItems[orderItems.length - 1].UnitTypeId + '" /></td>' +
+                        '<td hidden><input type="hidden"  class="form-control UNit"  value="' + orderItems[orderItems.length - 1].UNit + '" /></td>' +
+
+                        '<td class="txt"><input readonly type="text"  class="txt form-control position" value="' + orderItems[orderItems.length - 1].Quantity + '" /></td>' +
+                        '<td class="txt"><input readonly type="text"  class="txt form-control quantity rate" id="rate" value="' + orderItems[orderItems.length - 1].actual_price + '" /></td>' +
+                        '<td class="txt"><input readonly type="text"  class="txt form-control totals" value="' + (orderItems[orderItems.length - 1].actual_price) * (orderItems[orderItems.length - 1].Quantity) + '" /></td>' +
+                        '<td><input type="button" value="Remove" class="btn btn-danger" onclick="deleteRow(this)" /></td>' +
+                        "</tr>"
+                    );
+
+                    var totals = $('.totals');
+                    for (var i = 0; i < totals.length; i++) {
+                        var total = totals[i].value;
+                        subTotal = subTotal + Number(total);
+
+                        if ($('#Discount').val() == '') {
+                            if ($('#RevicedFromCustomer').val() == '') {
+                                gtl = parseFloat(subTotal);
+                            }
+                            else {
+                                gtl = parseFloat(subTotal) - parseFloat($('#RevicedFromCustomer').val().trim());
+                            }
+
+
+                        } else {
+                            if ($('#RevicedFromCustomer').val() == '') {
+                                gtl = parseFloat(subTotal) - parseFloat($('#Discount').val().trim());
+                            }
+                            else {
+                                gtl = parseFloat(subTotal) - parseFloat($('#Discount').val().trim()) - parseFloat($('#RevicedFromCustomer').val().trim());
+                            }
+
+                        }
+
+
+                    }
+                    $('#subTotal').text(subTotal.toFixed(2));
+                    $('#grandtotal').text(gtl.toFixed(2));
+
+
+                }
+
+
+                $('#submitnewcustomerid').click(function (e) {
+                    //  var SalessViewModel = {
+                    var Id = $('.Id').val();
+                    var CreatedDate = $('.CreatedDate').val();
+                    var CustomerNo = $('.CustomerNo').val();
+                    var CustomerName = $('.CustomerName1').val();
+                    var PhoneNumber = $('.PhoneNumber1').val();
+                    var ProjectLocation = $('.ProjectLocation').val();
+                    var locations = $('.locations');
+                    var Gender = $('.Gender').val();
+                    var Noted = $('.Noted1').val();
+                    var locationArray = new Array();
+                    if (locations.length > 0) {
+                        for (var i = 0; i < locations.length; i++) {
+                            //locationArray = {};
+                            locationArray.push(locations[i].value);
+                        }
+                    }
+
+                   // alert(PhoneNumber, CustomerName, Gender);
+                    if (CustomerName == "" || PhoneNumber == "" ) {
+                        alert("Please input Customer Name and Phone !")
+                    }
+                    else {
+                        var serviceURL = '/Sale/SubmitNewCustomer';
+                        $.ajax({
+                            url: serviceURL,
+                            type: "POST",
+                            dataType: "json",
+                            data: { 'Id': Id, 'CreatedDate': CreatedDate, 'CustomerNo': CustomerNo, 'CustomerName': CustomerName, 'PhoneNumber': PhoneNumber, 'ProjectLocation': ProjectLocation, 'Gender': Gender, 'Noted': Noted, 'locations': locationArray },
+                            success: successFunc,
+                            error: errorFunc
+                        });
+                        function successFunc(data) {
+                            // alert(data);
+                            //window.location = '/Sale/Create';
+                            //autocompleteCustomer(CustomerName);
+                            //console.log(data);
+                            $('#custid').val(data.data.Id);
+                            $('#history_block').show();
+                            autocompleteLocation(data.data.Id);
+                            $('#cus_history').attr("href", "/Sale/CustomerHistory/" + data.data.Id + "?old_record=" + data.data.is_old_data);
+                        }
+                        function errorFunc() {
+                            //window.location = '/Sale/Create';
+                        }
+                    }
+                    $("#footer-cancel").click();
+                    $('#cust').val(CustomerName);
+
+                    //$('#cust').focus();
+                    //autocompleteCustomer(CustomerName);
+                    //$('#myModal').modal('toggle');
+                });
+            });
+            $('#button-add-new-client').click(function () {
+                var possible = "zyxwvutsrqpnmlkjihgfedcba";
+                $('.getAutoCustomerNo').val('No-C'
+                    + (Math.floor(Math.random() * 10) + 1)
+                    + possible.charAt(Math.floor(Math.random() * possible.length))
+                    + (Math.floor(Math.random() * 100) + 1) + '-'
+                    + (Math.floor(Math.random() * 100) + 1)
+                    + (Math.floor(Math.random() * 100) + 1)
+                    + (Math.floor(Math.random() * 100) + 1));
+            });
+            function deleteRow(r) {
+                var i = r.parentNode.parentNode.rowIndex;
+                var subTotal = 0;
+                var gtl = 0;
+                var totals = $('.totals');
+                var totalll = $('#subTotal').val();
+                var gtlll = $('#grandtotal').val();
+                var total = totals[i-2].value;
+
+                gtl = (gtlll - Number(total));
+                subTotal = (totalll - Number(total));
+                document.getElementById("hello").deleteRow(i);
+
+                $('#subTotal').val(subTotal);
+                Discount();
+                RevicedFromCustomer();
+            }
+            function isNumberKey(evt) {
+                 var charCode = (evt.which) ? evt.which : event.keyCode
+                 if (charCode > 31 && (charCode < 48 || charCode > 57) && charCode != 46)
+                     return false;
+                 else {
+                     var len = document.getElementById("quantity").value.length;
+                     var index = document.getElementById("quantity").value.indexOf('.');
+
+                     if (index > 0 && charCode == 46) {
+                         return false;
+                     }
+                     if (index > 0) {
+                         var CharAfterdot = (len + 1) - index;
+                         if (CharAfterdot > 3) {
+                             return false;
+                         }
+                     }
+
+                 }
+                 return true;
+            }
+
+
+             $('#btnsave').click(function () {
+                    var isAllValid = true;
+
+                    //if (orderItems.length == 0) {
+                    //    alert('Please add order item!');
+                    //    isAllValid = false;
+                    //}
+                    if ($('#cust').val().trim() == '') {
+                        isAllValid = false;
+                        $('#cust').siblings('span.error').css('visibility', 'visible');
+
+                    }
+
+                    else {
+                        if ($('#custid').val().trim() == '') {
+                            isAllValid = false;
+                            alert("Please select Customer in list!");
+                        }
+                        $('#cust').siblings('span.error').css('visibility', 'hidden');
+
+                    }
+
+                     if ($('#loc_id').val().trim() == '') {
+                         isAllValid = false;
+                         $('#loc_id').siblings('span.error').css('visibility', 'visible');
+                     }
+                     else {
+                         $('#loc_id').siblings('span.error').css('visibility', 'hidden');
+                     }
+
+
+                 var GetDetail = [];
+                 var contactpersons = $('.contect-person');
+                 var contactphones = $('.phone');
+                 var color_codes = $('.color_code');
+                 var contactpositions = $('.position');
+                 //var contactquantity = $('.quantity');
+                 var actual_prices = $('.rate');
+                 var UnitEng = $('.UnitEng');
+                 var UNit = $('.UNit');
+
+
+                 if (contactpersons.length > 0) {
+                     for (var i = 0; i < contactpersons.length; i++) {
+                         item_element = {};
+                         item_element.ProductId = contactpersons[i].value;
+                         item_element.color_code = color_codes[i].value;
+                         item_element.UnitTypeId = UnitEng[i].value;
+                         item_element.UNit = UNit[i].value;
+                         item_element.ProductName = contactphones[i].value;
+                         item_element.Quantity = contactpositions[i].value;
+                         //item_element.Price = contactquantity[i].value;
+                         item_element.actual_price = actual_prices[i].value;
+                         GetDetail.push(item_element);
+                     }
+                 }
+
+
+
+                    //Save if valid
+                    if (isAllValid) {
+                        var data = {
+                            ID: $('#orderNo').val().trim(),
+                            //  Owe: $('#subTotal').text(),
+                            Amount: $('#subTotal').val().trim(),
+                            CreatedDate: $('#orderDate').val().trim(),
+                            CustomerId: $('#custid').val().trim(),
+                            CustomerLocation: $('#location').val().trim(),
+                            LocationText: $('#loc_id').val().trim(),
+                            RevicedFromCustomer: $('#RevicedFromCustomer').val().trim(),
+                            RevicedFromCustomer1: $('#RevicedFromCustomer1').val().trim(),
+                            Discount: $('#Discount').val().trim(),
+                            Description: $('#description').val().trim(),
+                            GetDetail: GetDetail
+
+                        }
+                        //console.log(data);
+                        $(this).val('Please wait...');
+
+                        $.ajax({
+                            url: '/Sale/EditNew',
+                            type: "POST",
+                            data: JSON.stringify(data),
+                            dataType: "JSON",
+                            contentType: "application/json",
+                            success: successFunc,
+                            error: errorFunc
+                        });
+                        function successFunc(data, status) {
+                            // alert(data);
+                            window.location = '/Sale'
+
+                        }
+                        function errorFunc() {
+                            window.location = '/Sale'
+                        }
+                    }
+
+                });
+    </script>
+    <script>
+
+            $('#quantity,#rate').blur(function () {
+
+                if ($('#rate').val() == '') {
+                    var gtl1 = 0;
+                }
+                else {
+                    var txtVal = this.value;
+                    var gtl1 = parseFloat($('#rate').val().trim()) * parseFloat(txtVal);
+                }
+                $('#totalss').text(gtl1.toFixed(2));
+
+            });
+
+
+
+            $(document).ready(function () {
+                $('#quantity').keyup(function () {
+                    var result = parseFloat($('#stock').val().trim());
+                    var result1 = $('#qtyunit').val().trim();
+                    var result2 = parseFloat($('#quantity').val().trim());
+                    var sum = result * result1;
+                    var sum1 = result2 * result1;
+                    $('.addd').prop('disabled', false);
+                });
+                $('#itemName').keyup(function () {
+                    if ($('#itemName').val().trim() && $('#quantity').val().trim() != '') {
+                        $('.addd').prop('disabled', false);
+                        $("#rate").css("border-color", "Green");
+                    } else {
+                        $('.addd').prop('disabled', false);
+                    }
+
+                });
+
+
+            });
+
+        function Discount() {
+
+            if ($('#Discount').val() == "") {
+                $('#Discount').val('0');
+            }
+            if ($('#RevicedFromCustomer1').val() == "") {
+                var own = parseFloat($('#subTotal').val()) - parseFloat($('#RevicedFromCustomer').val());
+            }
+            else {
+                var own = parseFloat($('#subTotal').val()) - parseFloat($('#RevicedFromCustomer').val()) - parseFloat($('#RevicedFromCustomer1').val());
+            }
+            var txtVal2 = $('#Discount').val();
+            if (txtVal2 > own) {
+                alert("New Received must less than Owe!");
+                $('#Discount').val(@Model.Discount);
+                $('#Owe').val(parseFloat($('#subTotal').val()) - parseFloat($('#Discount').val()) - parseFloat($('#RevicedFromCustomer').val()));
+            }
+            else {
+                $('#Owe').val((parseFloat($('#subTotal').val()) - parseFloat($('#Discount').val()) - parseFloat($('#RevicedFromCustomer').val())).toFixed(2));
+            }
+        }
+        function RevicedFromCustomer1() {
+            var own = (parseFloat($('#subTotal').val()) - parseFloat($('#RevicedFromCustomer').val()) - parseFloat($('#Discount').val()));
+            var txtVal2 = $('#RevicedFromCustomer1').val();
+            if (txtVal2 > own) {
+                alert("New Recived must less than Owe!");
+                $('#RevicedFromCustomer1').val('0');
+
+            }
+        }
+        $('#Discount').keyup(function () {
+            Discount();
+        });
+
+        $('#RevicedFromCustomer1').keyup(function () {
+            RevicedFromCustomer1();
+        });
+
+            function Check() {
+                if ($('#cust').val().trim() != '') {
+                    $("#cust").css("border-color", "Green");
+                    $("#st").html('');
+                }
+                else {
+                    $("#st").html('<font color="Red">CustomerName required</font>');
+                    $("#cust").css("border-color", "Red");
+
+                }
+                if ($('#loc_id').val().trim() != '') {
+                    $("#loc_id").css("border-color", "Green");
+                    $("#st2").hide();
+                    $("#st2").html('');
+                }
+                else {
+                    $("#st2").html('<font color="Red">Customer Location required</font>');
+                    $("#loc_id").css("border-color", "Red");
+
+                }
+
+                if ($('#itemName').val().trim() != '') {
+                    $("#itemName").css("border-color", "Green");
+                    $("#st1").html('');
+                }
+                else {
+                    $("#st1").html('<font color="Red">ItemName required</font>');
+                    $("#itemName").css("border-color", "Red");
+
+                }
+
+                if ($('#StateId').val() != null && $('#StateId').val().length > 0) {
+                    if ($('#StateId').val().trim() != '') {
+                        $("#StateId").css("border-color", "Green");
+                        $("#st1").html('');
+                    }
+                    //$("#StateId").css("border-color", "Green");
+                    // $("#st2").html('');
+                }
+                else {
+                    $("#st2").html('<font color="Red">Customer Location required</font>');
+                    $("#StateId").css("border-color", "Red");
+
+                }
+                if ($('#quantity').val().trim() != '') {
+                    $("#quantity").css("border-color", "Green");
+                    $("#st3").html('');
+
+                }
+                else {
+                    $("#st3").html('<font color="Red">Quantity required</font>');
+                    $("#quantity").css("border-color", "Red");
+
+                }
+
+
+                if ($('#itemName').val().trim() && $('#quantity').val().trim() && $('#totalss').val().trim() != '') {
+                    $('.bbb').removeAttr('disabled');
+                }
+            }
+            function UserCheck() {
+                $.post("@Url.Action("CheckUsernameAvailability", "Customer")",
+                {
+                    userdata: $("#phone").val()
+                },
+                function (data) {
+                if (data == 0) {
+                    $("#phone").css("border-color", "Green");
+                    $('.submitnewcustomerid').removeAttr('disabled');
+                    $("#stcust").html('');
+                    $("#stphone").html('');
+                }
+                else {
+                    $("#stcust").html('<font color="Red">This Customer is already use!</font>');
+                    $("#stphone").html('<font color="Red">Please Add New Number!</font>');
+                    $("#phone").css("border-color", "Red");
+                    $('.submitnewcustomerid').attr('disabled', 'disabled');
+                }
+                });
+            }
+    </script>
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<style>
+    span.error {
+        display: block;
+        visibility: hidden;
+        color: red;
+        font-size: 90%;
+    }
+</style>
