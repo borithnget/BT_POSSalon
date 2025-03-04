@@ -10,13 +10,13 @@
         .content-wrapper {
             padding-top: 0px !important;
         }
+
         .payment-form-container input, .payment-form-container select {
             width: 200px;
             margin-left: auto;
         }
     </style>
 }
-
 <input type="hidden" id="appointmentId" name="appointmentId" value="@appointmentId" />
 <div class="row">
     <div class="col-md-8">
@@ -43,8 +43,6 @@
                     @Html.AntiForgeryToken()
                     <li class="icon-item p-2" style="height:100% !important;"><a href="javascript:document.getElementById('logoutForm').submit()" style="color:white;vertical-align:middle !important;"> <i class="fa fa-sign-out" aria-hidden="true"></i></a></li>
                 }
-
-
 
                 <li class="icon-item p-2 no-hover" lang="km">
                     <input type="text" class="search-item" placeholder="ស្វែងរកកូដ...">
@@ -78,7 +76,6 @@
     </div>
 
 </div>
-
 @using (Html.BeginForm("Index", "Coffee", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
@@ -87,57 +84,60 @@
         <div class="row">
             <!-- Product section: Takes 50% of the screen width -->
             <div class="col-md-8">
-
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
-                        <button class="nav-link active" id="nav-home-tab" data-toggle="tab" data-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Product</button>
-                        <button class="nav-link" id="nav-profile-tab" data-toggle="tab" data-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Service</button>
-                        
+                        <button class="nav-link active" id="nav-all-tab" data-bs-toggle="tab" data-bs-target="#nav-all" type="button" role="tab" aria-controls="nav-all" aria-selected="true">All</button>
+                        <button class="nav-link" id="nav-product-tab" data-bs-toggle="tab" data-bs-target="#nav-product" type="button" role="tab" aria-controls="nav-product" aria-selected="false">Product</button>
+                        <button class="nav-link" id="nav-service-tab" data-bs-toggle="tab" data-bs-target="#nav-service" type="button" role="tab" aria-controls="nav-service" aria-selected="false">Service</button>
+                        <button class="nav-link" id="nav-package-tab" data-bs-toggle="tab" data-bs-target="#nav-package" type="button" role="tab" aria-controls="nav-package" aria-selected="false">Package</button>
                     </div>
                 </nav>
                 <div class="tab-content" id="nav-tabContent">
-                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
-                        <div id="categoryGridWrapper" class="mt-3">
-                            <div class="row" id="categoryGrid">
-                            </div>
+                    <!-- All Panel -->
+                    <div class="tab-pane fade show active" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
+                        <div id="AllcategoryGridWrapper" class="mt-3">
+                            <div class="row" id="AllcategoryGrid"></div>
                         </div>
+                        <div id="productGridWrapper" style="min-height:500px; overflow-y: auto;">
+                            <div class="row" id="AllGrid"></div> <!-- Updated ID -->
+                            <div id="serviceList" class="row"></div>
+                            <div id="selectedServices" class="mt-3"></div>
+                        </div>
+                    </div>
 
+                    <!-- Product Panel -->
+                    <div class="tab-pane fade" id="nav-product" role="tabpanel" aria-labelledby="nav-product-tab">
+                        <div id="categoryGridWrapper" class="mt-3">
+                            <div class="row" id="categoryGrid"></div>
+                        </div>
                         <div id="productGridWrapper" style="min-height:500px; overflow-y: auto;">
-                            <div class="row" id="productGrids"></div>
                             <div class="row" id="productGrid"></div>
-                            <div id="serviceList" class="row"></div>
                             <div id="selectedServices" class="mt-3"></div>
-                            <div id="actionButtons" style="display:none;">
-                                <button id="cancelSelection" class="btn btn-secondary" onclick="cancelSelection()">Cancel</button>
-                                <button id="confirmSelection" class="btn btn-primary" onclick="confirmSelectionAndDisplayProducts()">Confirm</button>
-                            </div>
                         </div>
                     </div>
+
                     <!-- Service Panel -->
-                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                    <div class="tab-pane fade" id="nav-service" role="tabpanel" aria-labelledby="nav-service-tab">
                         <div id="serviceTypeGridWrapper" class="mt-3">
-                            <div class="row" id="serviceTypeGrid">
-                            </div>
+                            <div class="row" id="serviceTypeGrid"></div>
                         </div>
                         <div id="productGridWrapper" style="min-height:500px; overflow-y: auto;">
-                            <div class="row" id="serviceGrids"></div>
                             <div class="row" id="serviceGrid"></div>
-                            <div id="serviceList" class="row"></div>
                             <div id="selectedServices" class="mt-3"></div>
-                            <div id="actionButtons" style="display:none;">
-                                <button id="cancelSelection" class="btn btn-secondary" onclick="cancelSelection()">Cancel</button>
-                                <button id="confirmSelection" class="btn btn-primary" onclick="confirmSelectionAndDisplayProducts()">Confirm</button>
-                            </div>
                         </div>
                     </div>
-                    
                 </div>
 
-                
-
+                <!-- Action Buttons -->
+                <div id="actionButtons" style="display:none;">
+                    <button id="cancelSelection" class="btn btn-secondary" onclick="cancelSelection()">Cancel</button>
+                    <button id="confirmSelection" class="btn btn-primary" onclick="confirmSelectionAndDisplayProducts()">Confirm</button>
+                </div>
             </div>
+
             <div class="col-md-4 d-flex flex-column" style="height: 100%;">
-                <div style="height: 300px; overflow-y: auto; margin-bottom: 15px;">
+                <div style="height:auto ; overflow-y: auto; margin-bottom: 15px;">
+                    @*300px*@
                     <div id="paymentSection" class="flex-grow-1">
                         <div id="selectedProductsList" style="display: flex; flex-direction: column; gap: 10px;"></div>
                     </div>
@@ -305,7 +305,7 @@
     @section Scripts {
         <!-- Bootstrap 5 Modal -->
         <link rel="stylesheet" href="~/Content/css/site.css">
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap" rel="stylesheet">      
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -423,7 +423,6 @@
             updateAllAmount();
             updateTotalAmount();
             updatePaymentSection();
-
         }
         cashReceivedInput.addEventListener('dblclick', function () {
             cashReceivedInput.value = '';
@@ -606,7 +605,6 @@
             source: '@Url.Action("getCust", "Sale")',
             select: function (event, ui) {
                 var selectedObj = ui.item;
-
                 var id = selectedObj.id;
                 var pn = selectedObj.label;
                 var status = selectedObj.status;
@@ -614,8 +612,6 @@
                 $('#customer_id').val(id);
             }
         });
-
-
           var appointmentId = $('#appointmentId').val();
             if (appointmentId != "") {
                 //alert(appointmentId);
@@ -671,7 +667,6 @@
                     }
                 });
             }
-
           function adjustCategoryCardStyles() {
               const categoryCards = document.querySelectorAll('.category-card h6');
               const categoryCols = document.querySelectorAll('.category-col');
@@ -695,8 +690,6 @@
                   categoryCards.forEach(card => {
                       card.style.fontSize = '12px';
                   });
-
-
                   $(".category-col").removeClass("col-12 col-sm-3 col-md-2 col-lg-2").addClass("col-sm-3");
               } else if (screenWidth <= 1024) {
                   categoryCols.forEach(col => {
@@ -716,10 +709,52 @@
                   $(".category-col").removeClass("col-12 col-sm-3 col-md-4 col-lg-2").addClass("col-lg-2.4");
               }
           }
-
           window.addEventListener('resize', adjustCategoryCardStyles);
           adjustCategoryCardStyles();
+      $.ajax({
+      url: '@Url.Action("GetCategories", "Coffee")',
+      type: 'GET',
+      data: { isService: null},
+      success: function (categories) {
+          var allButton = `
+          <div class="col-6 col-sm-3 col-md-2 col-lg-2 mb-2 category-col">
+              <div class="card p-2 text-center category-card bg-primary text-white" data-category-id="all">
+                  <h6 class="m-0">All</h6>
+              </div>
+          </div>
+          `;
+          $('#AllcategoryGrid').append(allButton);
+          categories.forEach(function (category) {
+              categoryMap[category.Id] = category;
+              var categoryName = category.CategoryNameEng || category.CategoryNameKh;
+              var categoryButton = `
+              <div class="col-6 col-sm-3 col-md-2 col-lg-2 mb-2 category-col">
+                  <div class="card p-2 text-center category-card" data-category-id="${category.Id}">
+                      <h6 class="m-0">${categoryName}</h6>
+                  </div>
+              </div>
+              `;
+              $('#AllcategoryGrid').append(categoryButton);
+          });
 
+          $(".category-card").on("click", function () {
+              var selectedCategoryId = $(this).data("category-id");
+
+              if (selectedCategoryId === "all") {
+                  loadAll(1, "");
+              } else {
+                  var selectedCategoryIds = [selectedCategoryId];
+                  var categoryFilter = selectedCategoryIds.join(',');
+                  loadAll(1, categoryFilter);
+              }
+          });
+      },
+      error: function () {
+          alert("Error loading categories.");
+      }
+  });
+
+    loadAll(1, "");
         $.ajax({
             url: '@Url.Action("GetCategories", "Coffee")',
             type: 'GET',
@@ -841,9 +876,65 @@
                 alert("Error loading customer types.");
             }
         });
-        loadProducts(1, "");
+            loadAll(1, "");
+       /* loadProducts(1, "");*/
         });
+        function loadAll(pageNumber, categoryFilter, selectedCustomerTypeId) {
+     $.ajax({
+         url: '@Url.Action("GetProductData", "Coffee")',
+         type: 'GET',
+         data: {
+             pageNumber: pageNumber,
+             pageSize: 100,
+             categoryFilter: categoryFilter,
+             selectedCustomerTypeId: selectedCustomerTypeId,
+         },
+         success: function (response) {
+             console.log(response);
+             var products = response;
+             var productGrid = $('#AllGrid');
+             productGrid.empty();
+             if (products.length === 0) {
+                 productGrid.append('<p>No products found.</p>');
+             }
+             products.forEach(function (product) {
+                 var productImage = product.ProductImage ? product.ProductImage : '/Images/default-product.jpg';
+                 var productCard = `
+                 <div class="col-lg-3 col-md-4 col-sm-6 col-12 product-card mb-4"
+                     data-id="${product.Id}"
+                     data-name="${product.ProductName}"
+                     data-price="${product.PriceInStock}"
+                     data-description="${product.Description}"
+                     data-category-name="${product.CategoryName}">
 
+                     <div class="card h-100 position-relative shadow-sm">
+                         <div class="position-absolute top-0 end-0 m-2 bg-success text-white p-2 rounded price-tag">
+                             $${product.PriceInStock}
+                         </div>
+                         <img src="${productImage}" class="card-img-top product-image" alt="${product.ProductName}">
+                         <div class="card-body text-center">
+                             <h5 class="card-title product-title">${product.ProductName}</h5>
+                         </div>
+                     </div>
+                 </div>
+                 `;
+                 $("#AllGrid").append(productCard);
+     });
+     $('.product-card').off('click').on('click', function () {
+         var productId = $(this).data('id');
+         $('#selectedProductId').val(productId);
+         getProductAttributes(productId);
+     });
+     updateAllAmount();
+     updateTotalAmount();
+     updatePaymentSection();
+     adjustResponsiveStyles();
+ },
+         error: function () {
+             alert('Error loading product data');
+         }
+     });
+ }
         function loadProducts(pageNumber, categoryFilter, selectedCustomerTypeId) {
             $.ajax({
                 url: '@Url.Action("GetProductData", "Coffee")',
@@ -856,7 +947,7 @@
                     isService: false,
                 },
                 success: function (response) {
-                    console.log(response);
+                   /* console.log("Product Response:", response);*/
                     var products = response;
                     var productGrid = $('#productGrid');
                     productGrid.empty();
@@ -884,6 +975,8 @@
                             </div>
                         </div>
                         `;
+                       /* console.log('Appending Product Card:', productCard);  // Debugging output*/
+
                 $("#productGrid").append(productCard);
             });
             $('.product-card').off('click').on('click', function () {
@@ -901,7 +994,6 @@
         }
     });
                 }
-
                     function loadService(pageNumber, categoryFilter, selectedCustomerTypeId) {
                         $.ajax({
                             url: '@Url.Action("GetProductData", "Coffee")',
@@ -914,7 +1006,7 @@
                                 isService: true,
                             },
                             success: function (response) {
-                                console.log(response);
+                               /* console.log(response);*/
                                 var products = response;
                                 var productGrid = $('#serviceGrid');
                                 productGrid.empty();
@@ -958,9 +1050,8 @@
                                 alert('Error loading product data');
                             }
                         });
-                    }
-
-                function getProductAttributes(productId) {
+                }
+function getProductAttributes(productId) {
     $.ajax({
         url: '@Url.Action("GetProductAttributes", "Coffee")',
         type: 'GET',
@@ -1281,7 +1372,7 @@ adjustResponsiveStyles();  // Initial style adjustment
                         alert('An error occurred: ' + error);
                     }
                 });
-        }
+                }
         $(document).ready(function () {
             // Event listener for dropdown item selection
             $('.dropdown-item').click(function () {
@@ -1301,7 +1392,8 @@ adjustResponsiveStyles();  // Initial style adjustment
                 } else if (selection === 'product') {
                     productGrid.show();
                     selectedServices.hide();
-                } else {
+                }
+                else {
                     productGrid.hide();
                     selectedServices.hide();
                 }
@@ -1476,7 +1568,6 @@ adjustResponsiveStyles();  // Initial style adjustment
                     </div>
                 </div>
             </div>`;
-
                 productGrids.append(productCard);
             });
             $('#productGrids').show();
@@ -1653,11 +1744,8 @@ adjustResponsiveStyles();  // Initial style adjustment
                     }
                 });
             }
-
             // Initially hide the dropdown container
             dropdownContainer.style.display = 'none'; // Hide on load
-
-
             // Add event listener for resizing
             window.addEventListener('resize', function () {
                 adjustResponsivePaymentStyles();

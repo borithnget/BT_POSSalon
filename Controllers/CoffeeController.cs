@@ -75,7 +75,7 @@ namespace jotun.Controllers
 				return Json(new { data = employeeList }, JsonRequestBehavior.AllowGet);
 			}
 		}
-		public JsonResult GetProductData(ProductViewModels model, string categoryFilter = null, int pageNumber = 1, int pageSize = 100, int? selectedCustomerTypeId = null,bool isService=false)
+		public JsonResult GetProductData(ProductViewModels model, string categoryFilter = null, int pageNumber = 1, int pageSize = 100, int? selectedCustomerTypeId = null, bool? isService = null)
 		{
 			string descrip = "";
 			List<ProductViewModels> models = new List<ProductViewModels>();
@@ -95,8 +95,14 @@ namespace jotun.Controllers
 				{
 					selectedCustomerTypeId = 1;
 				}
-				var query = db.tblProducts
-							  .Where(p => p.Status == 1 && p.Service==isService);
+				var query = db.tblProducts.Where(p => p.Status == 1);
+
+				if (isService.HasValue)
+				{
+					query = query.Where(p => p.Service == isService.Value);
+				}
+				/*var query = db.tblProducts
+							  .Where(p => p.Status == 1 && p.Service==isService );*/
 
 				if (!string.IsNullOrEmpty(categoryFilter))
 				{
@@ -180,20 +186,18 @@ namespace jotun.Controllers
 						a.AttributeValue
 					})
 					.ToList();
-
 				return Json(attributes, JsonRequestBehavior.AllowGet);
 			}
 		}
-		public JsonResult GetCategories(bool isService)
+		public JsonResult GetCategories(bool? isService)
 		{
 			using (jotunDBEntities db = new jotunDBEntities())
 			{
 				var categories = db.tblCategories
 								   .Where(c => c.Status == 1 &&
-										  c.Service==isService)
+										  (!isService.HasValue || c.Service == isService))
 								   .Select(c => new { c.Id, c.CategoryNameEng, c.CategoryNameKh })
 								   .ToList();
-
 				return Json(categories, JsonRequestBehavior.AllowGet);
 			}
 		}
@@ -1024,6 +1028,120 @@ namespace jotun.Controllers
 			}
 			return RedirectToAction("Index");
 		}
+		public ActionResult CreatePackage()
+		{
+			using (var db = new jotunDBEntities())
+			{
+				var model = new CreatePackageViewModel
+				{
+					// Load available services for selection
+					AvailableServices = db.tblServices
+						.Where(s => s.IsActive)
+						.Select(s => new SelectListItem
+						{
+							Value = s.ServiceId.ToString(),
+							Text = s.Name
+						})
+						.ToList(),
+
+					// Load available products for selection
+					AvailableProducts = db.tblProducts
+						.Where(p => p.CreatedDate.Value.Year == 2025)
+						.Select(p => new SelectListItem
+						{
+							Value = p.Id.ToString(),
+							Text = p.ProductName
+						})
+						.ToList(),
+
+					// Initialize empty lists for selection
+					SelectedServices = new List<ServiceSelectionViewModel> { new ServiceSelectionViewModel() },
+					SelectedProducts = new List<ProductSelectionViewModel> { new ProductSelectionViewModel() }
+				};
+				return View(model);
+			}
+		}
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public ActionResult CreatePackage(CreatePackageViewModel model)
+		{
+			if (!ModelState.IsValid)
+			{
+				var selectedServices = model.SelectedServices;
+				var selectedProducts = model.SelectedProducts;
+				using (var db = new jotunDBEntities())
+				{
+					model.AvailableServices = db.tblServices
+						.Where(s => s.IsActive)
+						.Select(s => new SelectListItem
+						{
+							Value = s.ServiceId.ToString(),
+							Text = s.Name
+						})
+						.ToList();
+
+					model.AvailableProducts = db.tblProducts
+						.Where(p => p.CreatedDate.Value.Year == 2025)
+						.Select(p => new SelectListItem
+						{
+							Value = p.Id.ToString(),
+							Text = p.ProductName
+						})
+						.ToList();
+				}
+				return View(model);
+			}
+
+			using (var db = new jotunDBEntities())
+			{
+				var package = new Package
+				{
+					PackageName = model.Name,
+					Price = model.Price,
+					Description = model.Description,
+					CreatedAt = DateTime.Now,
+					/*CreatedBy = */
+					Status = 1,
+				};
+				db.Packages.Add(package);
+				db.SaveChanges();
+
+				// Save selected services
+				if (model.SelectedServices != null && model.SelectedServices.Any())
+				{
+					foreach (var service in model.SelectedServices)
+					{
+						var packageService = new PackageService
+						{
+							PackageId = package.Id,
+							ServiceId = service.Id,
+							Quantity = service.Quantity,	
+						};
+						db.PackageServices.Add(packageService);
+					}
+					db.SaveChanges();
+				}
+
+				// Save selected products
+				if (model.SelectedProducts != null && model.SelectedProducts.Any())
+				{
+					foreach (var product in model.SelectedProducts)
+					{
+						var packageProduct = new PackageProduct
+						{
+							PackageId = package.Id,
+							ProductId = product.Id,
+							Quantity = product.Quantity,
+						};
+						db.PackageProducts.Add(packageProduct);
+					}
+					db.SaveChanges();
+				}
+			}
+			return RedirectToAction("Index");
+		}
+
+
 	}
 
 }
