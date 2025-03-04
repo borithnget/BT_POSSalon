@@ -1132,6 +1132,8 @@ namespace jotun.Controllers
 							PackageId = package.Id,
 							ProductId = product.Id,
 							Quantity = product.Quantity,
+							Unit = product.Unit,
+							Qty = product.Qty,
 						};
 						db.PackageProducts.Add(packageProduct);
 					}

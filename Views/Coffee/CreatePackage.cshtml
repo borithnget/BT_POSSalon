@@ -1,0 +1,321 @@
+﻿@model jotun.Models.CreatePackageViewModel
+
+<h2 style="margin-top: 30px; margin-left:10px;">Create Package</h2>
+
+@using (Html.BeginForm("CreatePackage", "Coffee", FormMethod.Post, new { @class = "form-horizontal" , id = "createPackageForm" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="ml-4 mt-4">
+        <!-- Product and Service Info Section -->
+        <div class="form-group">
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.Name, new { @class = "col-md-12 control-label" })
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.Price, new { @class = "col-md-12 control-label" })
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.Description, new { @class = "col-md-12 control-label" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", style = "width: 300px;" })
+                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-4">
+                    @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", step = "0.01", style = "width: 300px;" })
+                    @Html.ValidationMessageFor(m => m.Price)
+                </div>
+                <div class="col-md-4">
+                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 4, style = "width: 500px;" })
+                    @Html.ValidationMessageFor(m => m.Description)
+                </div>
+            </div>
+        </div>
+
+        <!-- Package Type Section: Radio Buttons for 4 Options -->
+        <div class="form-group">
+            <label class="col-md-4 control-label">Select Package Type</label>
+            <div class="col-md-8">
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="PackageType" id="onlyProducts" value="onlyProducts" />
+                    <label class="form-check-label" for="onlyProducts">Only Products</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="PackageType" id="onlyServices" value="onlyServices" />
+                    <label class="form-check-label" for="onlyServices">Only Services</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="PackageType" id="bothProductsAndServices" value="bothProductsAndServices" />
+                    <label class="form-check-label" for="bothProductsAndServices">Both Products and Services</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="PackageType" id="noProductsOrServices" value="noProductsOrServices" />
+                    <label class="form-check-label" for="noProductsOrServices">No Products/Services</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Services Section -->
+        <button type="button" id="addServiceRow" class="btn btn-primary d-none">Add Service</button>
+        <div id="serviceTableContainer" class="mt-2 d-none">
+            <table id="serviceTable" class="table">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody id="serviceRows">
+                    @for (int i = 0; i < Model.SelectedServices.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DropDownListFor(m => m.SelectedServices[i].Id,
+                                    new SelectList(Model.AvailableServices, "Value", "Text", Model.SelectedServices[i].Id),
+                                    "-- Select Service --",
+                                    new { @class = "form-control", style = "width: 300px;" })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.SelectedServices[i].Quantity, new { @class = "form-control", type = "number", min = "1", style = "width: 150px;" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Products Section -->
+        <button type="button" id="addProductRow" class="btn btn-primary d-none">Add Product</button>
+        <div id="productTableContainer" class="mt-2 d-none">
+            <table id="productTable" class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Qty</th>
+                    </tr>
+                </thead>
+                <tbody id="productRows">
+                    @for (int i = 0; i < Model.SelectedProducts.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DropDownListFor(m => m.SelectedProducts[i].Id,
+                                    new SelectList(Model.AvailableProducts, "Value", "Text", Model.SelectedProducts[i].Id),
+                                    "-- Select Product --",
+                                    new { @class = "form-control", style = "width: 300px;" })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.SelectedProducts[i].Quantity, new { @class = "form-control", type = "number", min = "1", style = "width: 150px;" })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.SelectedProducts[i].Unit, new { @class = "form-control", type = "number", min = "1", style = "width: 150px;" })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.SelectedProducts[i].Qty, new { @class = "form-control", type = "number", min = "1", style = "width: 150px;" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Submit and Cancel Buttons -->
+        <div class="form-group row">
+            <div class="col-md-12 mt-3">
+                @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-secondary" })
+                <input type="submit" value="Create" class="btn btn-success" />
+            </div>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    document.getElementById("createPackageForm").addEventListener("submit", function (event) {
+        var name = document.getElementById("Name");
+        var price = document.getElementById("Price");
+        var description = document.getElementById("Description");
+
+        // Check if the required fields are empty
+        if (!name.value.trim() || !price.value.trim() || !description.value.trim()) {
+            event.preventDefault();  // Prevent form submission
+            alert("Please fill out all required fields.");
+        }
+    });
+
+  // Listen to changes on the radio buttons and show/hide appropriate sections
+document.querySelectorAll('input[name="PackageType"]').forEach(input => {
+    input.addEventListener("change", function () {
+        toggleTables(this.value);
+    });
+});
+function toggleTables(packageType) {
+    var serviceTableContainer = document.getElementById("serviceTableContainer");
+    var productTableContainer = document.getElementById("productTableContainer");
+    var addServiceRow = document.getElementById("addServiceRow");
+    var addProductRow = document.getElementById("addProductRow");
+
+    // Enable or disable fields and hide/show sections based on packageType
+    switch (packageType) {
+        case "onlyProducts":
+            // Hide service sections, show product sections
+            serviceTableContainer.classList.add("d-none");
+            productTableContainer.classList.remove("d-none");
+            addServiceRow.classList.add("d-none");
+            addProductRow.classList.remove("d-none");
+
+            // Disable service-related fields to avoid form submission
+            disableFields("SelectedServices");
+
+            // Enable product-related fields
+            enableFields("SelectedProducts");
+            break;
+
+        case "onlyServices":
+            // Show service sections, hide product sections
+            serviceTableContainer.classList.remove("d-none");
+            productTableContainer.classList.add("d-none");
+            addServiceRow.classList.remove("d-none");
+            addProductRow.classList.add("d-none");
+
+            // Disable product-related fields to avoid form submission
+            disableFields("SelectedProducts");
+
+            // Enable service-related fields
+            enableFields("SelectedServices");
+            break;
+
+        case "bothProductsAndServices":
+            // Show both service and product sections
+            serviceTableContainer.classList.remove("d-none");
+            productTableContainer.classList.remove("d-none");
+            addServiceRow.classList.remove("d-none");
+            addProductRow.classList.remove("d-none");
+
+            // Enable both product and service fields
+            enableFields("SelectedServices");
+            enableFields("SelectedProducts");
+            break;
+
+        case "noProductsOrServices":
+            // Hide both service and product sections
+            serviceTableContainer.classList.add("d-none");
+            productTableContainer.classList.add("d-none");
+            addServiceRow.classList.add("d-none");
+            addProductRow.classList.add("d-none");
+
+            // Disable both product and service fields
+            disableFields("SelectedServices");
+            disableFields("SelectedProducts");
+            break;
+
+        default:
+            break;
+    }
+
+    // After toggling the tables, make sure each row has a delete button
+    addDeleteButtonToRows('serviceRows');
+    addDeleteButtonToRows('productRows');
+}
+
+// Function to disable fields based on name prefix (e.g., "SelectedServices" or "SelectedProducts")
+function disableFields(prefix) {
+    document.querySelectorAll(`[name^="${prefix}"]`).forEach(el => {
+        el.disabled = true;
+    });
+}
+
+// Function to enable fields based on name prefix (e.g., "SelectedServices" or "SelectedProducts")
+function enableFields(prefix) {
+    document.querySelectorAll(`[name^="${prefix}"]`).forEach(el => {
+        el.disabled = false;
+    });
+}
+
+// Function to add a new row for service
+document.getElementById('addServiceRow').addEventListener('click', function () {
+    var rowCount = document.querySelectorAll("#serviceRows tr").length;
+    var newRow = document.createElement('tr');
+    newRow.innerHTML = `
+        <td>
+            <select name="SelectedServices[${rowCount}].Id" class="form-control" style="width: 300px;">
+                @foreach (var service in Model.AvailableServices)
+                {
+                    <option value="@service.Value">@service.Text</option>
+                }
+            </select>
+        </td>
+        <td>
+            <input type="number" name="SelectedServices[${rowCount}].Quantity" class="form-control" style="width: 150px;" min="1" value="1" />
+        </td>
+        <td>
+            <button type="button" class="btn btn-danger deleteRow">
+                <i class="fa fa-trash"></i> 
+            </button>
+        </td>
+    `;
+    document.getElementById('serviceRows').appendChild(newRow);
+    addDeleteButtonToRows('serviceRows'); // Re-add delete buttons
+});
+
+// Function to add a new row for product
+document.getElementById('addProductRow').addEventListener('click', function () {
+    var rowCount = document.querySelectorAll("#productRows tr").length; // Get the next index
+    var newRow = document.createElement('tr');
+    newRow.innerHTML = `
+        <td>
+            <select name="SelectedProducts[${rowCount}].Id" class="form-control" style="width: 300px;">
+                @foreach (var product in Model.AvailableProducts)
+                {
+                    <option value="@product.Value">@product.Text</option>
+                }
+            </select>
+        </td>
+        <td>
+            <input name="SelectedProducts[${rowCount}].Quantity" type="number" class="form-control" style="width: 150px;" min="1" value="1" />
+        </td>
+        <td>
+            <input name="SelectedProducts[${rowCount}].Unit" type="text" class="form-control" style="width: 150px;" value="" />
+        </td>
+        <td>
+            <input name="SelectedProducts[${rowCount}].Qty" type="number" class="form-control" style="width: 150px;" min="1" value="1" />
+        </td>
+        <td>
+            <button type="button" class="btn btn-danger deleteRow">
+                <i class="fa fa-trash"></i> 
+            </button>
+        </td>
+    `;
+    document.getElementById('productRows').appendChild(newRow);
+    addDeleteButtonToRows('productRows'); // Re-add delete buttons
+});
+
+// Function to add delete button to rows if they are not already there
+function addDeleteButtonToRows(tableId) {
+    var rows = document.getElementById(tableId).querySelectorAll('tr');
+    rows.forEach(row => {
+        if (!row.querySelector('.deleteRow')) { // Ensure we don't add multiple delete buttons
+            var deleteButton = document.createElement('td');
+            deleteButton.innerHTML = `
+                <button type="button" class="btn btn-danger deleteRow">
+                    <i class="fa fa-trash"></i> 
+                </button>
+            `;
+            row.appendChild(deleteButton);
+        }
+    }); 
+}
+
+// Event listener for deleting rows
+document.addEventListener("click", function (e) {
+    if (e.target && e.target.classList.contains("deleteRow")) {
+        var row = e.target.closest("tr");
+        row.parentNode.removeChild(row);
+    }
+});
+toggleTables(document.querySelector('input[name="PackageType"]:checked')?.value || "noProductsOrServices");
+</script>
