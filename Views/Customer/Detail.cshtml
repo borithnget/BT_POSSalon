@@ -1,196 +1,131 @@
-﻿@model jotun.Models.CustomerViewModels
+﻿@model jotun.Models.CustomerOrderViewModel
 @{
     ViewBag.Title = "Detail";
 }
 
-@*<script src="~/Scripts/jquery-3.4.1.min.js"></script>
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<link rel="stylesheet" href="/resources/demos/style.css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@
-
-
 @using (Html.BeginForm("Detail", "Customer", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
-
-    <div style="background-color:#e9ecef; padding:15px;">
-        <h4>Detail Customer</h4>
+    <div class="container-fluid" style="padding: 15px;">
+        <h4>Customer Details</h4>
         <hr />
-        <div class="center-block" style="background-color:transparent">
-            @Html.AntiForgeryToken()
-            @Html.ValidationSummary("", new { @class = "text-danger" })
-            @Html.HiddenFor(model => model.Id)
-            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                <div class="modal-dialog modal-sm" role="document">
-                    <div class="modal-content">
 
-                        <div class="modal-body">
-                            Are you sure you want to delete?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                            <input type="reset" value="Delete" i class="btn btn-danger" onclick="window.location='/Customer/Delete/@Html.ValueFor(model => model.Id)';" />
-                        </div>
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary("", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.Customer.Id)
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+
+                    <div class="modal-body">
+                        Are you sure you want to delete?
                     </div>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-md-4" style="background-color:transparent">
-                        <div class="form-group ">
-                            @Html.Label("Date", new { @class = "col-md-12 control-label" })
-                            <div class="col-md-12">
-
-                                @Html.TextBoxFor(m => m.CreatedDate, new { @class = " form-control", @readonly = "readonly" })
-                                @*   @Html.LabelFor(m => m.UpdatedDate, DateTime.Now.ToString("dd-MMM-yyyy"), new { @class = " form-control", @readonly = "readonly" })*@
-                            </div>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <input type="reset" value="Delete" i class="btn btn-danger" onclick="window.location='/Customer/Delete/@Html.ValueFor(model => model.Customer.Id)';" />
                     </div>
-                    <div class="col-md-4" style="background-color:transparent">
-                        <div class="form-group">
-                            @Html.Label("Customer No", new { @class = "col-md-12 control-label disabled" })
-                            <div class="col-md-12">
-                                @Html.TextBoxFor(m => m.CustomerNo, new { @class = "form-control getAutoCustomerNo", @readonly = "readonly" })
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-md-4" style="background-color:transparent">
-                        <div class="form-group">
-                            <span style=" float:left">
-                                @Html.Label("Customer Name", new { @class = "col-md-12 control-label disabled" })
-                            </span>
-                            <span style="color:red; float:left; font-size:20px">*</span>
-                            <div class="col-md-12">
-                                @Html.TextBoxFor(m => m.CustomerName, new { @class = "form-control", @readonly = "readonly" })
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4" style="background-color:transparent">
-                        <div class="form-group">
-                            <span style=" float:left">
-                                @Html.Label("Phone Number", new { @class = "col-md-12 control-label disabled" })
-                            </span>
-                            <span style="color:red; float:left; font-size:20px">*</span>
-                            <div class="col-md-12">
-                                @Html.TextBoxFor(m => m.PhoneNumber, new { @class = "form-control", @readonly = "readonly" })
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-md-4" style="background-color:transparent">
-                        <div class="form-group">
-                            @Html.Label("Gender", new { @class = "col-md-12 control-label" })
-                            <div class="col-md-12">
-                                @Html.TextBoxFor(m => m.Gender, new { @class = "form-control", @readonly = "readonly" })
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4" style="background-color:transparent">
-
-                        <div class="form-group">
-                            @Html.Label("Project Location", new { @class = "col-md-12 control-label" })
-                            <div class="col-md-12">
-                                @*@Html.TextBoxFor(m => m.ProjectLocation, new { @class = "form-control", @readonly = "readonly" })*@
-                                @{ if (Model.locations.Count > 0)
-                                    {
-                                        foreach (var l in Model.locations)
-                                        {
-                                           
-                                            <span style="white-space: pre-line">@l.location</span> <br/>
-                                        }
-                                    }
-                                }
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-md-8" style="background-color:transparent">
-                        <div class="form-group">
-                            @Html.Label("Noted", new { @class = "col-md-3 control-label" })
-                            <div class="col-md-12">
-                                @Html.TextAreaFor(m => m.Noted, new { @class = "form-control", @readonly = "readonly" })
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-
-
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-9">
-                    <input type="reset" value="Edit" id="kosalid" class="btn btn-info" onclick="window.location='/Customer/Edit/@Html.ValueFor(model => model.Id)';" />
-                    <input type="reset" value="Delete" id="kosalid" class="btn btn-danger" data-toggle="modal" data-target="#myModal" />
-                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Customer';" />
-
                 </div>
             </div>
         </div>
+        <!-- Row for Personal Info and Order Info with gap -->
+        <div class="row justify-content-between" style="display: flex; flex-wrap: nowrap;">
+            <!-- Personal Info Box (40% of screen with 10px gap) -->
+            <div class="col-4 mb-3" style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-right: 10px; flex: 0 0 40%; max-width: 40%; min-width: 0;">
+                <h5 class="text-center">Personal Information</h5>
 
+                <div class="d-flex mb-2">
+                    <span style="flex: 0 0 40%; text-align: right; font-weight: bold;">Date :</span>
+                    <span style="flex: 0 0 60%; text-align: left; padding-left: 10px;">@Model.Customer.CreatedDate</span>
+                </div>
+
+                <div class="d-flex mb-2">
+                    <span style="flex: 0 0 40%; text-align: right; font-weight: bold;">Customer No :</span>
+                    <span style="flex: 0 0 60%; text-align: left; padding-left: 10px;">@Model.Customer.CustomerNo</span>
+                </div>
+
+                <div class="d-flex mb-2">
+                    <span style="flex: 0 0 40%; text-align: right; font-weight: bold;">Customer Name :</span>
+                    <span style="flex: 0 0 60%; text-align: left; padding-left: 10px;">@Model.Customer.CustomerName</span>
+                </div>
+
+                <div class="d-flex mb-2">
+                    <span style="flex: 0 0 40%; text-align: right; font-weight: bold;">Phone Number :</span>
+                    <span style="flex: 0 0 60%; text-align: left; padding-left: 10px;">@Model.Customer.PhoneNumber</span>
+                </div>
+
+                <div class="d-flex mb-2">
+                    <span style="flex: 0 0 40%; text-align: right; font-weight: bold;">Gender :</span>
+                    <span style="flex: 0 0 60%; text-align: left; padding-left: 10px;">@Model.Customer.Gender</span>
+                </div>
+
+                <div class="d-flex mb-2">
+                    <span style="flex: 0 0 40%; text-align: right; font-weight: bold;">Project Location :</span>
+                    <span style="flex: 0 0 60%; text-align: left; padding-left: 10px;">
+                        @if (Model.Customer.locations != null && Model.Customer.locations.Count > 0)
+                        {
+                            foreach (var location in Model.Customer.locations)
+                            {
+                                <span>@location.location</span>
+                            }
+                        }
+                        else
+                        {
+                            <span>No location available</span>
+                        }
+                    </span>
+                </div>
+
+                <div class="d-flex mb-2">
+                    <span style="flex: 0 0 40%; text-align: right; font-weight: bold;">Noted :</span>
+                    <span style="flex: 0 0 60%; text-align: left; padding-left: 10px;">@Model.Customer.Noted</span>
+                </div>
+
+                <!-- Action Buttons (centered) -->
+                <div class="d-flex justify-content-center mt-3">
+                    <button type="button" class="btn btn-primary mr-2" onclick="window.location='/Customer/Edit/@Html.ValueFor(model => model.Customer.Id)'">Edit</button>
+                    <button type="button" class="btn btn-danger mr-2" data-toggle="modal" data-target="#myModal">Delete</button>
+                    <button type="button" class="btn btn-secondary" onclick="window.location='/Customer'">Cancel</button>
+                </div>
+            </div>
+            <!-- Order Info Box (60% of screen) -->
+            <div class="col-8 mb-3" style="background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); flex: 0 0 60%; max-width: 58%; min-width: 0;" lang="km">
+                <h5 class="text-center">ប្រវត្តិនៃការបញ្ជាទិញ</h5>
+                @if (Model.OrderHistory != null && Model.OrderHistory.Count > 0)
+                {
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ថ្ងៃបញ្ជាទិញ</th>
+                                <th>លេខកូដបញ្ជាទិញ</th>
+                                <th>ចំនួន</th>
+                                <th>ស្ថានភាព</th>
+                                <th>ចំនួនទឹកប្រាក់សរុប</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.OrderHistory)
+                            {
+                                <tr>
+                                    <td>@order.CreatedDate</td>
+                                    <td>@order.InvoiceNo</td>
+                                    <td>@order.Quantity</td>
+                                    <td>@order.InvoiceStatus</td>
+                                    <td>@order.Amount</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-center">No order history available.</p>
+                }
+            </div>
+        </div>
     </div>
-
-
-    @section Scripts {
-        <script>
-            
-
-        </script>
-
-        @Scripts.Render("~/bundles/jqueryval")
-    }
-
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@section Scripts {
+    <link rel="stylesheet" href="~/Content/css/site.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap" rel="stylesheet">
+    @Scripts.Render("~/bundles/jqueryval")
+}

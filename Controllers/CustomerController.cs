@@ -209,59 +209,87 @@ namespace jotun.Controllers
 
             }
         }
+		public ActionResult Detail(string id)
+		{
+			using (jotunDBEntities db = new jotunDBEntities())
+			{
+				var customer = db.tblCustomers.Find(id);
+				if (customer == null)
+					return HttpNotFound();
 
-        [HttpGet]
-        public ActionResult Detail(string id)
-        {
+				// Fetch order history using SaleViewModels
+				var orderHistory = SaleViewModels.GetNoDetail(id);
+				var viewModel = new CustomerOrderViewModel
+				{
+					Customer = new CustomerViewModels()
+					{
+						Id = customer.Id,
+						CreatedDate = (customer.UpdatedDate ?? customer.CreatedDate)?.ToString("dd-MMM-yyyy"),
+						CustomerName = customer.CustomerName,
+						CustomerNo = customer.CustomerNo,
+						Gender = customer.Gender,
+						PhoneNumber = customer.PhoneNumber,
+						ProjectLocation = customer.ProjectLocation,
+						Noted = customer.Noted,
+						locations = db.tblCustomer_location
+							.Where(l => l.customer_id == customer.Id && l.status == true)
+							.ToList()
+					},
+					OrderHistory = (List<SaleViewModels>)orderHistory
+				};
 
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            using (jotunDBEntities db = new jotunDBEntities())
-            {
-                tblCustomer customer = db.tblCustomers.Find(id);
-                if (customer == null)
-                {
-                    return HttpNotFound();
-                }
-                if (customer.UpdatedDate.Equals(null))
-                {
-                    return View(new CustomerViewModels()
-                    {
-                        Id = customer.Id,
-                        CreatedDate = Convert.ToDateTime(customer.CreatedDate).ToString("dd-MMM-yyyy"),
-                        CustomerName = customer.CustomerName,
-                        CustomerNo = customer.CustomerNo,
-                        Gender = customer.Gender,
-                        PhoneNumber = customer.PhoneNumber,
-                        ProjectLocation = customer.ProjectLocation,
-                        Noted = customer.Noted,
-                        locations = db.tblCustomer_location.Where(l => l.customer_id == customer.Id && l.status == true).ToList()
-                    });
-                }
-                else
-                {
-                    return View(new CustomerViewModels()
-                    {
-                        Id = customer.Id,
-                        CreatedDate = Convert.ToDateTime(customer.UpdatedDate).ToString("dd-MMM-yyyy"),
-                        CustomerName = customer.CustomerName,
-                        CustomerNo = customer.CustomerNo,
-                        Gender = customer.Gender,
-                        PhoneNumber = customer.PhoneNumber,
-                        ProjectLocation = customer.ProjectLocation,
-                        Noted = customer.Noted,
-                        locations = db.tblCustomer_location.Where(l => l.customer_id == customer.Id && l.status == true).ToList()
-                    });
-                }
-                
-            }
-        }
+				return View(viewModel);
+			}
+		}
+		/* [HttpGet]
+		 public ActionResult Detail(string id)
+		 {
 
+			 if (id == null)
+			 {
+				 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+			 }
+			 using (jotunDBEntities db = new jotunDBEntities())
+			 {
+				 tblCustomer customer = db.tblCustomers.Find(id);
+				 if (customer == null)
+				 {
+					 return HttpNotFound();
+				 }
+				 if (customer.UpdatedDate.Equals(null))
+				 {
+					 return View(new CustomerViewModels()
+					 {
+						 Id = customer.Id,
+						 CreatedDate = Convert.ToDateTime(customer.CreatedDate).ToString("dd-MMM-yyyy"),
+						 CustomerName = customer.CustomerName,
+						 CustomerNo = customer.CustomerNo,
+						 Gender = customer.Gender,
+						 PhoneNumber = customer.PhoneNumber,
+						 ProjectLocation = customer.ProjectLocation,
+						 Noted = customer.Noted,
+						 locations = db.tblCustomer_location.Where(l => l.customer_id == customer.Id && l.status == true).ToList()
+					 });
+				 }
+				 else
+				 {
+					 return View(new CustomerViewModels()
+					 {
+						 Id = customer.Id,
+						 CreatedDate = Convert.ToDateTime(customer.UpdatedDate).ToString("dd-MMM-yyyy"),
+						 CustomerName = customer.CustomerName,
+						 CustomerNo = customer.CustomerNo,
+						 Gender = customer.Gender,
+						 PhoneNumber = customer.PhoneNumber,
+						 ProjectLocation = customer.ProjectLocation,
+						 Noted = customer.Noted,
+						 locations = db.tblCustomer_location.Where(l => l.customer_id == customer.Id && l.status == true).ToList()
+					 });
+				 }
 
-
-        public JsonResult GetCustomerData()
+			 }
+		 }*/
+		public JsonResult GetCustomerData()
         {
             string xx = "";
 
