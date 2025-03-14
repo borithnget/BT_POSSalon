@@ -1,0 +1,123 @@
+﻿@model IEnumerable<jotun.Entities.tb_Acc_AccountType>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <h2 class="ml-3">Account Type List</h2>
+    <button class="btn btn-primary mr-5 ms-1" data-toggle="modal" data-target="#createAccountTypeModal">
+        <i class="fa-solid fa-plus ml-2"></i> CREATE NEW ACCOUNT TYPE
+    </button>
+</div>
+
+<div class="container" style="max-width: 95%; margin: 0 auto; margin-top: 30px;">
+    <table id="accountTypeTable" class="table table-bordered table-striped" style="width: 100%;">
+        <thead class="table-dark">
+            <tr>
+                <th>No.</th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var accountType in Model)
+            {
+                <tr>
+                    <td>@(Model.ToList().IndexOf(accountType) + 1)</td>
+                    <td>@accountType.AccountTypeCode</td>
+                    <td>@accountType.AccountTypeName</td>
+                    <td>@accountType.Description</td>
+                    <td>
+                        <a href="javascript:void(0);" class="btn btn-primary btn-sm edit-topup" data-id="@accountType.Id">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="modal fade" id="createAccountTypeModal" tabindex="-1" role="dialog" aria-labelledby="createAccountTypeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createAccountTypeModalLabel">Create New Account Type</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="@Url.Action("Create", "Accounting")">
+                        <div class="form-group">
+                            <label for="AccountTypeCode">Code</label>
+                            <input type="text" class="form-control" id="AccountTypeCode" name="AccountTypeCode" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="AccountTypeName">Name</label>
+                            <input type="text" class="form-control" id="AccountTypeName" name="AccountTypeName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Description">Description</label>
+                            <textarea class="form-control" id="Description" name="Description"></textarea>
+                        </div>
+                        <div class="form-group text-right">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editAccountTypModal" tabindex="-1" role="dialog" aria-labelledby="editAccountTypModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAccountTypModalLabel">Edit Account Type</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="~/Content/css/site.css">
+<link href="~/Content/vendor/datatables/datatables.min.css" rel="stylesheet" />
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<link href="~/Content/vendor/datatables/datatables.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+@section Scripts {
+    <script src="~/Scripts/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#accountTypeTable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "lengthMenu": [5, 10, 25, 50, 100],
+                "language": {
+                    "search": "Search Account Types:"
+                }
+            });
+    $('#accountTypeTable').on('click', '.btn-primary', function () {
+        var accountTypeId = $(this).data('id');
+        $.ajax({
+            url: '@Url.Action("EditAccountType","Accounting")/' + accountTypeId,
+        type: 'GET',
+        success: function (response) {
+            console.log('Response:', response);
+        $('#editAccountTypModal .modal-body').html(response);
+        $('#editAccountTypModal').modal('show');
+        },
+        error: function (xhr, status, error) {
+        console.error('Error:', error);
+        alert('Error loading the edit form.');
+    }
+        });
+    });
+    });
+    </script>
+}

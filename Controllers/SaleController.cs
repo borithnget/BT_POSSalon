@@ -981,7 +981,6 @@ namespace jotun.Controllers
                         }
                     }
                 }
-
                 // string code = CommonFunction.GenerateServiceCodeNumber(id);
                 return Json(new { result = Result.Success }, JsonRequestBehavior.AllowGet);
 
@@ -1368,7 +1367,6 @@ namespace jotun.Controllers
                     ViewBag.ErrorMessage = "No customer found with the provided ID.";
                 }
             }
-
             return View();
         }
 
@@ -1447,24 +1445,24 @@ namespace jotun.Controllers
                 if (old_record)
                 {
 
-                    /* sale_list = (from s in db.tblSales
+					/* sale_list = (from s in db.tblSales
                                       join c in db.tblCustomers on s.CustomerId equals c.Id
                                       where c.CustomerName == customer_name.CustomerName && s.Status == 1
                                       select s)
                                       .ToList();  */
-                    sale_list = db.tblSales
-                                .Where(s => s.Status == 1 && s.CustomerId == customer_name.Id)
-                                .Join(db.tblCustomers,
-                                 s => s.CustomerId, c => c.Id, (s, c) => new { Sale = s, Customer = c })
-                                .Where(sc => sc.Customer.CustomerName == customer_name.CustomerName)
-                                .Select(sc => sc.Sale)
-                                .ToList();
-                }
-                else
+					 sale_list = db.tblSales
+								 .Where(s => s.Status == 1 && s.CustomerId == customer_name.Id)
+								 .Join(db.tblCustomers,
+								  s => s.CustomerId, c => c.Id, (s, c) => new { Sale = s, Customer = c })
+								 .Where(sc => sc.Customer.CustomerName == customer_name.CustomerName)
+								 .Select(sc => sc.Sale)
+								 .ToList();
+				}
+				else
                 {
                     sale_list = (from s in db.tblSales
-                                 where s.CustomerId == customer_id && s.Status == 1
-                                 select s).ToList();
+                                 where s.CustomerId == customer_id && s.Status == 1 
+								 select s).ToList();
                 }
                 foreach (var sale in sale_list)
                 {

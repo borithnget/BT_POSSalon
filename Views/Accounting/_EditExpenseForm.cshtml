@@ -1,0 +1,85 @@
+﻿@model jotun.Models.AccountingViewModel
+<form id="editExpenseForm" method="post" action="@Url.Action("EditExpense", "Accounting")">
+    @Html.AntiForgeryToken()
+
+    @for (int loopIndex = 0; loopIndex < Model.Expenses.Count; loopIndex++)
+    {
+        var expense = Model.Expenses[loopIndex];
+        <div class="card-body">
+            @Html.HiddenFor(m => m.Expenses[loopIndex].Id)
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Expenses[loopIndex].Date, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Expenses[loopIndex].Date, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", name = "Expenses[" + loopIndex + "].Date" })
+                        @Html.ValidationMessageFor(m => m.Expenses[loopIndex].Date, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Expenses[loopIndex].Cost, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Expenses[loopIndex].Cost, "{0:F2}", new { @class = "form-control", name = "Expenses[" + loopIndex + "].Cost" })
+                        @Html.ValidationMessageFor(m => m.Expenses[loopIndex].Cost, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Expenses[loopIndex].SupplierName, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Expenses[loopIndex].SupplierName, new { @class = "form-control", name = "Expenses[" + loopIndex + "].SupplierName" })
+                        @Html.ValidationMessageFor(m => m.Expenses[loopIndex].SupplierName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Expenses[loopIndex].SupplierContact, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.Expenses[loopIndex].SupplierContact, new { @class = "form-control", name = "Expenses[" + loopIndex + "].SupplierContact" })
+                        @Html.ValidationMessageFor(m => m.Expenses[loopIndex].SupplierContact, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.Expenses[loopIndex].Description, new { @class = "control-label" })
+                        @Html.TextAreaFor(m => m.Expenses[loopIndex].Description, new { @class = "form-control", rows = 3, name = "Expenses[" + loopIndex + "].Description" })
+                        @Html.ValidationMessageFor(m => m.Expenses[loopIndex].Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-right: 2px;">
+                    <i class="bi bi-x-circle"></i> Close
+                </button>
+                <button type="submit" class="btn btn-primary" style="margin-left: 2px;">
+                    <i class="bi bi-save"></i> Save
+                </button>
+            </div>
+        </div>
+    }
+</form>
+<script>
+    $("#editExpenseForm").submit(function(event) {
+        event.preventDefault();  
+        $.ajax({
+            url: $(this).attr("action"),
+            type: $(this).attr("method"),
+            data: $(this).serialize(),
+            success: function(response) {             
+                if (response.success) {
+                    $('#editExpenseModal').modal('hide');                
+                    window.location.href = '@Url.Action("ExpenseList", "Accounting")';
+                }
+            },
+            error: function(xhr, status, error) {
+                alert("There was an error updating the expense.");
+            }
+        });
+    });
+</script>

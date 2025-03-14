@@ -12,17 +12,16 @@ namespace jotun.Entities
     using System;
     using System.Collections.Generic;
     
-    public partial class tblServiceProduct
+    public partial class tb_Acc_Expense
     {
-        public System.Guid ServiceProductId { get; set; }
-        public System.Guid ServiceId { get; set; }
-        public string ProductId { get; set; }
-        public int Quantity { get; set; }
-        public string Quality { get; set; }
-        public string Notes { get; set; }
-        public string Unit { get; set; }
-    
-        public virtual tblProduct tblProduct { get; set; }
-        public virtual tblService tblService { get; set; }
+        public int Id { get; set; }
+        public string Description { get; set; }
+        public Nullable<bool> IsActive { get; set; }
+        public string Status { get; set; }
+        public Nullable<System.DateTime> CreatedAt { get; set; }
+        public Nullable<System.DateTime> UpdatedAt { get; set; }
+        public string CreatedBy { get; set; }
+        public string UpdatedBy { get; set; }
+        public Nullable<int> ShopId { get; set; }
     }
 }

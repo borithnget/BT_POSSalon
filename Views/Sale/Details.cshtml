@@ -7,7 +7,7 @@
 
 @using (Html.BeginForm("Details", "Sale", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
-    <div style="background-color:#e9ecef; padding:15px;">
+    <div style="background-color:#ffffff; padding:15px;">
         <h4>Detail Sale </h4>
         <hr />
         <div class="center-block" style="background-color:transparent">
@@ -55,7 +55,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+                           @* <div class="row">
                                 <div class="col-md-6" style="background-color:transparent">
 
                                 </div>
@@ -71,7 +71,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>*@
 
 
                         </div>
@@ -99,9 +99,12 @@
                     <thead>
                         <tr>
                             <th>No.</th>
-                            <th>Product</th>
-                            <th>Color Code</th>
-                            <td>Unit Type</td>
+                            <th>Product Details</th>
+                            @* <th>Color Code</th>*@
+                            @* <td>Unit Type</td>*@
+                            <th>ServiceType</th>
+                            <th>ProductType</th>
+                            <th>Customer Type</th>
                             <th>Quantity</th>
                             <th>Price</th>
                             <th>Total</th>
@@ -114,11 +117,13 @@
                             {
                                 <tr>
                                     <td>@count</td>
-                                    <td>@item.ProductIdn</td>
-                                    <td>@item.color_code</td>
+                                   <td>@(item.ProductIdn + " - " + item.Size + " - " + item.Sugar)</td>
+                                   @* <td>@item.color_code</td>*@
+                                    <td></td>
+                                    <td></td>
                                     <td>@item.UNit</td>
                                     <td>@item.Quantity</td>
-                                    <td>@item.actual_price</td>
+                                    <td>@item.Price</td>
                                     <td class="totals">@item.Total</td>
                                 </tr>
                                 count++;
@@ -129,25 +134,25 @@
 
                     <tfoot>
                         <tr>
-                            <th colspan="6" style="text-align:right !important;">Sub Total($): </th>
+                            <th colspan="7" style="text-align:right !important;">Sub Total($): </th>
                             <th colspan="1">
                                 @Html.TextBoxFor(m => m.Amount, new { id = "Total", @class = "form-control", @readonly = "readonly" })
 
                             </th>
                         </tr>
-
+@*
                         <tr>
                             <th colspan="6" style="text-align:right !important;">Owe($): </th>
                             <th colspan="1">
                                 @Html.TextBoxFor(m => m.Owe, new { id = "Owe", @class = "form-control", @readonly = "readonly" })
 
                             </th>
-                        </tr>
+                        </tr>*@
 
 
 
                         <tr>
-                            <th colspan="6" style="text-align:right !important;">Discount($):</th>
+                            <th colspan="7" style="text-align:right !important;">Discount($):</th>
                             <th colspan="1">
                                 @*@Html.TextBoxFor(m => m.Discount, new { id = "Discount", @class = "form-control", @readonly = "readonly" })*@
                                 @Html.TextBoxFor(m => m.Discount, new { id = "Discount", @class = "form-control", @type = "number", @min = "0", @step = "0.01", @value = "0" })
@@ -157,7 +162,7 @@
 
 
                         <tr>
-                            <th colspan="6" style="text-align:right !important;">Old Received From Customer($):</th>
+                            <th colspan="7" style="text-align:right !important;">Old Received From Customer($):</th>
                             <th colspan="1">
                                 @Html.TextBoxFor(m => m.RevicedFromCustomer, new { id = "RevicedFromCustomer", @class = "form-control", @readonly = "readonly" })
                             </th>
@@ -165,13 +170,13 @@
                         @if (Convert.ToDecimal(Model.Owe) > 0)
                         {
                             <tr>
-                                <th colspan="6" style="text-align:right !important;">New Received From Customer Cash($):</th>
+                                <th colspan="7" style="text-align:right !important;">New Received From Customer Cash($):</th>
                                 <th colspan="1">
                                     @Html.TextBoxFor(m => m.RevicedFromCustomer1, new { id = "RevicedFromCustomer1", @class = "form-control", @autocomplete = "off", @type = "number", @step = "0.01", @value = "0" })
                                 </th>
                             </tr>
                             <tr>
-                                <th colspan="6" style="text-align:right !important;">New Received From Customer ABA($):</th>
+                                <th colspan="7" style="text-align:right !important;">New Received From Customer ABA($):</th>
                                 <th colspan="1">
                                     @Html.TextBoxFor(m => m.NewReceivedByABA, new { id = "RevicedFromCustomerABA", @class = "form-control", @autocomplete = "off", @type = "number", @step = "0.01", @value = "0" })
                                 </th>
@@ -191,7 +196,7 @@
 
                     @*<input type="reset" value="Edit" id="kosalid" class="btn btn-info" onclick="window.location='/Sale/EditNew/@Html.ValueFor(model => model.Id)';" />*@
                     <input type="reset" value="Delete" id="kosalid" class="btn btn-danger" data-toggle="modal" data-target="#myModal" />
-                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Sale';" />
+                    <input type="reset" value="Cancel" class="btn btn-secondary" onclick="window.location='/Sale/CustomerHistory';" />
 
                 </div>
             </div>

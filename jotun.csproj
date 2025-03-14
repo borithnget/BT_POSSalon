@@ -225,6 +225,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\AccountingController.cs" />
     <Compile Include="Controllers\AppointmentController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\CoffeeController.cs" />
@@ -301,6 +302,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>jotunDBEntities.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Entities\Package.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PackageProduct.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\PackageService.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="Entities\tblAppointment.cs">
       <DependentUpon>jotunDBEntities.tt</DependentUpon>
     </Compile>
@@ -323,6 +333,9 @@
       <DependentUpon>jotunDBEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\tblCustomer_location.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\tblExchangeRate.cs">
       <DependentUpon>jotunDBEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\tblInvoice.cs">
@@ -391,6 +404,24 @@
     <Compile Include="Entities\tbSalePayment.cs">
       <DependentUpon>jotunDBEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="Entities\tb_Acc_Account.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\tb_Acc_AccountType.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\tb_Acc_Expense.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\tb_Acc_Expense_Detail.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\tb_Expense_Amount.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\tb_Expense_Topup.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="Entities\UserProfile.cs">
       <DependentUpon>jotunDBEntities.tt</DependentUpon>
     </Compile>
@@ -408,12 +439,16 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AccountingViewModel.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\AppointmentModel.cs" />
     <Compile Include="Models\CategoryViewModels.cs" />
     <Compile Include="Models\Constain.cs" />
+    <Compile Include="Models\CreatePackageViewModel.cs" />
     <Compile Include="Models\CreateServiceViewModel.cs" />
+    <Compile Include="Models\CustomerOrderViewModel.cs" />
     <Compile Include="Models\CustomerViewModels.cs" />
+    <Compile Include="Models\EventCalendarViewModel.cs" />
     <Compile Include="Models\ExcelData.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\InvoiceViewModels.cs" />
@@ -2518,6 +2553,20 @@
     <Content Include="Views\Appointment\Create.cshtml" />
     <Content Include="Views\Appointment\Index.cshtml" />
     <Content Include="Views\Coffee\CreateService.cshtml" />
+    <Content Include="Views\Coffee\CreatePackage.cshtml" />
+    <Content Include="Views\Appointment\GetEventCalendar.cshtml" />
+    <Content Include="Views\Accounting\Index.cshtml" />
+    <Content Include="Views\Accounting\AccountType.cshtml" />
+    <Content Include="Views\Accounting\AccountList.cshtml" />
+    <Content Include="Views\Accounting\ExpenseList.cshtml" />
+    <Content Include="Views\Accounting\TopupList.cshtml" />
+    <Content Include="Views\Accounting\CreateExpense.cshtml" />
+    <Content Include="Views\Accounting\ExpenditureReport.cshtml" />
+    <Content Include="Views\Accounting\_EditExpenseForm.cshtml" />
+    <Content Include="Views\Accounting\_EditTopupForm.cshtml" />
+    <Content Include="Views\Accounting\ExpenseDiture.cshtml" />
+    <Content Include="Views\Accounting\_EditAccountTypeForm.cshtml" />
+    <Content Include="Views\Accounting\_EditAccountListForm.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -2564,6 +2613,9 @@
     <PackageReference Include="Microsoft.SqlServer.Types">
       <Version>14.0.1016.290</Version>
     </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>11.0.1</Version>
+    </PackageReference>
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
   </ItemGroup>
   <ItemGroup>
@@ -2597,25 +2649,4 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
-    <Error Condition="!Exists('packages\EntityFramework.6.5.1\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.5.1\build\EntityFramework.props'))" />
-    <Error Condition="!Exists('packages\EntityFramework.6.5.1\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.5.1\build\EntityFramework.targets'))" />
-  </Target>
-  <Import Project="packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
-  <!--<Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
-  </Target>-->
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target> -->
 </Project>

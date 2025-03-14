@@ -18,7 +18,6 @@ namespace jotun.Entities
         public jotunDBEntities()
             : base("name=jotunDBEntities")
         {
-            this.Configuration.LazyLoadingEnabled = false; 
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -65,5 +64,15 @@ namespace jotun.Entities
         public virtual DbSet<webpages_Membership> webpages_Membership { get; set; }
         public virtual DbSet<webpages_OAuthMembership> webpages_OAuthMembership { get; set; }
         public virtual DbSet<webpages_Roles> webpages_Roles { get; set; }
+        public virtual DbSet<PackageProduct> PackageProducts { get; set; }
+        public virtual DbSet<Package> Packages { get; set; }
+        public virtual DbSet<PackageService> PackageServices { get; set; }
+        public virtual DbSet<tb_Acc_Account> tb_Acc_Account { get; set; }
+        public virtual DbSet<tb_Acc_AccountType> tb_Acc_AccountType { get; set; }
+        public virtual DbSet<tb_Acc_Expense> tb_Acc_Expense { get; set; }
+        public virtual DbSet<tb_Acc_Expense_Detail> tb_Acc_Expense_Detail { get; set; }
+        public virtual DbSet<tb_Expense_Amount> tb_Expense_Amount { get; set; }
+        public virtual DbSet<tb_Expense_Topup> tb_Expense_Topup { get; set; }
+        public virtual DbSet<tblExchangeRate> tblExchangeRates { get; set; }
     }
 }

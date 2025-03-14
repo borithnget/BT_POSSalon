@@ -15,6 +15,7 @@ using System.Net;
 using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
 using System.Windows.Input;
@@ -378,7 +379,7 @@ namespace jotun.Controllers
 				return Json(new { success = true, data = serviceTypes }, JsonRequestBehavior.AllowGet);
 			}
 		}
-		public ActionResult CreateSale()
+		/*public ActionResult CreateSale()
 		{
 			using (jotunDBEntities db = new jotunDBEntities())
 			{
@@ -391,7 +392,7 @@ namespace jotun.Controllers
 			};
 			return View();
 
-		}
+		}*/
 		public JsonResult GetServicesByServiceType(Guid? serviceTypeId)
 		{
 			using (var db = new jotunDBEntities())
@@ -947,7 +948,32 @@ namespace jotun.Controllers
 	private class FromBodyAttribute : Attribute
 	{
 	}
- public ActionResult CreateService()
+	[HttpPost]
+	public JsonResult SaveServiceType([FromBody] tblServiceType model)
+	{
+			
+				if (model != null && !string.IsNullOrEmpty(model.Name))
+				{
+					using (var db = new jotunDBEntities())
+					{
+						var newServiceType = new tblServiceType
+						{
+							ServiceTypeId = Guid.NewGuid(),
+							Name = model.Name,
+							Description = model.Description,
+							IsActive = true,
+							CreatedAt = DateTime.Now,
+						};
+
+						db.tblServiceTypes.Add(newServiceType);
+						db.SaveChanges();
+					}
+
+					return Json(new { success = true, message = "Service type saved successfully." });
+				}
+				return Json(new { success = false, message = "Invalid data." });
+		}
+		public ActionResult CreateService()
 		{
 			using (var db = new jotunDBEntities())
 			{
@@ -974,7 +1000,29 @@ namespace jotun.Controllers
 				return View(model);
 			}
 		}
-	[HttpPost]
+		public ActionResult GetAvailableUnits(string productId)
+		{
+			using (var db = new jotunDBEntities())
+			{
+				var product = db.tblProducts
+					.Where(p => p.Id.ToString() == productId)
+					.FirstOrDefault();
+				if (product != null)
+				{
+					var unit = db.tblUnits
+						.Where(u => u.Id == product.Unitid) 
+						.Select(u => new SelectListItem
+						{
+							Value = u.Id.ToString(),
+							Text = u.UnitNameKh         
+						})
+						.ToList();
+					return Json(unit, JsonRequestBehavior.AllowGet);
+				}
+				return Json(new List<SelectListItem>(), JsonRequestBehavior.AllowGet);
+			}
+		}
+		[HttpPost]
 	[ValidateAntiForgeryToken]
 	public ActionResult CreateService(CreateServiceViewModel model)
 		{
@@ -1012,11 +1060,16 @@ namespace jotun.Controllers
 				{
 					foreach (var product in model.Products)
 					{
+						var unitName = db.tblUnits
+							.Where(u => u.Id == product.Unit) 
+							.Select(u => u.UnitNameKh)
+							.FirstOrDefault();
 						var serviceProduct = new tblServiceProduct
 						{
 							ServiceProductId = Guid.NewGuid(),
 							ServiceId = service.ServiceId,
 							ProductId = product.ProductId.ToString(), 
+							Unit = unitName,
 							Quantity = product.Quantity,
 							Quality = product.Quality
 						};

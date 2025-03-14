@@ -1,0 +1,81 @@
+﻿@model jotun.Models.AccountingViewModel
+
+<form id="editAccountForm" method="post" action="@Url.Action("EditAccount", "Accounting")">
+    @Html.AntiForgeryToken()
+
+    <div class="card-body">
+        @for (int i = 0; i < Model.EditAccounts.Count; i++)
+        {
+            <div class="row">
+                @Html.HiddenFor(m => m.EditAccounts[i].Id)
+
+                <div class="col-md-12 mb-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.EditAccounts[i].AccountName, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.EditAccounts[i].AccountName, new { @class = "form-control", placeholder = "Enter Account Name" })
+                        @Html.ValidationMessageFor(m => m.EditAccounts[i].AccountName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.EditAccounts[i].AccountCode, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.EditAccounts[i].AccountCode, new { @class = "form-control", placeholder = "Enter Account Code" })
+                        @Html.ValidationMessageFor(m => m.EditAccounts[i].AccountCode, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="col-md-12 mb-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.EditAccounts[i].AccountTypeId, new { @class = "control-label" })
+
+                        @Html.DropDownListFor(
+                            m => m.EditAccounts[i].AccountTypeId,
+                            new SelectList(Model.AccountTypes, "Value", "Text", Model.EditAccounts[i].AccountTypeId),
+                            "Select Account Type",
+                            new { @class = "form-control" }
+                        )
+
+                        @Html.ValidationMessageFor(m => m.EditAccounts[i].AccountTypeId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="col-md-12 mb-3">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.EditAccounts[i].Description, new { @class = "control-label" })
+                        @Html.TextAreaFor(m => m.EditAccounts[i].Description, new { @class = "form-control", placeholder = "Enter Description", rows = 4 })
+                        @Html.ValidationMessageFor(m => m.EditAccounts[i].Description, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-right: 2px;">
+                <i class="bi bi-x-circle"></i> Close
+            </button>
+            <button type="submit" class="btn btn-primary" style="margin-left: 2px;">
+                <i class="bi bi-save"></i> Save
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+    $("#editAccountForm").submit(function(event) {
+        event.preventDefault();
+        $.ajax({
+            url: $(this).attr("action"),
+            type: $(this).attr("method"),
+            data: $(this).serialize(),
+            success: function(response) {
+                if (response.success) {
+                    $('#editAccountModal').modal('hide');
+                    window.location.href = '@Url.Action("AccountList", "Accounting")'; 
+                }
+            },
+            error: function(xhr, status, error) {
+                alert("There was an error updating the account.");
+            }
+        });
+    });
+</script>

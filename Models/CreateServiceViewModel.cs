@@ -16,11 +16,12 @@ namespace jotun.Models
         public List<ServiceProductViewModel> Products { get; set; }
         public List<SelectListItem> AvailableProducts { get; set; }
     }
-
     public class ServiceProductViewModel
     {
         public Nullable<Guid> ProductId { get; set; }
         public int Quantity { get; set; }
         public string Quality { get; set; }
-    }
+        public string Unit { get; set; }
+		public List<SelectListItem> AvailableUnits { get; set; }
+	}
 }

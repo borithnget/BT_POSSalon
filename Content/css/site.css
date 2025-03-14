@@ -15,7 +15,6 @@
 #productGrid {
     flex-wrap: wrap;
 }
-
 .product-card {
     cursor: pointer;
     transition: transform 0.3s ease;
@@ -70,7 +69,6 @@
     box-sizing: border-box;
     justify-content: flex-start; /* Ensure it allows the search box to take the remaining space */
 }
-
 .icon-item {
     position: relative;
     padding: 10px 1vw;
@@ -138,7 +136,6 @@
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
 }
-
 #customerTypeDisplay {
     min-width: 120px;
     min-height: 40px;
@@ -148,7 +145,6 @@
     padding: 8px;
     gap: 4px;
 }
-
 @media (max-width: 768px) {
     .search-item {
         width: 80%;

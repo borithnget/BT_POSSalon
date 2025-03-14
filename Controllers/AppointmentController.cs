@@ -31,7 +31,6 @@ namespace jotun.Controllers
             }
 
         }
-
         // GET: Appointment/Details/5
         public ActionResult Details(int id)
         {
@@ -68,7 +67,6 @@ namespace jotun.Controllers
                 appointment.CreatedBy = User.Identity.GetUserId();
                 db.tblAppointments.Add(appointment);
                 db.SaveChanges();
-
                 if (model.service_id != null)
                 {
                     for (int i = 0; i < model.service_id.Count(); i++)
@@ -82,7 +80,6 @@ namespace jotun.Controllers
                         db.SaveChanges();
                     }
                 }
-
                 return RedirectToAction("Index");
             }
             catch (Exception ex)
@@ -137,7 +134,23 @@ namespace jotun.Controllers
         [HttpPost]
         public ActionResult GetAppointmentAJAX(string id)
         {
-            return Json(new {data=AppointmentModel.GetAppointmentModel(id)},JsonRequestBehavior.AllowGet);   
+            return Json(new { data = AppointmentModel.GetAppointmentModel(id) }, JsonRequestBehavior.AllowGet);
         }
+        public ActionResult GetEventCalendar()
+        {
+            var events = new List<EventViewModel>
+            {
+        new EventViewModel { Name = "Product Launch", Date = new DateTime(2025, 5, 1, 10, 0, 0), Description = "New product launch event" },
+        new EventViewModel { Name = "Team Meeting", Date = new DateTime(2025, 5, 2, 14, 0, 0), Description = "Discuss project updates" },
+        new EventViewModel { Name = "Client Visit", Date = new DateTime(2025, 5, 5, 9, 0, 0), Description = "Visit client for project discussion" }
+            };
+            var model = new EventCalendarViewModel
+            {
+                Events = events
+            };
+
+            return View(model); 
+        }
+
     }
 }

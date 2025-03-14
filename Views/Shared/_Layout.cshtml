@@ -204,6 +204,7 @@
 
                                         </ul>
                                     </li>
+
                                     @if (User.IsInRole("SuperAdmin") || User.IsInRole("Administrator"))
                                     {
                                         <li class="nav-item has-treeview">
@@ -253,9 +254,6 @@
                                                 </li>
                                             </ul>
                                         </li>
-
-
-
                                         <li class="nav-item">
                                             <a href="/Report/Owe" class="nav-link @ViewBag.reportoweactive" style="color:blue">
                                                 <i class="far fa-circle nav-icon"></i>
@@ -266,10 +264,61 @@
 
                                 </ul>
                             </li>
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link" style="color:white;">
+                                    <i class="fas fa-wallet nav-icon"></i>
+                                    <p>
+                                        Expense
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="/Accounting/ExpenseList" class="nav-link @ViewBag.reportexpenselistactive" style="color:blue">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Expense List</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/Accounting/TopupList" class="nav-link @ViewBag.reportpettycashmiscactive" style="color:blue">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Petty Cash - Miscellaneous Expenses</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="/Accounting/ExpenseDiture" class="nav-link @ViewBag.reportexpenditurereportactive" style="color:blue">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Expenditure Report</p>
+                                        </a>
+                                    </li>
 
+                                    <!-- Nested Accounts under Expense -->
+                                    <li class="nav-item has-treeview">
+                                        <a href="#" class="nav-link" style="color:blue">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>
+                                                Accounts
+                                                <i class="right fas fa-angle-left"></i>
+                                            </p>
+                                        </a>
+                                        <ul class="nav nav-treeview">
+                                            <li class="nav-item">
+                                                <a href="/Accounting/AccountType" class="nav-link @ViewBag.reportaccounttypeactive" style="color:blue">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Account Type</p>
+                                                </a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a href="/Accounting/AccountList" class="nav-link @ViewBag.reportaccountlistactive" style="color:blue">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Account List</p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
 
                         }
-
                         @if (User.IsInRole("SuperAdmin") || User.IsInRole("Administrator"))
                         {
                             <li class="nav-item">

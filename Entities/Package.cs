@@ -12,26 +12,25 @@ namespace jotun.Entities
     using System;
     using System.Collections.Generic;
     
-    public partial class tblService
+    public partial class Package
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public tblService()
+        public Package()
         {
-            this.tblServiceProducts = new HashSet<tblServiceProduct>();
+            this.PackageProducts = new HashSet<PackageProduct>();
             this.PackageServices = new HashSet<PackageService>();
         }
     
-        public System.Guid ServiceId { get; set; }
-        public System.Guid ServiceTypeId { get; set; }
-        public string Name { get; set; }
-        public decimal Price { get; set; }
+        public int Id { get; set; }
+        public string PackageName { get; set; }
         public string Description { get; set; }
-        public bool IsActive { get; set; }
-        public System.DateTime CreatedAt { get; set; }
+        public Nullable<byte> Status { get; set; }
+        public Nullable<decimal> Price { get; set; }
+        public Nullable<System.DateTime> CreatedAt { get; set; }
+        public string CreatedBy { get; set; }
     
-        public virtual tblServiceType tblServiceType { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tblServiceProduct> tblServiceProducts { get; set; }
+        public virtual ICollection<PackageProduct> PackageProducts { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PackageService> PackageServices { get; set; }
     }

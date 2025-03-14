@@ -1,0 +1,207 @@
+﻿@model jotun.Models.AccountingViewModel
+
+@{
+    ViewBag.Title = "Create Expense";
+}
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <h2 class="ml-3"> Create Expense</h2>
+    <div class="ml-auto">     
+        <a href="@Url.Action("CreateAccount", "Accounting")" class="btn btn-primary mr-3 ms-1">
+            <i class="fa-solid fa-plus ml-2"></i> CREATE NEW ACCOUNT
+        </a>
+        <a href="@Url.Action("CreateSubAccount", "Accounting")" class="btn btn-primary mr-3 ms-1">
+            <i class="fa-solid fa-plus ml-2"></i> CREATE SUB NEW ACCOUNT
+        </a>
+    </div>
+</div>
+
+@using (Html.BeginForm("CreateExpense", "Accounting", FormMethod.Post, new { id = "expenseForm" }))
+{
+    <div class="d-flex" style="width: 100%; margin: 0 auto; gap: 20px;">
+        <!-- Form Section -->
+        <div class="form-container" style="flex: 0 0 30%; padding-right: 20px;">
+            @Html.AntiForgeryToken()
+            <div class="form-group d-flex">
+                <label class="mr-2" style="width: 150px;">Account</label>
+                @Html.DropDownListFor(m => m.AccountCode,
+                    new SelectList(Model.Accounts, "Value", "Text"),
+                    "Select Account",
+                    new { @class = "form-control", id = "AccountCode", style = "width: 300px;" })
+            </div>
+
+            <div class="form-group d-flex">
+                <label class="mr-2" style="width: 150px;">Date</label>
+                <input type="date" id="expenseDate" class="form-control" style="width: 300px;" />
+            </div>
+
+            <div class="form-group d-flex">
+                <label class="mr-2" style="width: 150px;">Supplier Name</label>
+                <input type="text" id="supplierName" class="form-control" placeholder="Enter Supplier Name" style="width: 300px;" />
+            </div>
+
+            <div class="form-group d-flex">
+                <label class="mr-2" style="width: 150px;">Supplier Contact</label>
+                <input type="text" id="supplierContact" class="form-control" placeholder="Enter Supplier Contact" style="width: 300px;" />
+            </div>
+
+            <div class="form-group d-flex">
+                <label class="mr-2" style="width: 150px;">Description</label>
+                <input type="text" id="description" class="form-control" placeholder="Enter Description" style="width: 300px;" />
+            </div>
+
+            <div class="form-group d-flex">
+                <label class="mr-2" style="width: 150px;">Cost</label>
+                <input type="number" id="cost" class="form-control" placeholder="Enter Cost" style="width: 300px;" />
+            </div>
+
+            <button type="button" id="addExpenseDetail" class="btn btn-secondary mt-2">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+        <!-- Table Section -->
+        <div class="form-container" style="flex: 0 0 65%; padding-left: 20px; max-height: 550px; overflow: auto; ">
+            <h3>Expense Details</h3>
+            <table class="table table-bordered" id="expenseDetailsTable">
+                <thead>
+                    <tr>
+                        <th>Account</th>
+                        <th>Date</th>
+                        <th>Supplier Name</th>
+                        <th>Supplier Contact</th>
+                        <th>Description</th>
+                        <th>Cost</th>
+                        <th>Attachment</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="expenseDetailsList"></tbody>
+            </table>
+            <input type="hidden" id="expenseDetailsHidden" name="expense_Details" />
+
+            <div class="form-group mt-3">
+                <button type="submit" id="submitButton" class="btn btn-primary">Submit Expense</button>
+            </div>
+        </div>
+    </div>
+}
+
+<link rel="stylesheet" href="~/Content/css/site.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<script>
+    document.getElementById("addExpenseDetail").addEventListener("click", function () {
+        var container = document.getElementById("expenseDetailsList");
+        // Get input values
+        var date = document.getElementById("expenseDate").value;
+        var supplierName = document.getElementById("supplierName").value;
+        var supplierContact = document.getElementById("supplierContact").value;
+        var description = document.getElementById("description").value;
+        var cost = parseFloat(document.getElementById("cost").value);
+        var account = document.getElementById("AccountCode").options[document.getElementById("AccountCode").selectedIndex].text;
+        // Create a new table row
+        var rowHtml = `
+        <tr class="expense-detail">
+            <td>${account}</td>
+            <td>${date}</td>
+            <td>${supplierName}</td>
+            <td>${supplierContact}</td>
+            <td>${description}</td>
+            <td>${cost}</td>
+            <td></td>
+            <td><button type="button" class="btn btn-danger remove-expense"><i class="fas fa-trash"></i></button></td>
+        </tr>
+    `;
+        var row = document.createElement("tr");
+        row.innerHTML = rowHtml;
+        container.appendChild(row);
+        // Clear the inputs after adding
+        document.getElementById("expenseDate").value = '';
+        document.getElementById("supplierName").value = '';
+        document.getElementById("supplierContact").value = '';
+        document.getElementById("description").value = '';
+        document.getElementById("cost").value = '';
+        document.getElementById("AccountCode").selectedIndex = 0;
+        // Remove button functionality
+        row.querySelector(".remove-expense").addEventListener("click", function () {
+            container.removeChild(row);
+        });
+    });
+    // Handle form submission and serialize expense details
+    document.getElementById("submitButton").addEventListener("click", function (e) {
+        e.preventDefault();
+        var submitButton = document.getElementById("submitButton");
+        var originalText = submitButton.innerHTML;
+
+        submitButton.innerHTML = "Wait...";
+        submitButton.disabled = true;
+        var expenseDetails = [];
+        var rows = document.getElementById("expenseDetailsList").children;
+        for (var i = 0; i < rows.length; i++) {
+            var row = rows[i];
+            var expenseDetail = {
+                Account: row.cells[0].innerText,
+                Cost: parseFloat(row.cells[5].innerText),
+                Description: row.cells[4].innerText,
+                SupplierName: row.cells[2].innerText,
+                SupplierContact: row.cells[3].innerText
+            };
+            expenseDetails.push(expenseDetail);
+        }
+        document.querySelector("input[name='expense_Details']").value = JSON.stringify(expenseDetails);
+        var formData = new FormData(document.getElementById("expenseForm"));
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/Accounting/CreateExpense", true);
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                alert("Expense submitted successfully!");
+                window.location.href = "/Accounting/ExpenseList";
+            } else {
+                alert("An error occurred. Please try again.");
+            }
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        };
+        xhr.onerror = function () {
+            alert("A network error occurred. Please check your connection.");
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+        };
+        xhr.send(formData);
+    });
+</script>
+
+<style>
+    .form-container {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        width: 450px;
+        margin: 20px auto;
+    }
+
+    .form-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .form-container h3 {
+        margin-top: 20px;
+    }
+
+    .table {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+        .table th, .table td {
+            text-align: center;
+        }
+
+    .remove-expense {
+        margin-top: 5px;
+    }
+</style>

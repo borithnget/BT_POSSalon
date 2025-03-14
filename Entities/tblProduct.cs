@@ -18,6 +18,7 @@ namespace jotun.Entities
         public tblProduct()
         {
             this.tblServiceProducts = new HashSet<tblServiceProduct>();
+            this.PackageProducts = new HashSet<PackageProduct>();
         }
     
         public string Id { get; set; }
@@ -44,5 +45,7 @@ namespace jotun.Entities
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tblServiceProduct> tblServiceProducts { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<PackageProduct> PackageProducts { get; set; }
     }
 }

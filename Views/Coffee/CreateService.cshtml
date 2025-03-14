@@ -1,6 +1,6 @@
 ﻿@model jotun.Models.CreateServiceViewModel
 
-<h2 style="margin-top : 76px; margin-left:10px;">Create Service</h2>
+<h2 style="margin-top : 45px; margin-left:10px;">Create Service</h2>
 
 @using (Html.BeginForm("CreateService", "Coffee", FormMethod.Post, new { @class = "form-horizontal" }))
 {
@@ -25,9 +25,10 @@
                     @Html.TextBoxFor(m => m.Name, new { @class = "form-control", style = "width: 300px;" })
                     @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
                 </div>
-                <div class="col-md-4" style="background-color:transparent">
+                <div class="col-md-4 d-flex align-items-center" style="background-color:transparent;gap:3px;">
                     @Html.DropDownListFor(m => m.ServiceTypeId, Model.ServiceTypes, "-- Select Service Type --", new { @class = "form-control", style = "width: 300px;" })
                     @Html.ValidationMessageFor(m => m.ServiceTypeId)
+                    <input type="button" value="New ?" class="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#newServiceTypeModal" id="newServiceTypeBtn" />
                 </div>
                 <div class="col-md-4" style="background-color:transparent">
                     @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", step = "0.01", style = "width: 300px;" })
@@ -83,6 +84,7 @@
                     <tr>
                         <th>Product</th>
                         <th>Quantity</th>
+                        <th>Unit</th>
                         <th>Quality</th>
                     </tr>
                 </thead>
@@ -94,13 +96,25 @@
                                 @Html.DropDownListFor(m => m.Products[i].ProductId,
                                     new SelectList(Model.AvailableProducts, "Value", "Text", Model.Products[i].ProductId),
                                     "-- Select Product --",
-                                    new { @class = "form-control", style = "width: 300px;" })
+                                    new { @class = "form-control  product-select", style = "width: 300px;" })
                             </td>
                             <td>
                                 @Html.TextBoxFor(m => m.Products[i].Quantity, new { @class = "form-control", type = "number", min = "1", style = "width: 300px;" })
                             </td>
                             <td>
+                                @Html.DropDownListFor(m => m.Products[i].Unit,
+                                    new SelectList(Enumerable.Empty<SelectListItem>(), "Value", "Text"),
+                                    "-- Select Unit --",
+                                    new { @class = "form-control unit-select", style = "width: 300px;" })
+                            </td>
+
+                            <td>
                                 @Html.TextBoxFor(m => m.Products[i].Quality, new { @class = "form-control", style = "width: 300px;" })
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm delete-row">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </td>
                         </tr>
                     }
@@ -115,6 +129,40 @@
         </div>
     </div>
 }
+<!-- Modal -->
+<div class="modal fade" id="newServiceTypeModal" tabindex="-1" aria-labelledby="newServiceTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newServiceTypeModalLabel">Create New Service Type</h5>
+            </div>
+            <div class="modal-body">
+                <form id="createServiceTypeForm">
+                    <!-- Service Type Name Field -->
+                    <div class="mb-3">
+                        <label for="newServiceType" class="form-label">Service Type Name</label>
+                        <input type="text" class="form-control" id="newServiceType" name="ServiceTypeName" required />
+                    </div>
+                    <!-- Service Type Description Field -->
+                    <div class="mb-3">
+                        <label for="newServiceDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="newServiceDescription" name="ServiceDescription" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveServiceTypeBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/Scripts/jquery-ui.js"></script>
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+}
+
 <script type="text/javascript">
     var availableProducts = @Html.Raw(Json.Encode(Model.AvailableProducts));
 
@@ -147,6 +195,7 @@
     });
 
     // Add product row dynamically
+    // Add product row dynamically
     addProductBtn.addEventListener("click", function () {
         const productTable = document.getElementById("productTable").querySelector('tbody');
         const rowCount = productTable.rows.length;
@@ -156,8 +205,9 @@
         // Create dropdown for product
         const productSelect = document.createElement("select");
         productSelect.name = `Products[${rowCount}].ProductId`;
-        productSelect.className = "form-control";
+        productSelect.className = "form-control product-select"; // 🔹 Add product-select class
         productSelect.style.width = "300px";
+        productSelect.setAttribute("data-index", rowCount); // 🔹 Add data-index to track row index
         availableProducts.forEach(product => {
             const option = new Option(product.Text, product.Value);
             productSelect.appendChild(option);
@@ -178,63 +228,93 @@
         qualityInput.className = "form-control";
         qualityInput.style.width = "300px";
 
-        // Append to table row
+        // Create unit dropdown (instead of input)
+        const unitSelect = document.createElement("select");
+        unitSelect.name = `Products[${rowCount}].Unit`;
+        unitSelect.className = "form-control unit-select"; // 🔹 Add unit-select class
+        unitSelect.style.width = "300px";
+        unitSelect.innerHTML = '<option value="">-- Select Unit --</option>'; // Default option
+
+        // Delete row button
+        let deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.className = "btn btn-danger btn-sm delete-row";
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.addEventListener("click", function () {
+            row.remove();
+        });
+
+        // Append elements to table row
         row.innerHTML = `
-            <td></td>
-            <td></td>
-            <td></td>
-        `;
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    `;
         row.cells[0].appendChild(productSelect);
         row.cells[1].appendChild(quantityInput);
-        row.cells[2].appendChild(qualityInput);
+        row.cells[2].appendChild(unitSelect);
+        row.cells[3].appendChild(qualityInput);
+        row.cells[4].appendChild(deleteBtn);
+    });
+
+$(document).ready(function () {
+    $(document).on("change", ".product-select", function () {
+        var productId = $(this).val();
+        var row = $(this).closest("tr"); // Get the current row
+        var unitSelect = row.find(".unit-select"); // Get the unit dropdown in the same row
+
+        console.log("Selected Product ID:", productId);
+
+        if (productId) {
+            $.ajax({
+                url: '@Url.Action("GetAvailableUnits", "Coffee")',
+                data: { productId: productId },
+                success: function (data) {
+                    unitSelect.empty();
+                    unitSelect.append('<option value="">-- Select Unit --</option>');
+
+                    $.each(data, function (i, item) {
+                        unitSelect.append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                    });
+                }
+            });
+        } else {
+            unitSelect.empty().append('<option value="">-- Select Unit --</option>');
+        }
+    });
+});
+    document.getElementById('saveServiceTypeBtn').addEventListener('click', function () {
+        var serviceTypeName = document.getElementById('newServiceType').value;
+        var Description = document.getElementById('newServiceDescription').value;
+
+        // Correct the condition to check both serviceTypeName and Description
+        if (serviceTypeName && Description) {
+            // Create the data to send to the server
+            var data = { name: serviceTypeName, description: Description };
+
+            // Send the data to the server via AJAX
+            fetch('/Coffee/SaveServiceType', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        var modalElement = document.getElementById('newServiceTypeModal');
+                        var modal = bootstrap.Modal.getInstance(modalElement);
+                        modal.hide();
+                        alert('Service type create successful.');
+                    } else {
+                        alert('Error saving service type.');
+                    }
+                })
+        } else {
+            alert('Please enter a service type name and description.');
+        }
     });
 </script>
-
-
-@*<script type="text/javascript">
-        var availableProducts = @Html.Raw(Json.Encode(Model.AvailableProducts));
-
-        // Add product row dynamically
-        document.getElementById("addProductRow").addEventListener("click", function () {
-            var productTable = document.getElementById("productTable").getElementsByTagName('tbody')[0];
-            var rowCount = productTable.rows.length;
-
-            // Insert a new row at the end
-            var row = productTable.insertRow(rowCount);
-            // Create Product Dropdown
-            var cell1 = row.insertCell(0);
-            var productSelect = document.createElement("select");
-            productSelect.setAttribute("name", "Products[" + rowCount + "].ProductId");
-            productSelect.setAttribute("class", "form-control");
-            productSelect.setAttribute("style", "width: 300px;");
-
-            // Populate dropdown with available products
-            availableProducts.forEach(function (product) {
-                var option = document.createElement("option");
-                option.value = product.Value;
-                option.text = product.Text;
-                productSelect.appendChild(option);
-            });
-
-            // Create Quantity Input
-            var cell2 = row.insertCell(1);
-            var quantityInput = document.createElement("input");
-            quantityInput.setAttribute("type", "number");
-            quantityInput.setAttribute("name", "Products[" + rowCount + "].Quantity");
-            quantityInput.setAttribute("class", "form-control");
-            quantityInput.setAttribute("style", "width: 300px;");
-
-            // Create Quality Input
-            var cell3 = row.insertCell(2);
-            var qualityInput = document.createElement("input");
-            qualityInput.setAttribute("type", "text");
-            qualityInput.setAttribute("name", "Products[" + rowCount + "].Quality");
-            qualityInput.setAttribute("class", "form-control");
-            qualityInput.setAttribute("style", "width: 300px;");
-
-            // Append the inputs to the respective cells
-            cell1.appendChild(productSelect);
-            cell2.appendChild(quantityInput);
-            cell3.appendChild(qualityInput);
-        });
-    </script>*@

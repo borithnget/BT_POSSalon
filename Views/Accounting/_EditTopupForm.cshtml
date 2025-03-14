@@ -1,0 +1,71 @@
+﻿@model jotun.Models.AccountingViewModel
+
+<form id="editTopupForm" method="post" action="@Url.Action("EditTopup", "Accounting")">
+    @Html.AntiForgeryToken()
+
+    <div class="card-body">
+        @for (int i = 0; i < Model.editTop.Count; i++)
+        {
+            <div class="row">
+                @Html.HiddenFor(m => m.editTop[i].Id)
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.editTop[i].TopupDate, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.editTop[i].TopupDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                        @Html.ValidationMessageFor(m => m.editTop[i].TopupDate, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.editTop[i].TopupAmount, new { @class = "control-label" })
+                        @Html.TextBoxFor(m => m.editTop[i].TopupAmount, "{0:F2}", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.editTop[i].TopupAmount, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        @Html.LabelFor(m => m.editTop[i].Remark, new { @class = "control-label" })
+                        @Html.TextAreaFor(m => m.editTop[i].Remark, new { @class = "form-control", rows = 3 })
+                        @Html.ValidationMessageFor(m => m.editTop[i].Remark, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+        }
+
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" style="margin-right: 2px;">
+                <i class="bi bi-x-circle"></i> Close
+            </button>
+            <button type="submit" class="btn btn-primary" style="margin-left: 2px;">
+                <i class="bi bi-save"></i> Save
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+    $("#editTopupForm").submit(function(event) {
+        event.preventDefault();
+        $.ajax({
+            url: $(this).attr("action"),
+            type: $(this).attr("method"),
+            data: $(this).serialize(),
+            success: function(response) {
+                if (response.success) {
+                    $('#editTopupModal').modal('hide');
+                    window.location.href = '@Url.Action("TopupList", "Accounting")';
+                }
+            },
+            error: function(xhr, status, error) {
+                alert("There was an error updating the topup.");
+            }
+        });
+    });
+</script>

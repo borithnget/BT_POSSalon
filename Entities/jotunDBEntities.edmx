@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="CoffeePOSDataModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="CoffeePOSDataModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="__MigrationHistory">
           <Key>
             <PropertyRef Name="MigrationId" />
@@ -65,6 +65,130 @@
           <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
           <Property Name="AccessFailedCount" Type="int" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+        </EntityType>
+        <EntityType Name="PackageProducts">
+          <Key>
+            <PropertyRef Name="PackageId" />
+            <PropertyRef Name="ProductId" />
+          </Key>
+          <Property Name="PackageId" Type="int" Nullable="false" />
+          <Property Name="ProductId" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="Quantity" Type="int" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="50" />
+          <Property Name="Qty" Type="int" />
+        </EntityType>
+        <EntityType Name="Packages">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PackageName" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="500" />
+          <Property Name="Status" Type="tinyint" />
+          <Property Name="Price" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="100" />
+        </EntityType>
+        <EntityType Name="PackageServices">
+          <Key>
+            <PropertyRef Name="PackageId" />
+            <PropertyRef Name="ServiceId" />
+          </Key>
+          <Property Name="PackageId" Type="int" Nullable="false" />
+          <Property Name="ServiceId" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Quantity" Type="int" />
+        </EntityType>
+        <EntityType Name="tb_Acc_Account">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AccountTypeId" Type="int" />
+          <Property Name="AccountCode" Type="nvarchar" MaxLength="255" />
+          <Property Name="AccountName" Type="nvarchar(max)" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="ShopId" Type="int" />
+          <Property Name="ParentId" Type="int" />
+        </EntityType>
+        <EntityType Name="tb_Acc_AccountType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="AccountTypeCode" Type="nvarchar" MaxLength="255" />
+          <Property Name="AccountTypeName" Type="nvarchar(max)" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="ShopId" Type="int" />
+        </EntityType>
+        <EntityType Name="tb_Acc_Expense">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="50" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="Status" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="ShopId" Type="int" />
+        </EntityType>
+        <EntityType Name="tb_Acc_Expense_Detail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ExpenseId" Type="int" />
+          <Property Name="AccountId" Type="int" />
+          <Property Name="ExpenseDate" Type="date" />
+          <Property Name="Cost" Type="money" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="Status" Type="nvarchar" MaxLength="50" />
+          <Property Name="ShopId" Type="int" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="Reason" Type="nvarchar(max)" />
+          <Property Name="SuppplierName" Type="nvarchar" MaxLength="255" />
+          <Property Name="SupplierContact" Type="nvarchar(max)" />
+          <Property Name="RefId" Type="int" />
+        </EntityType>
+        <EntityType Name="tb_Expense_Amount">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TotalTopupAmount" Type="money" />
+          <Property Name="RemainTopupAmount" Type="money" />
+          <Property Name="TotalExpense" Type="money" />
+          <Property Name="ShopId" Type="int" />
+        </EntityType>
+        <EntityType Name="tb_Expense_Topup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TopupDate" Type="date" />
+          <Property Name="IsActive" Type="bit" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="TopupAmount" Type="money" />
+          <Property Name="Remark" Type="nvarchar(max)" />
+          <Property Name="ShopId" Type="int" />
         </EntityType>
         <EntityType Name="tblAppointment">
           <Key>
@@ -176,6 +300,19 @@
           <Property Name="customer_type" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="discount" Type="decimal" Precision="5" Scale="4" />
           <Property Name="StoreDiscount" Type="decimal" Precision="10" Scale="2" />
+        </EntityType>
+        <EntityType Name="tblExchangeRate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ExchangeRateDate" Type="date" />
+          <Property Name="RateKHR" Type="money" />
+          <Property Name="Active" Type="bit" />
+          <Property Name="CreatedAt" Type="datetime" />
+          <Property Name="UpdatedAt" Type="datetime" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="tblInvoices">
           <Key>
@@ -407,6 +544,7 @@
           <Property Name="Quantity" Type="int" Nullable="false" />
           <Property Name="Quality" Type="nvarchar" MaxLength="50" />
           <Property Name="Notes" Type="nvarchar" MaxLength="255" />
+          <Property Name="Unit" Type="nvarchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="tblServiceProvided">
           <Key>
@@ -552,6 +690,62 @@
           <Property Name="UserId" Type="int" Nullable="false" />
           <Property Name="RoleId" Type="int" Nullable="false" />
         </EntityType>
+        <Association Name="FK__PackagePr__Packa__1EA48E88">
+          <End Role="Packages" Type="Self.Packages" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PackageProducts" Type="Self.PackageProducts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Packages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PackageProducts">
+              <PropertyRef Name="PackageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PackagePr__Produ__1F98B2C1">
+          <End Role="tblProducts" Type="Self.tblProducts" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PackageProducts" Type="Self.PackageProducts" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblProducts">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PackageProducts">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PackageSe__Packa__19DFD96B">
+          <End Role="Packages" Type="Self.Packages" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PackageServices" Type="Self.PackageServices" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Packages">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PackageServices">
+              <PropertyRef Name="PackageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PackageSe__Servi__1AD3FDA4">
+          <End Role="tblService" Type="Self.tblService" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="PackageServices" Type="Self.PackageServices" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblService">
+              <PropertyRef Name="ServiceId" />
+            </Principal>
+            <Dependent Role="PackageServices">
+              <PropertyRef Name="ServiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__tblProduc__Custo__02FC7413">
           <End Role="tblCustomerType" Type="Self.tblCustomerType" Multiplicity="0..1" />
           <End Role="tblProductByUnit" Type="Self.tblProductByUnit" Multiplicity="*" />
@@ -773,6 +967,15 @@
           <EntitySet Name="AspNetUserLogins" EntityType="Self.AspNetUserLogins" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUserRoles" EntityType="Self.AspNetUserRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="AspNetUsers" EntityType="Self.AspNetUsers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PackageProducts" EntityType="Self.PackageProducts" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Packages" EntityType="Self.Packages" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PackageServices" EntityType="Self.PackageServices" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tb_Acc_Account" EntityType="Self.tb_Acc_Account" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tb_Acc_AccountType" EntityType="Self.tb_Acc_AccountType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tb_Acc_Expense" EntityType="Self.tb_Acc_Expense" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tb_Acc_Expense_Detail" EntityType="Self.tb_Acc_Expense_Detail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tb_Expense_Amount" EntityType="Self.tb_Expense_Amount" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tb_Expense_Topup" EntityType="Self.tb_Expense_Topup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblAppointment" EntityType="Self.tblAppointment" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblAttribute" EntityType="Self.tblAttribute" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblCategories" EntityType="Self.tblCategories" Schema="dbo" store:Type="Tables" />
@@ -781,6 +984,7 @@
           <EntitySet Name="tblCustomerPointHistory" EntityType="Self.tblCustomerPointHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblCustomers" EntityType="Self.tblCustomers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblCustomerType" EntityType="Self.tblCustomerType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblExchangeRate" EntityType="Self.tblExchangeRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblInvoices" EntityType="Self.tblInvoices" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblJeweler" EntityType="Self.tblJeweler" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblProductAttribute" EntityType="Self.tblProductAttribute" Schema="dbo" store:Type="Tables" />
@@ -808,6 +1012,22 @@
           <EntitySet Name="webpages_OAuthMembership" EntityType="Self.webpages_OAuthMembership" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="webpages_Roles" EntityType="Self.webpages_Roles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="webpages_UsersInRoles" EntityType="Self.webpages_UsersInRoles" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__PackagePr__Packa__1EA48E88" Association="Self.FK__PackagePr__Packa__1EA48E88">
+            <End Role="Packages" EntitySet="Packages" />
+            <End Role="PackageProducts" EntitySet="PackageProducts" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PackagePr__Produ__1F98B2C1" Association="Self.FK__PackagePr__Produ__1F98B2C1">
+            <End Role="tblProducts" EntitySet="tblProducts" />
+            <End Role="PackageProducts" EntitySet="PackageProducts" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PackageSe__Packa__19DFD96B" Association="Self.FK__PackageSe__Packa__19DFD96B">
+            <End Role="Packages" EntitySet="Packages" />
+            <End Role="PackageServices" EntitySet="PackageServices" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PackageSe__Servi__1AD3FDA4" Association="Self.FK__PackageSe__Servi__1AD3FDA4">
+            <End Role="tblService" EntitySet="tblService" />
+            <End Role="PackageServices" EntitySet="PackageServices" />
+          </AssociationSet>
           <AssociationSet Name="FK__tblProduc__Custo__02FC7413" Association="Self.FK__tblProduc__Custo__02FC7413">
             <End Role="tblCustomerType" EntitySet="tblCustomerType" />
             <End Role="tblProductByUnit" EntitySet="tblProductByUnit" />
@@ -877,8 +1097,7 @@
             <End Role="webpages_UsersInRoles" EntitySet="webpages_UsersInRoles" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="CoffeePOSDataModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -1143,6 +1362,7 @@
           <Property Name="ModifiedBy" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="Service" Type="Boolean" />
           <NavigationProperty Name="tblServiceProducts" Relationship="Self.FK_ServiceProduct_Product" FromRole="tblProducts" ToRole="tblServiceProduct" />
+          <NavigationProperty Name="PackageProducts" Relationship="CoffeePOSDataModel.FK__PackagePr__Produ__1F98B2C1" FromRole="tblProduct" ToRole="PackageProduct" />
         </EntityType>
         <EntityType Name="tblPurchaseBySupplier">
           <Key>
@@ -1280,6 +1500,7 @@
           <Property Name="CreatedAt" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="tblServiceType" Relationship="Self.FK_Service_ServiceType" FromRole="tblService" ToRole="tblServiceType" />
           <NavigationProperty Name="tblServiceProducts" Relationship="Self.FK_ServiceProduct_Service" FromRole="tblService" ToRole="tblServiceProduct" />
+          <NavigationProperty Name="PackageServices" Relationship="CoffeePOSDataModel.FK__PackageSe__Servi__1AD3FDA4" FromRole="tblService" ToRole="PackageService" />
         </EntityType>
         <EntityType Name="tblServiceBooked">
           <Key>
@@ -1302,6 +1523,7 @@
           <Property Name="Notes" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="tblProduct" Relationship="Self.FK_ServiceProduct_Product" FromRole="tblServiceProduct" ToRole="tblProducts" />
           <NavigationProperty Name="tblService" Relationship="Self.FK_ServiceProduct_Service" FromRole="tblServiceProduct" ToRole="tblService" />
+          <Property Name="Unit" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblServiceProvided">
           <Key>
@@ -1713,7 +1935,232 @@
             <End Role="webpages_Roles" EntitySet="webpages_Roles" />
             <End Role="UserProfile" EntitySet="UserProfiles" />
           </AssociationSet>
+          <EntitySet Name="PackageProducts" EntityType="CoffeePOSDataModel.PackageProduct" />
+          <EntitySet Name="Packages" EntityType="CoffeePOSDataModel.Package" />
+          <EntitySet Name="PackageServices" EntityType="CoffeePOSDataModel.PackageService" />
+          <AssociationSet Name="FK__PackagePr__Packa__1EA48E88" Association="CoffeePOSDataModel.FK__PackagePr__Packa__1EA48E88">
+            <End Role="Package" EntitySet="Packages" />
+            <End Role="PackageProduct" EntitySet="PackageProducts" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PackagePr__Produ__1F98B2C1" Association="CoffeePOSDataModel.FK__PackagePr__Produ__1F98B2C1">
+            <End Role="tblProduct" EntitySet="tblProducts" />
+            <End Role="PackageProduct" EntitySet="PackageProducts" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PackageSe__Packa__19DFD96B" Association="CoffeePOSDataModel.FK__PackageSe__Packa__19DFD96B">
+            <End Role="Package" EntitySet="Packages" />
+            <End Role="PackageService" EntitySet="PackageServices" />
+          </AssociationSet>
+          <AssociationSet Name="FK__PackageSe__Servi__1AD3FDA4" Association="CoffeePOSDataModel.FK__PackageSe__Servi__1AD3FDA4">
+            <End Role="tblService" EntitySet="tblServices" />
+            <End Role="PackageService" EntitySet="PackageServices" />
+          </AssociationSet>
+          <EntitySet Name="tb_Acc_Account" EntityType="CoffeePOSDataModel.tb_Acc_Account" />
+          <EntitySet Name="tb_Acc_AccountType" EntityType="CoffeePOSDataModel.tb_Acc_AccountType" />
+          <EntitySet Name="tb_Acc_Expense" EntityType="CoffeePOSDataModel.tb_Acc_Expense" />
+          <EntitySet Name="tb_Acc_Expense_Detail" EntityType="CoffeePOSDataModel.tb_Acc_Expense_Detail" />
+          <EntitySet Name="tb_Expense_Amount" EntityType="CoffeePOSDataModel.tb_Expense_Amount" />
+          <EntitySet Name="tb_Expense_Topup" EntityType="CoffeePOSDataModel.tb_Expense_Topup" />
+          <EntitySet Name="tblExchangeRates" EntityType="CoffeePOSDataModel.tblExchangeRate" />
         </EntityContainer>
+        <EntityType Name="PackageProduct">
+          <Key>
+            <PropertyRef Name="PackageId" />
+            <PropertyRef Name="ProductId" />
+          </Key>
+          <Property Name="PackageId" Type="Int32" Nullable="false" />
+          <Property Name="ProductId" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+          <Property Name="Quantity" Type="Int32" />
+          <NavigationProperty Name="Package" Relationship="CoffeePOSDataModel.FK__PackagePr__Packa__1EA48E88" FromRole="PackageProduct" ToRole="Package" />
+          <NavigationProperty Name="tblProduct" Relationship="CoffeePOSDataModel.FK__PackagePr__Produ__1F98B2C1" FromRole="PackageProduct" ToRole="tblProduct" />
+          <Property Name="Unit" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Qty" Type="Int32" />
+        </EntityType>
+        <EntityType Name="Package">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PackageName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="Byte" />
+          <NavigationProperty Name="PackageProducts" Relationship="CoffeePOSDataModel.FK__PackagePr__Packa__1EA48E88" FromRole="Package" ToRole="PackageProduct" />
+          <NavigationProperty Name="PackageServices" Relationship="CoffeePOSDataModel.FK__PackageSe__Packa__19DFD96B" FromRole="Package" ToRole="PackageService" />
+          <Property Name="Price" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="PackageService">
+          <Key>
+            <PropertyRef Name="PackageId" />
+            <PropertyRef Name="ServiceId" />
+          </Key>
+          <Property Name="PackageId" Type="Int32" Nullable="false" />
+          <Property Name="ServiceId" Type="Guid" Nullable="false" />
+          <Property Name="Quantity" Type="Int32" />
+          <NavigationProperty Name="Package" Relationship="CoffeePOSDataModel.FK__PackageSe__Packa__19DFD96B" FromRole="PackageService" ToRole="Package" />
+          <NavigationProperty Name="tblService" Relationship="CoffeePOSDataModel.FK__PackageSe__Servi__1AD3FDA4" FromRole="PackageService" ToRole="tblService" />
+        </EntityType>
+        <Association Name="FK__PackagePr__Packa__1EA48E88">
+          <End Type="CoffeePOSDataModel.Package" Role="Package" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="CoffeePOSDataModel.PackageProduct" Role="PackageProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Package">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PackageProduct">
+              <PropertyRef Name="PackageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PackagePr__Produ__1F98B2C1">
+          <End Type="CoffeePOSDataModel.tblProduct" Role="tblProduct" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="CoffeePOSDataModel.PackageProduct" Role="PackageProduct" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblProduct">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PackageProduct">
+              <PropertyRef Name="ProductId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PackageSe__Packa__19DFD96B">
+          <End Type="CoffeePOSDataModel.Package" Role="Package" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="CoffeePOSDataModel.PackageService" Role="PackageService" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Package">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="PackageService">
+              <PropertyRef Name="PackageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__PackageSe__Servi__1AD3FDA4">
+          <End Type="CoffeePOSDataModel.tblService" Role="tblService" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="CoffeePOSDataModel.PackageService" Role="PackageService" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblService">
+              <PropertyRef Name="ServiceId" />
+            </Principal>
+            <Dependent Role="PackageService">
+              <PropertyRef Name="ServiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="tb_Acc_Account">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AccountTypeId" Type="Int32" />
+          <Property Name="AccountCode" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="AccountName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ShopId" Type="Int32" />
+          <Property Name="ParentId" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tb_Acc_AccountType">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="AccountTypeCode" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="AccountTypeName" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="ShopId" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tb_Acc_Expense">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ShopId" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tb_Acc_Expense_Detail">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ExpenseId" Type="Int32" />
+          <Property Name="AccountId" Type="Int32" />
+          <Property Name="ExpenseDate" Type="DateTime" Precision="0" />
+          <Property Name="Cost" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Status" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ShopId" Type="Int32" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="Reason" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="SuppplierName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="SupplierContact" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="RefId" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tb_Expense_Amount">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TotalTopupAmount" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="RemainTopupAmount" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="TotalExpense" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="ShopId" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tb_Expense_Topup">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TopupDate" Type="DateTime" Precision="0" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="TopupAmount" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Remark" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ShopId" Type="Int32" />
+        </EntityType>
+        <EntityType Name="tblExchangeRate">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ExchangeRateDate" Type="DateTime" Precision="0" />
+          <Property Name="RateKHR" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="Active" Type="Boolean" />
+          <Property Name="CreatedAt" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2130,6 +2577,7 @@
           <EntitySetMapping Name="tblServiceProducts">
             <EntityTypeMapping TypeName="CoffeePOSDataModel.tblServiceProduct">
               <MappingFragment StoreEntitySet="tblServiceProduct">
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
                 <ScalarProperty Name="ServiceProductId" ColumnName="ServiceProductId" />
                 <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
                 <ScalarProperty Name="ProductId" ColumnName="ProductId" />
@@ -2302,6 +2750,151 @@
               <ScalarProperty Name="UserId" ColumnName="UserId" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="PackageProducts">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.PackageProduct">
+              <MappingFragment StoreEntitySet="PackageProducts">
+                <ScalarProperty Name="Qty" ColumnName="Qty" />
+                <ScalarProperty Name="Unit" ColumnName="Unit" />
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="ProductId" ColumnName="ProductId" />
+                <ScalarProperty Name="PackageId" ColumnName="PackageId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Packages">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.Package">
+              <MappingFragment StoreEntitySet="Packages">
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="PackageName" ColumnName="PackageName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PackageServices">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.PackageService">
+              <MappingFragment StoreEntitySet="PackageServices">
+                <ScalarProperty Name="Quantity" ColumnName="Quantity" />
+                <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
+                <ScalarProperty Name="PackageId" ColumnName="PackageId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tb_Acc_Account">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tb_Acc_Account">
+              <MappingFragment StoreEntitySet="tb_Acc_Account">
+                <ScalarProperty Name="ParentId" ColumnName="ParentId" />
+                <ScalarProperty Name="ShopId" ColumnName="ShopId" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="AccountName" ColumnName="AccountName" />
+                <ScalarProperty Name="AccountCode" ColumnName="AccountCode" />
+                <ScalarProperty Name="AccountTypeId" ColumnName="AccountTypeId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tb_Acc_AccountType">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tb_Acc_AccountType">
+              <MappingFragment StoreEntitySet="tb_Acc_AccountType">
+                <ScalarProperty Name="ShopId" ColumnName="ShopId" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="AccountTypeName" ColumnName="AccountTypeName" />
+                <ScalarProperty Name="AccountTypeCode" ColumnName="AccountTypeCode" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tb_Acc_Expense">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tb_Acc_Expense">
+              <MappingFragment StoreEntitySet="tb_Acc_Expense">
+                <ScalarProperty Name="ShopId" ColumnName="ShopId" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tb_Acc_Expense_Detail">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tb_Acc_Expense_Detail">
+              <MappingFragment StoreEntitySet="tb_Acc_Expense_Detail">
+                <ScalarProperty Name="RefId" ColumnName="RefId" />
+                <ScalarProperty Name="SupplierContact" ColumnName="SupplierContact" />
+                <ScalarProperty Name="SuppplierName" ColumnName="SuppplierName" />
+                <ScalarProperty Name="Reason" ColumnName="Reason" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="ShopId" ColumnName="ShopId" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Cost" ColumnName="Cost" />
+                <ScalarProperty Name="ExpenseDate" ColumnName="ExpenseDate" />
+                <ScalarProperty Name="AccountId" ColumnName="AccountId" />
+                <ScalarProperty Name="ExpenseId" ColumnName="ExpenseId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tb_Expense_Amount">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tb_Expense_Amount">
+              <MappingFragment StoreEntitySet="tb_Expense_Amount">
+                <ScalarProperty Name="ShopId" ColumnName="ShopId" />
+                <ScalarProperty Name="TotalExpense" ColumnName="TotalExpense" />
+                <ScalarProperty Name="RemainTopupAmount" ColumnName="RemainTopupAmount" />
+                <ScalarProperty Name="TotalTopupAmount" ColumnName="TotalTopupAmount" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tb_Expense_Topup">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tb_Expense_Topup">
+              <MappingFragment StoreEntitySet="tb_Expense_Topup">
+                <ScalarProperty Name="ShopId" ColumnName="ShopId" />
+                <ScalarProperty Name="Remark" ColumnName="Remark" />
+                <ScalarProperty Name="TopupAmount" ColumnName="TopupAmount" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="TopupDate" ColumnName="TopupDate" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblExchangeRates">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblExchangeRate">
+              <MappingFragment StoreEntitySet="tblExchangeRate">
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="UpdatedAt" ColumnName="UpdatedAt" />
+                <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="RateKHR" ColumnName="RateKHR" />
+                <ScalarProperty Name="ExchangeRateDate" ColumnName="ExchangeRateDate" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

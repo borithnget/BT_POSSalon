@@ -17,7 +17,6 @@
         @*<a class="btn btn-default" data-toggle="modal" data-target="#myModal">Add New</a>*@
         <br />
         <br />
-
         <div class="modal fade" id="myModalEdit">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -51,7 +50,6 @@
                                     @Html.TextBoxFor(m => m.Id, new { @class = "form-control" })
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 @Html.Label("Customer Name", new { @class = "col-md-3 control-label" })
                                 <div class="col-md-9">
@@ -82,8 +80,7 @@
                                          new SelectListItem{ Text="Male", Value="Male"},
                                          new SelectListItem{ Text="Female", Value="Female"},
                                          new SelectListItem{ Text="Other", Value="Other"},
-                                         }, "--- Select ---", new { @class = "form-control" }
-              )
+                                         }, "--- Select ---", new { @class = "form-control" })
                                 </div>
                             </div>
 
@@ -99,12 +96,6 @@
                                     @Html.TextBoxFor(m => m.CreatedDate, new { @class = "form-control getCurrentDate" })
                                 </div>
                             </div>
-
-
-
-
-
-
                             <div class="form-group">
                                 <div class="col-md-offset-2 col-md-9">
                                     <input type="submit" class="btn btn-default" value="Register" />
@@ -116,9 +107,6 @@
                 </div>
             </div>
         </div>
-
-
-
         <table style="background-color:white;" id="userstable" class="table table-striped table-bordered" cellspacing="0">
             <thead>
                 <tr>
@@ -138,11 +126,6 @@
             </thead>
         </table>
     </div>
-
-
-
-
-
     @*<link href="https://cdn.datatables.net/1.10.15/css/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />*@
     @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.css" />*@

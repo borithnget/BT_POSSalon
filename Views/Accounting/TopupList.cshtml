@@ -1,0 +1,166 @@
+﻿@model IEnumerable<jotun.Entities.tb_Expense_Topup>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <h2 class="ml-3">Expense Top Up List</h2>
+    <button class="btn btn-primary mr-5 ms-1" data-toggle="modal" data-target="#addnewTopupModal">
+        <i class="fa-solid fa-plus ml-2"></i> ADD NEW TOPUP
+    </button>
+</div>
+
+<div class="container" style="max-width: 95%; margin: 0 auto; margin-top: 30px;">
+    <table id="topupTable" class="table table-bordered table-striped" style="width: 100%;">
+        <thead class="table-dark">
+            <tr>
+                <th>No.</th>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Remark</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var topup in Model)
+            {
+                <tr>
+                    <td>@(Model.ToList().IndexOf(topup) + 1)</td>
+                    <td>@topup.TopupDate</td>
+                    <td>@String.Format("{0:N2}", topup.TopupAmount)</td>
+                    <td>@topup.Remark</td>
+                    <td>
+                        <a href="javascript:void(0);" class="btn btn-primary btn-sm edit-topup" data-id="@topup.Id">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr id="totalRow">
+                <td colspan="2" style="text-align: right; font-weight: bold;">Total Amount:</td>
+                <td id="totalAmount" style="font-weight: bold;"></td>
+                <td colspan="2"></td>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="modal fade" id="addnewTopupModal" tabindex="-1" role="dialog" aria-labelledby="createTopupModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createTopupModalLabel">Create New Account Type</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    <form method="post" action="@Url.Action("CreateTopup", "Accounting")">
+                        <div class="form-group">
+                            <label for="TopupAmount">Amount:</label>
+
+                            <input type="number" class="form-control" id="TopupAmount" name="TopupAmount" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="TopupDate">Date:</label>
+
+                            <input type="date" class="form-control" id="TopupDate" name="TopupDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="Remark">Remark:</label>
+
+                            <textarea class="form-control" id="Remark" name="Remark"></textarea>
+                        </div>
+                        <div class="form-group text-right">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="editTopupModal" tabindex="-1" role="dialog" aria-labelledby="editTopupModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editTopupModalLabel">Edit Topup</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="~/Content/css/site.css">
+<link href="~/Content/vendor/datatables/datatables.min.css" rel="stylesheet" />
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"> 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+@section Scripts {
+    <script src="~/Scripts/datatables.min.js"></script>
+    <script>
+        var table;
+        $(document).ready(function () {
+            table = $('#topupTable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "lengthMenu": [5, 10, 25, 50, 100],
+                "language": {
+                    "search": "Search Topup:"
+                }
+            });
+            table.on('draw.dt', function () {
+                calculateTotalAmount();
+            });
+
+            function calculateTotalAmount() {
+                let totalAmount = 0;
+                $('#topupTable tbody tr:visible').each(function () {
+                    let amountCell = $(this).find('td:nth-child(3)');
+                    let amount = parseFloat(amountCell.text().replace(/[^0-9.-]+/g, "")) || 0;
+                    totalAmount += amount;
+                });
+                $('#totalAmount').text('$' + totalAmount.toFixed(2));
+            }
+            calculateTotalAmount();
+        });
+    $(document).ready(function () {
+    $('#topupTable').on('click', '.btn-primary', function () {
+        var topupId = $(this).data('id');
+        $.ajax({
+            url: '@Url.Action("EditTopup","Accounting")/' + topupId,
+        type: 'GET',
+        success: function (response) {
+            console.log('Response:', response);
+        $('#editTopupModal .modal-body').html(response);
+        $('#editTopupModal').modal('show');
+        },
+        error: function (xhr, status, error) {
+        console.error('Error:', error);
+        alert('Error loading the edit form.');
+    }
+});
+    });
+    });
+
+    </script>
+    }
+@*<style>
+    .modal.fade .modal-dialog {
+        transition: transform 0.3s ease-out;
+        transform: translateX(100%);
+        margin-top: 10%;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateX(0);
+    }
+
+    .modal-dialog {
+        margin: 0 auto;
+    }
+</style>*@

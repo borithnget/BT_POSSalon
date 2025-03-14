@@ -1,0 +1,155 @@
+﻿@model List<jotun.Models.AccountingViewModel>
+
+@{
+    ViewBag.Title = "Expense report";
+}
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <h2 class="ml-3">Expense Report</h2>
+</div>
+
+<div class="mt-3" style="margin-left: 55px;">
+    <div class="row">
+        <div class="col-md-3">
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" class="form-control">
+        </div>
+        <div class="col-md-3">
+            <label for="accountFilter">Account</label>
+            <select id="accountFilter" class="form-control">
+                <option value="">All Accounts</option>
+                @foreach (var account in Model)
+                {
+                    <option value="@account.AccountCode">@account.AccountCode - @account.AccountName</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button id="printButton" class="btn btn-success w-50">
+                <i class="fa fa-print"></i> PRINT
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div class="container" style="max-width: 95%; margin: 0 auto; margin-top: 30px;">
+    <table id="ExpenseTable" class="table table-bordered table-striped" style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Account</th>
+                <th>Description</th>
+                <th>Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var account in Model)
+            {
+                if (account.Expenses != null && account.Expenses.Any())
+                {
+                    foreach (var expense in account.Expenses)
+                    {
+                        <tr>
+                            <td class="expense-date">@expense.Date.ToShortDateString()</td>
+                            <td class="expense-account">@expense.AccountCode - @expense.Account</td>
+                            <td>@expense.Description</td>
+                            <td class="expense-cost">@String.Format("{0:N2}", expense.Cost)</td>
+                        </tr>
+                    }
+                }
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" style="text-align: right; font-weight: bold;">Total Cost:</td>
+                <td id="totalCost" style="font-weight: bold;"></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<link rel="stylesheet" href="~/Content/css/site.css">
+<link href="~/Content/vendor/datatables/datatables.min.css" rel="stylesheet" />
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+@section Scripts {
+    <script src="~/Scripts/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $('#ExpenseTable').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "lengthMenu": [5, 10, 25, 50, 100],
+                "language": {
+                    "search": "Search Expense:"
+                }
+            });
+
+            table.on('draw', function () {
+                calculateTotalCost();
+            });
+
+            $('#startDate, #endDate, #accountFilter').on('change', filterTable);
+
+            function filterTable() {
+                var startDate = $('#startDate').val();
+                var endDate = $('#endDate').val();
+                var accountFilter = $('#accountFilter').val();
+                if (startDate && !endDate) {
+                    return;
+                }
+                var start = startDate ? new Date(startDate) : null;
+                var end = endDate ? new Date(endDate) : null;
+
+                table.rows().every(function () {
+                    var row = $(this.node());
+                    var dateText = row.find('.expense-date').text();
+                    var accountText = row.find('.expense-account').text();
+
+                    var rowDate = dateText ? new Date(dateText) : null;
+                    var matchesDate = (!start || (rowDate && !isNaN(rowDate.getTime()) && rowDate >= start)) &&
+                                      (!end || (rowDate && !isNaN(rowDate.getTime()) && rowDate <= end));
+                    var matchesAccount = !accountFilter || accountText.includes(accountFilter);
+
+                    if (matchesDate && matchesAccount) {
+                        row.show();
+                    } else {
+                        row.hide();
+                    }
+                });
+                calculateTotalCost();
+            }
+
+            function calculateTotalCost() {
+                let totalCost = 0;
+                $('#ExpenseTable tbody tr:visible').each(function () {
+                    let costCell = $(this).find('td:nth-child(4)'); 
+                    let cost = parseFloat(costCell.text().replace(/[^0-9.-]+/g, "")) || 0;
+                    totalCost += cost;
+                });
+                $('#totalCost').text('$' + totalCost.toFixed(2));
+            }
+            calculateTotalCost();
+        });
+        $(document).ready(function () {
+            $("#printButton").click(function () {
+                var printContent = document.getElementById("ExpenseTable").outerHTML;
+                var originalContent = document.body.innerHTML;
+                document.body.innerHTML = `<html><head><title>Expense Report</title></head><body>${printContent}</body></html>`;
+                window.print();
+                document.body.innerHTML = originalContent;
+                location.reload();
+            });
+        });
+    </script>
+}
