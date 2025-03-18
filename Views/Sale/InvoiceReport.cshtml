@@ -1,82 +1,158 @@
-﻿@model jotun.Models.SaleViewModels
-@*@model IEnumerable<jotun.Models.SaleViewModels>*@
+﻿@using System.Data
 
-@using ReportViewerForMvc;
+@model DataTable
 @{
-    ViewBag.Title = "InvoiceReport";
-}
-<style>
-    #printerDiv iframe {
-        position: absolute;
-        top: -1000px;
+    ViewBag.Title = "Invoice Report";
+    decimal totalAmount = 0m;
+
+    if (Model != null && Model.Rows.Count > 0)
+    {
+        totalAmount = Model.AsEnumerable().Sum(row =>
+        {
+            decimal val;
+            return decimal.TryParse(row["Totals"] != null ? row["Totals"].ToString() : "0", out val) ? val : 0m;
+        });
     }
-</style>
-<div style="background-color:#e9ecef; padding:15px;">
-    <h4>Invoice Sale</h4>
-    <hr />
-    <div hidden>
-        @Html.TextBoxFor(m => m.Id, htmlAttributes: new { @class = "form-control", @id = "saleid", autocomplete = "off" })
+}
+<div class="mt-4 ml-4">
+    <button class="btn btn-secondary" onclick="goBackToSale()">
+        <i class="fas fa-arrow-left"></i> Back
+    </button>
+    <button class="btn btn-success" onclick="printReport()">
+        <i class="fas fa-print"></i> Print
+    </button>
+</div>
+<div class="container" id="reportContent">
+    <div class="text-center mb-4">
+        <h2>Lily Diamond</h2>
+        <h6>Diamond and Italy Gold Wholesale</h6>
     </div>
-    <div id="divPDF">
-        <div id="printerDiv"><iframe id="frmPDF"></iframe></div>
+    <div class="customer-info mb-4">
+        <p>ផ្ទះលេខ​ 11Eo & 13Eo ផ្លូវលេខ 118 សង្កាត់ផ្សារកណ្ដាល១ ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ</p>
+        <p>#11E0 & 13E0, Street 118, Sanakat Phsar Kandal 1, Khan Duan Penh, Phnom Penh, Cambodia</p>
+        <p>TEL: 012 777 848, 095 929 242, 077 888 272</p>
     </div>
-    <div class="col-md-3" id="getfrasm">
-        <input style="margin-top:25px" class="btn btn-danger" type="button" value="Back" onclick="window.location='/Sale';" />
-        <input style="margin-top:25px" class="btn btn-success" type="button" value="Print" onclick="funExportToPDF()" />
-    </div>
-
-    <hr />
-    <div class="panel-body" style="background-color:white">
-        <div class="text-center getfram" id="getfram">
-
-            @Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer, new { id = "kosalreportsale" })
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <p><strong>Sale to:</strong> @ViewBag.CustomerName</p>
+            <p><strong>TEL:</strong> @ViewBag.PhoneNumber</p>
+            <p><strong>Item:</strong></p>
+        </div>
+        <div class="col-md-4 text-center">
+            <h3 style="font-size: 24px; text-decoration: underline;">INVOICE</h3>
+        </div>
+        <div class="col-md-4 text-right">
+            <p style="margin-right:142px"><strong>No:</strong> @ViewBag.InvoiceNo</p>
+            <p><strong>Date:</strong> @ViewBag.InvoiceDate</p>
         </div>
     </div>
-</div>
-<br />
-@section Scripts{
-    @*<script type="text/javascript" src="~/Scripts/custom/print-script.js"></script>*@
-}
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<script type="text/javascript">
-    function funExportToPDF() {
-        //alert(document.getElementById("getfram").getElementsByTagName("iframe"));
-        $.ajax({
-            url: '@Url.Action("ExportToPDF", "Sale")',
-            type: 'GET',
-            data: { id: $('#saleid').val() },
-            contentType: 'application/json; charset=utf-8',
-            success: function (result) {
-                $('#frmPDF').attr('src', '@Url.Content("~/")' + result);
-                setTimeout(function () {
-                    frame = document.getElementById("frmPDF");
-                    frameframedoc = frame.contentWindow;
-                    console.log(frameframedoc);
-                    console.log(frame);
-                    frameframedoc.focus();
-                    frameframedoc.print();
-                    
-                    $.ajax({
-                        url: '@Url.Action("ExportToPDFRemove", "Sale")',
-                        data: { id: '@Url.Content("~/")' + result },
-                        type: 'GET',
-                    });
-                }, 3000);
-                
-            },
-            error: function (xhr, status, err) {
-                alert(err);
-                $.ajax({
-                    url: '@Url.Action("ExportToPDFRemove", "Sale")',
-                    data: { id: '@Url.Content("~/")' + result },
-                    type: 'GET',
-                });
+    <table class="table table-bordered mb-4">
+        <thead>
+            <tr>
+                <th class="text-center">ល.រ<br>No</th>
+                <th class="text-center">ឈ្មោះទំនិញ<br>Product Name</th>
+                <th class="text-center">ទម្ងន់<br>Weight</th>
+                <th class="text-center">ចំនួន<br>Quantity</th>
+                <th class="text-center">តម្លៃ<br>Price</th>
+                <th class="text-center">សរុប<br>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < ((DataTable)ViewBag.InvoiceData).Rows.Count; i++)
+            {
+                var row = ((DataTable)ViewBag.InvoiceData).Rows[i];
+                <tr>
+                    <td>@(i + 1)</td>
+                    <td>@row["ProductId"]</td>
+                    <td>@row["UnitId"]</td>
+                    <td>@row["Quantity"]</td>
+                    <td>@(Convert.ToDecimal(row["Price"]).ToString("C2"))</td>
+                    <td>@(Convert.ToDecimal(row["Total"]).ToString("C2"))</td>
+                </tr>
             }
-        });
-            return false;
-    }
+            <tr>
+                <td colspan="5" style="text-align: left;">ថ្លៃឈ្នួល / Labour Cost</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+    <div style="float: left; margin-right: 20px;">
+        <div class="image-placeholder">
+            <img src="@ViewBag.ImageUrl" alt="Sale Image" style="width: 100px; height: 100px;" />
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-6 offset-md-6 text-right">
+            <p><strong>សរុប / Total:</strong> <span>@ViewBag.TotalAmount.ToString("C2")</span></p>
+            <p><strong>នាំចូល / Deposit:</strong> <span>@ViewBag.DepositAmount.ToString("C2")</span></p>
+            <p><strong>សំណង់ / Balance:</strong> <span>@ViewBag.Balance.ToString("C2")</span></p>
+        </div>
+    </div>
+    <div class="footer text-left">
+        <p>- ទំនិញដែលលក់ហើយមិនអាចដូរវិញបាន លើកលែងតែខូចគុណភាព 0.5 ដុល្លារ</p>
+        <p>- ចំពោះការប្ដូរគ្រាប់ពេជ្រកាត់ខាត 5%​ និងសំបកខាតឈ្នួល</p>
+        <p>- ពេជ្រធានាទិញចូលវិញដោយកាត់ខាត 10%</p>
+        <p>***កំណត់សម្គាល់​:​​ពេជ្រគិតតាមតម្លៃក្នុងវិក័យប័ត្រក្នុងរយ:ពេល១ឆ្នាំ ដំបូងប៉ុណ្ណោះ បើលើសពីនេះត្រូវគិតតាមហាងឆេងថ្មី</p>
+    </div>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <p><strong>អតិខិជន:</strong></p>
+                <p><strong>Customer:<span class="line-after-colon"></span></strong></p>
+            </div>
+            <div class="col-md-6 text-right">
+                <p><strong style="margin-right:265px">អ្នកលក់:</strong> </p>
+                <p><strong>Seller:<span class="line-after-colon"></span></strong></p>
+            </div>
+        </div>
+</div>
+<link rel="stylesheet" href="~/Content/css/Invoice.css">
 
+<script>
+     function goBackToSale() {
+        var routeUrl = '@Url.Action("Index", "Sale")';
+        window.location.href = routeUrl;
+    }
+   function printReport() {
+    var content = document.getElementById('reportContent').outerHTML;
+    var printWindow = window.open('', '', 'height=600,width=800');
+
+    printWindow.document.write('<html><head><title>Invoice Report</title>');
+    printWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">');
+    printWindow.document.write('<style>');
+    printWindow.document.write('body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 20px; padding: 0; }');
+    printWindow.document.write('.container { max-width: 1200px; margin: 0 auto; padding: 20px; }');
+    printWindow.document.write('table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }');
+    printWindow.document.write('table th, table td { padding: 10px; text-align: center; border: 1px solid #ddd; }');
+    printWindow.document.write('table th { background-color: #f4f4f4; }');
+    printWindow.document.write('.line-after-colon { border-bottom: 1px solid #000; display: flex; width:30%; }');
+    printWindow.document.write('.row { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }');
+    printWindow.document.write('.col-md-4 { width: 100%; padding: 5px; }');
+    printWindow.document.write('.text-center { text-align: center; }');
+    printWindow.document.write('.text-right { text-align: right; }');
+    printWindow.document.write('.col-md-4.text-right p { margin-right: 3px; }');
+
+
+    printWindow.document.write('body { font-size: 12pt; margin: 0; padding: 0; }');
+    printWindow.document.write('.container { padding: 0; margin: 0; }');
+    printWindow.document.write('table { width: 100%; font-size: 10pt; border-collapse: collapse; }');
+    printWindow.document.write('table th, table td { padding: 8px; text-align: left; border: 1px solid #ccc; }');
+    printWindow.document.write('table th { background-color: #f4f4f4; font-weight: bold; }');
+    printWindow.document.write('.footer { font-size: 10pt; color: #777; margin-top: 20px; text-align: left; }');
+    printWindow.document.write('.line-after-colon { border-bottom: 1px solid #000; display: inline-block; width: 30%; }');
+    printWindow.document.write('.col-md-6 { width: 100%; padding: 5px; }');
+    printWindow.document.write('.no-print { display: none; }');
+    printWindow.document.write('.page-break { page-break-before: always; }');
+    printWindow.document.write('h1, h2 ,h3 { font-size: 16pt; text-align: center; margin: 0; padding: 0; }');
+    printWindow.document.write('h6 { font-size: 10pt; text-align: center; margin: 0; padding: 0; }');
+    printWindow.document.write('table { width: 100%; margin-bottom: 20px; }');
+    printWindow.document.write('.invoice-header { margin-bottom: 15px; }');
+    printWindow.document.write('</style>');
+
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(content);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+}
 
 </script>
-
-

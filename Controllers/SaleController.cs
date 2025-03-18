@@ -1690,99 +1690,197 @@ namespace jotun.Controllers
             Session["SelectedIds"] = idList;
             return RedirectToAction("InvoiceReport");
         }
-        public ActionResult InvoiceReport(bool isFirstRecord = true)
-        {
-            jotunDBEntities db = new jotunDBEntities();
-            /*var aa = 0;*/
-            var idListString = Session["SelectedIds"] as List<string>;
-            var idList = idListString.ToList();
-            var allInvoiceData = new List<DataRow>();
-            string imageUrl = "/Images/defaultimage.jpg";
-            DataTable dt = new DataTable();
-            dt.Columns.Add(new DataColumn("Id"));
-            dt.Columns.Add(new DataColumn("ProductId"));
-            dt.Columns.Add(new DataColumn("Quantity"));
-            dt.Columns.Add(new DataColumn("Price"));
-            dt.Columns.Add(new DataColumn("CustomerId"));
-            dt.Columns.Add(new DataColumn("Date"));
-            dt.Columns.Add(new DataColumn("Total"));
-            dt.Columns.Add(new DataColumn("Totals"));
-            dt.Columns.Add(new DataColumn("VAT"));
-            dt.Columns.Add(new DataColumn("Phone"));
-            dt.Columns.Add(new DataColumn("Address"));
-            dt.Columns.Add(new DataColumn("Discount"));
-            dt.Columns.Add(new DataColumn("RevicedFromCustomer"));
-            dt.Columns.Add(new DataColumn("Owe"));
-            dt.Columns.Add(new DataColumn("InvoiceNo"));
-            dt.Columns.Add(new DataColumn("ColorCode"));
-            dt.Columns.Add(new DataColumn("UnitId"));
-            dt.Columns.Add(new DataColumn("SaleImage", typeof(string)));
+		public ActionResult InvoiceReport(bool isFirstRecord = true)
+		{
+			jotunDBEntities db = new jotunDBEntities();
+			var idListString = Session["SelectedIds"] as List<string>;
+			var idList = idListString?.ToList() ?? new List<string>();
 
-            foreach (var singleIdStr in idList)
-            {
-                tblSale s = db.tblSales.Find(singleIdStr);
-                if (s == null)
-                {
-                    return HttpNotFound($"Sale with ID {singleIdStr} not found.");
-                }
-                if (isFirstRecord)
-                {
-                    imageUrl = string.IsNullOrEmpty(s.SaleImage) ? "/Images/defaultimage.jpg" :
-                        Request.Url.GetLeftPart(UriPartial.Authority) + Url.Content(s.SaleImage);
-                    isFirstRecord = false;
-                }
-                var saless = db.tblSalesDetails.Where(ID => ID.SaleId == singleIdStr.ToString());
-                var customer = db.tblSales.Where(ID => ID.Id == singleIdStr.ToString());
-                if (saless.Any())
-                {
-                    foreach (var cuss in customer)
-                    {
-                        foreach (var ii in saless)
-                        {
-                            var proname = db.tblProducts.FirstOrDefault(p => p.Id == ii.ProductId);
-                            var cus = db.tblCustomers.FirstOrDefault(c => c.Id == cuss.CustomerId);
-                            var unit = db.tblUnits.FirstOrDefault(u => u.Id == ii.UnitTypeId);
-                            DataRow dr = dt.NewRow();
-                            dr["CustomerId"] = cus?.CustomerName ?? "N/A";
-                            dr["Date"] = DateTime.Now.ToString("dd-MMM-yyyy");
-                            dr["Id"] = ii.Id;
-                            dr["ProductId"] = proname?.ProductName ?? "Unknown Product";
-                            dr["Quantity"] = ii.Quantity;
-                            dr["Price"] = ii.actual_price.HasValue ? ii.actual_price.Value.ToString("N") : "0.00";
-                            dr["Total"] = (ii.actual_price.HasValue ? ii.actual_price.Value : 0) * ii.Quantity;
-                            dr["Totals"] = ii.actual_price.HasValue ? ii.actual_price.Value.ToString("N") : "0.00";
-                            dr["VAT"] = ii.actual_price.HasValue ? ii.actual_price.Value.ToString("N") : "0.00";
-                            dr["Phone"] = cus?.PhoneNumber ?? "N/A";
-                            dr["Address"] = cus?.ProjectLocation ?? "N/A";
-                            dr["Discount"] = cuss.Discount;
-                            dr["RevicedFromCustomer"] = cuss.RevicedFromCustomer;
-                            dr["Owe"] = cuss.Amount - ((cuss.Amount * cuss.Discount) / 100 + cuss.RevicedFromCustomer);
-                            dr["InvoiceNo"] = cuss.InvoiceNo;
-                            dr["ColorCode"] = ii.color_code;
-                            dr["UnitId"] = unit?.UnitNameEng ?? "Unknown Unit";
-                            dr["SaleImage"] = imageUrl;
-                            dt.Rows.Add(dr);
-                        }
-                    }
-                }
-            }
-            ReportViewer rv = new ReportViewer();
-            rv.ProcessingMode = ProcessingMode.Local;
-            rv.SizeToReportContent = true;
-            rv.Width = Unit.Percentage(100);
-            rv.Height = Unit.Percentage(100);
-            rv.LocalReport.ReportPath = Request.MapPath(Request.ApplicationPath) + @"ReportDesign\Invoice.rdlc";
-            rv.LocalReport.DataSources.Clear();
-            ReportDataSource rds = new ReportDataSource("DSSaleInvoice", dt);
-            rv.LocalReport.DataSources.Add(rds);
-            rv.ShowPrintButton = true;
-            rv.ShowRefreshButton = true;
-            rv.LocalReport.EnableExternalImages = true;
+			var allInvoiceData = new List<DataRow>();
+			string imageUrl = "/Images/defaultimage.jpg";
+			DataTable dt = new DataTable();
+			dt.Columns.Add(new DataColumn("Id"));
+			dt.Columns.Add(new DataColumn("ProductId"));
+			dt.Columns.Add(new DataColumn("Quantity"));
+			dt.Columns.Add(new DataColumn("Price"));
+			dt.Columns.Add(new DataColumn("CustomerId"));
+			dt.Columns.Add(new DataColumn("Date"));
+			dt.Columns.Add(new DataColumn("Total"));
+			dt.Columns.Add(new DataColumn("Totals"));
+			dt.Columns.Add(new DataColumn("VAT"));
+			dt.Columns.Add(new DataColumn("Phone"));
+			dt.Columns.Add(new DataColumn("Address"));
+			dt.Columns.Add(new DataColumn("Discount"));
+			dt.Columns.Add(new DataColumn("RevicedFromCustomer"));
+			dt.Columns.Add(new DataColumn("Owe"));
+			dt.Columns.Add(new DataColumn("InvoiceNo"));
+			dt.Columns.Add(new DataColumn("ColorCode"));
+			dt.Columns.Add(new DataColumn("UnitId"));
+			dt.Columns.Add(new DataColumn("SaleImage", typeof(string)));
 
-            ViewBag.ReportViewer = rv;
-            return View();
-        }
-        public ActionResult ExportToPDFOriginal(string id)
+			decimal totalAmount = 0m;
+			decimal depositAmount = 0m;
+
+			foreach (var singleIdStr in idList)
+			{
+				tblSale sale = db.tblSales.Find(singleIdStr);
+				if (sale == null)
+				{
+					return HttpNotFound($"Sale with ID {singleIdStr} not found.");
+				}				
+				if (isFirstRecord)
+				{
+					imageUrl = string.IsNullOrEmpty(sale.SaleImage) ? "/Images/defaultimage.jpg" :
+						Request.Url.GetLeftPart(UriPartial.Authority) + Url.Content(sale.SaleImage);
+					isFirstRecord = false;
+				}
+				var saleDetails = db.tblSalesDetails.Where(sd => sd.SaleId == singleIdStr).ToList();
+				var customer = db.tblCustomers.FirstOrDefault(c => c.Id == sale.CustomerId); 
+
+				if (saleDetails.Any() && customer != null)
+				{					
+					ViewBag.CustomerName = customer?.CustomerName ?? "N/A";
+					ViewBag.PhoneNumber = customer?.PhoneNumber ?? "N/A";
+					ViewBag.CustomerAddress = customer?.ProjectLocation ?? "N/A";
+					ViewBag.InvoiceNo = sale.InvoiceNo;
+					ViewBag.InvoiceDate = DateTime.Now.ToString("dd-MMM-yyyy h:mm tt");
+
+					foreach (var saleDetail in saleDetails)
+					{
+						var product = db.tblProducts.FirstOrDefault(p => p.Id == saleDetail.ProductId);
+						var unit = db.tblUnits.FirstOrDefault(u => u.Id == saleDetail.UnitTypeId);	
+                        
+						DataRow dr = dt.NewRow();
+						dr["CustomerId"] = customer?.CustomerName ?? "N/A";
+						dr["Date"] = DateTime.Now.ToString("dd-MMM-yyyy");
+						dr["Id"] = saleDetail.Id;
+						dr["ProductId"] = product?.ProductName ?? "Unknown Product";
+						dr["Quantity"] = Convert.ToInt32(saleDetail.Quantity);
+						dr["Price"] = saleDetail.actual_price.HasValue ? saleDetail.actual_price.Value.ToString("N") : "0.00";
+					
+						decimal total = (decimal)(saleDetail.actual_price.HasValue ? saleDetail.actual_price.Value * saleDetail.Quantity : 0);
+						dr["Total"] = total;
+						dr["VAT"] = saleDetail.actual_price.HasValue ? saleDetail.actual_price.Value.ToString("N") : "0.00";
+						dr["Phone"] = customer?.PhoneNumber ?? "N/A";
+						dr["Address"] = customer?.ProjectLocation ?? "N/A";
+						dr["Discount"] = sale.Discount;
+						dr["RevicedFromCustomer"] = sale.RevicedFromCustomer;					
+						decimal owe = (decimal)(sale.Amount - ((sale.Amount * sale.Discount) / 100 + sale.RevicedFromCustomer));
+						dr["Owe"] = owe;
+
+						dr["InvoiceNo"] = sale.InvoiceNo;
+						dr["ColorCode"] = saleDetail.color_code;
+						dr["UnitId"] = unit?.UnitNameEng ?? "Unknown Unit";
+						dr["SaleImage"] = imageUrl;
+
+						dt.Rows.Add(dr);
+
+						totalAmount += total;
+						depositAmount += (decimal)sale.RevicedFromCustomer;
+					}
+				}
+			}			
+			decimal balance = totalAmount - depositAmount;		
+			ViewBag.InvoiceData = dt;
+			ViewBag.ImageUrl = imageUrl;
+			ViewBag.TotalAmount = totalAmount;
+			ViewBag.DepositAmount = depositAmount;
+			ViewBag.Balance = balance;
+			return View();
+		}
+		/*  public ActionResult InvoiceReport(bool isFirstRecord = true)
+		  {
+			  jotunDBEntities db = new jotunDBEntities();
+			  *//*var aa = 0;*//*
+			  var idListString = Session["SelectedIds"] as List<string>;
+			  var idList = idListString.ToList();
+			  var allInvoiceData = new List<DataRow>();
+			  string imageUrl = "/Images/defaultimage.jpg";
+			  DataTable dt = new DataTable();
+			  dt.Columns.Add(new DataColumn("Id"));
+			  dt.Columns.Add(new DataColumn("ProductId"));
+			  dt.Columns.Add(new DataColumn("Quantity"));
+			  dt.Columns.Add(new DataColumn("Price"));
+			  dt.Columns.Add(new DataColumn("CustomerId"));
+			  dt.Columns.Add(new DataColumn("Date"));
+			  dt.Columns.Add(new DataColumn("Total"));
+			  dt.Columns.Add(new DataColumn("Totals"));
+			  dt.Columns.Add(new DataColumn("VAT"));
+			  dt.Columns.Add(new DataColumn("Phone"));
+			  dt.Columns.Add(new DataColumn("Address"));
+			  dt.Columns.Add(new DataColumn("Discount"));
+			  dt.Columns.Add(new DataColumn("RevicedFromCustomer"));
+			  dt.Columns.Add(new DataColumn("Owe"));
+			  dt.Columns.Add(new DataColumn("InvoiceNo"));
+			  dt.Columns.Add(new DataColumn("ColorCode"));
+			  dt.Columns.Add(new DataColumn("UnitId"));
+			  dt.Columns.Add(new DataColumn("SaleImage", typeof(string)));
+
+			  foreach (var singleIdStr in idList)
+			  {
+				  tblSale s = db.tblSales.Find(singleIdStr);
+				  if (s == null)
+				  {
+					  return HttpNotFound($"Sale with ID {singleIdStr} not found.");
+				  }
+				  if (isFirstRecord)
+				  {
+					  imageUrl = string.IsNullOrEmpty(s.SaleImage) ? "/Images/defaultimage.jpg" :
+						  Request.Url.GetLeftPart(UriPartial.Authority) + Url.Content(s.SaleImage);
+					  isFirstRecord = false;
+				  }
+				  var saless = db.tblSalesDetails.Where(ID => ID.SaleId == singleIdStr.ToString());
+				  var customer = db.tblSales.Where(ID => ID.Id == singleIdStr.ToString());
+				  if (saless.Any())
+				  {
+					  foreach (var cuss in customer)
+					  {
+						  foreach (var ii in saless)
+						  {
+							  var proname = db.tblProducts.FirstOrDefault(p => p.Id == ii.ProductId);
+							  var cus = db.tblCustomers.FirstOrDefault(c => c.Id == cuss.CustomerId);
+							  var unit = db.tblUnits.FirstOrDefault(u => u.Id == ii.UnitTypeId);
+							  DataRow dr = dt.NewRow();
+							  dr["CustomerId"] = cus?.CustomerName ?? "N/A";
+							  dr["Date"] = DateTime.Now.ToString("dd-MMM-yyyy");
+							  dr["Id"] = ii.Id;
+							  dr["ProductId"] = proname?.ProductName ?? "Unknown Product";
+							  dr["Quantity"] = ii.Quantity;
+							  dr["Price"] = ii.actual_price.HasValue ? ii.actual_price.Value.ToString("N") : "0.00";
+							  dr["Total"] = (ii.actual_price.HasValue ? ii.actual_price.Value : 0) * ii.Quantity;
+							  dr["Totals"] = ii.actual_price.HasValue ? ii.actual_price.Value.ToString("N") : "0.00";
+							  dr["VAT"] = ii.actual_price.HasValue ? ii.actual_price.Value.ToString("N") : "0.00";
+							  dr["Phone"] = cus?.PhoneNumber ?? "N/A";
+							  dr["Address"] = cus?.ProjectLocation ?? "N/A";
+							  dr["Discount"] = cuss.Discount;
+							  dr["RevicedFromCustomer"] = cuss.RevicedFromCustomer;
+							  dr["Owe"] = cuss.Amount - ((cuss.Amount * cuss.Discount) / 100 + cuss.RevicedFromCustomer);
+							  dr["InvoiceNo"] = cuss.InvoiceNo;
+							  dr["ColorCode"] = ii.color_code;
+							  dr["UnitId"] = unit?.UnitNameEng ?? "Unknown Unit";
+							  dr["SaleImage"] = imageUrl;
+							  dt.Rows.Add(dr);
+						  }
+					  }
+				  }
+			  }
+			  ReportViewer rv = new ReportViewer();
+			  rv.ProcessingMode = ProcessingMode.Local;
+			  rv.SizeToReportContent = true;
+			  rv.Width = Unit.Percentage(100);
+			  rv.Height = Unit.Percentage(100);
+			  rv.LocalReport.ReportPath = Request.MapPath(Request.ApplicationPath) + @"ReportDesign\Invoice.rdlc";
+			  rv.LocalReport.DataSources.Clear();
+			  ReportDataSource rds = new ReportDataSource("DSSaleInvoice", dt);
+			  rv.LocalReport.DataSources.Add(rds);
+			  rv.ShowPrintButton = true;
+			  rv.ShowRefreshButton = true;
+			  rv.LocalReport.EnableExternalImages = true;
+
+			  ViewBag.ReportViewer = rv;
+			  return View();
+		  }*/
+		public ActionResult ExportToPDFOriginal(string id)
         {
             //id = "07f3b5ec-f01f-4d41-a48c-57597b247754";
             jotunDBEntities db = new jotunDBEntities();
