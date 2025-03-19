@@ -3,156 +3,424 @@
 @model DataTable
 @{
     ViewBag.Title = "Invoice Report";
-    decimal totalAmount = 0m;
+    int productCount = 0;
+    var invoiceData = ViewBag.InvoiceData as DataTable;
 
-    if (Model != null && Model.Rows.Count > 0)
+    if (invoiceData != null && invoiceData.Rows.Count > 0)
     {
-        totalAmount = Model.AsEnumerable().Sum(row =>
+        for (int i = 0; i < invoiceData.Rows.Count; i++)
         {
-            decimal val;
-            return decimal.TryParse(row["Totals"] != null ? row["Totals"].ToString() : "0", out val) ? val : 0m;
-        });
+            var row = invoiceData.Rows[i];
+            productCount++;
+        }
     }
+    bool duplicateInvoice = productCount <= 12;
 }
 <div class="mt-4 ml-4">
     <button class="btn btn-secondary" onclick="goBackToSale()">
         <i class="fas fa-arrow-left"></i> Back
     </button>
-    <button class="btn btn-success" onclick="printReport()">
+    <button class="btn btn-success" onclick="printReportBasedOnInvoiceType()">
         <i class="fas fa-print"></i> Print
     </button>
 </div>
 <div class="container" id="reportContent">
-    <div class="text-center mb-4">
-        <h2>Lily Diamond</h2>
-        <h6>Diamond and Italy Gold Wholesale</h6>
-    </div>
-    <div class="customer-info mb-4">
-        <p>ផ្ទះលេខ​ 11Eo & 13Eo ផ្លូវលេខ 118 សង្កាត់ផ្សារកណ្ដាល១ ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ</p>
-        <p>#11E0 & 13E0, Street 118, Sanakat Phsar Kandal 1, Khan Duan Penh, Phnom Penh, Cambodia</p>
-        <p>TEL: 012 777 848, 095 929 242, 077 888 272</p>
-    </div>
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <p><strong>Sale to:</strong> @ViewBag.CustomerName</p>
-            <p><strong>TEL:</strong> @ViewBag.PhoneNumber</p>
-            <p><strong>Item:</strong></p>
-        </div>
-        <div class="col-md-4 text-center">
-            <h3 style="font-size: 24px; text-decoration: underline;">INVOICE</h3>
-        </div>
-        <div class="col-md-4 text-right">
-            <p style="margin-right:142px"><strong>No:</strong> @ViewBag.InvoiceNo</p>
-            <p><strong>Date:</strong> @ViewBag.InvoiceDate</p>
-        </div>
-    </div>
-    <table class="table table-bordered mb-4">
-        <thead>
-            <tr>
-                <th class="text-center">ល.រ<br>No</th>
-                <th class="text-center">ឈ្មោះទំនិញ<br>Product Name</th>
-                <th class="text-center">ទម្ងន់<br>Weight</th>
-                <th class="text-center">ចំនួន<br>Quantity</th>
-                <th class="text-center">តម្លៃ<br>Price</th>
-                <th class="text-center">សរុប<br>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (int i = 0; i < ((DataTable)ViewBag.InvoiceData).Rows.Count; i++)
+
+    @if (duplicateInvoice)
+    {
+        <div class="row">
+            @for (int j = 0; j < 2; j++)
             {
-                var row = ((DataTable)ViewBag.InvoiceData).Rows[i];
-                <tr>
-                    <td>@(i + 1)</td>
-                    <td>@row["ProductId"]</td>
-                    <td>@row["UnitId"]</td>
-                    <td>@row["Quantity"]</td>
-                    <td>@(Convert.ToDecimal(row["Price"]).ToString("C2"))</td>
-                    <td>@(Convert.ToDecimal(row["Total"]).ToString("C2"))</td>
-                </tr>
+                <div class="col-md-6">
+                    <div class="text-center mb-4">
+                        <h2>Lily Diamond</h2>
+                        <h6>Diamond and Italy Gold Wholesale</h6>
+                    </div>
+
+                    <div class="customer-info mb-4">
+                        <p>ផ្ទះលេខ​ 11Eo & 13Eo ផ្លូវលេខ 118 សង្កាត់ផ្សារកណ្ដាល១ ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ</p>
+                        <p>#11E0 & 13E0, Street 118, Sanakat Phsar Kandal 1, Khan Duan Penh, Phnom Penh, Cambodia</p>
+                        <p>TEL: 012 777 848, 095 929 242, 077 888 272</p>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <p><strong>Sale to:</strong> @ViewBag.CustomerName</p>
+                            <p><strong>TEL:</strong> @ViewBag.PhoneNumber</p>
+                            <p><strong>Item:</strong></p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <h3 style="font-size: 24px; text-decoration: underline;">INVOICE</h3>
+                        </div>
+                        <div class="col-md-4 text-right">
+                            <p style="margin-right:142px"><strong>No:</strong> @ViewBag.InvoiceNo</p>
+                            <p><strong>Date:</strong> @ViewBag.InvoiceDate</p>
+                        </div>
+                    </div>
+
+                    <table class="table table-bordered mb-4">
+                        <thead>
+                            <tr>
+                                <th class="text-center">ល.រ<br>No</th>
+                                <th class="text-center">ឈ្មោះទំនិញ<br>Product Name</th>
+                                <th class="text-center">ទម្ងន់<br>Weight</th>
+                                <th class="text-center">ចំនួន<br>Quantity</th>
+                                <th class="text-center">តម្លៃ<br>Price</th>
+                                <th class="text-center">សរុប<br>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < ((DataTable)ViewBag.InvoiceData).Rows.Count; i++)
+                            {
+                                var row = ((DataTable)ViewBag.InvoiceData).Rows[i];
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td>@row["ProductId"]</td>
+                                    <td>@row["UnitId"]</td>
+                                    <td>@row["Quantity"]</td>
+                                    <td>@(Convert.ToDecimal(row["Price"]).ToString("C2"))</td>
+                                    <td>@(Convert.ToDecimal(row["Total"]).ToString("C2"))</td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="5" style="text-align: left;">ថ្លៃឈ្នួល / Labour Cost</td>
+                                <td></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div style="float: left; margin-right: 20px;">
+                        <div class="image-placeholder">
+                            <img src="@ViewBag.ImageUrl" alt="Sale Image" style="width: 100px; height: 100px;" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6 offset-md-6 text-right">
+                            <p><strong>សរុប / Total:</strong> <span>@ViewBag.TotalAmount.ToString("C2")</span></p>
+                            <p><strong>នាំចូល / Deposit:</strong> <span>@ViewBag.DepositAmount.ToString("C2")</span></p>
+                            <p><strong>សំណង់ / Balance:</strong> <span>@ViewBag.Balance.ToString("C2")</span></p>
+                        </div>
+                    </div>
+
+                    <div class="footer text-left">
+                        <p>- ទំនិញដែលលក់ហើយមិនអាចដូរវិញបាន លើកលែងតែខូចគុណភាព 0.5 ដុល្លារ</p>
+                        <p>- ចំពោះការប្ដូរគ្រាប់ពេជ្រកាត់ខាត 5%​ និងសំបកខាតឈ្នួល</p>
+                        <p>- ពេជ្រធានាទិញចូលវិញដោយកាត់ខាត 10%</p>
+                        <p>***កំណត់សម្គាល់​:​​ពេជ្រគិតតាមតម្លៃក្នុងវិក័យប័ត្រក្នុងរយ:ពេល១ឆ្នាំ ដំបូងប៉ុណ្ណោះ បើលើសពីនេះត្រូវគិតតាមហាងឆេងថ្មី</p>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong>អតិខិជន:</strong></p>
+                            <p><strong>Customer:<span class="line-after-colon"></span></strong></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>អ្នកលក់:</strong> </p>
+                            <p><strong>Seller:<span class="line-after-colon"></span></strong></p>
+                        </div>
+                    </div>
+                </div>
             }
-            <tr>
-                <td colspan="5" style="text-align: left;">ថ្លៃឈ្នួល / Labour Cost</td>
-                <td></td>
-            </tr>
-        </tbody>
-    </table>
-    <div style="float: left; margin-right: 20px;">
-        <div class="image-placeholder">
-            <img src="@ViewBag.ImageUrl" alt="Sale Image" style="width: 100px; height: 100px;" />
         </div>
-    </div>
-    <div class="row mb-4">
-        <div class="col-md-6 offset-md-6 text-right">
-            <p><strong>សរុប / Total:</strong> <span>@ViewBag.TotalAmount.ToString("C2")</span></p>
-            <p><strong>នាំចូល / Deposit:</strong> <span>@ViewBag.DepositAmount.ToString("C2")</span></p>
-            <p><strong>សំណង់ / Balance:</strong> <span>@ViewBag.Balance.ToString("C2")</span></p>
+    }
+    else
+    {
+        <div class="text-center mb-4">
+            <h2>Lily Diamond</h2>
+            <h6>Diamond and Italy Gold Wholesale</h6>
         </div>
-    </div>
-    <div class="footer text-left">
-        <p>- ទំនិញដែលលក់ហើយមិនអាចដូរវិញបាន លើកលែងតែខូចគុណភាព 0.5 ដុល្លារ</p>
-        <p>- ចំពោះការប្ដូរគ្រាប់ពេជ្រកាត់ខាត 5%​ និងសំបកខាតឈ្នួល</p>
-        <p>- ពេជ្រធានាទិញចូលវិញដោយកាត់ខាត 10%</p>
-        <p>***កំណត់សម្គាល់​:​​ពេជ្រគិតតាមតម្លៃក្នុងវិក័យប័ត្រក្នុងរយ:ពេល១ឆ្នាំ ដំបូងប៉ុណ្ណោះ បើលើសពីនេះត្រូវគិតតាមហាងឆេងថ្មី</p>
-    </div>
+
+        <div class="customer-info mb-4">
+            <p>ផ្ទះលេខ​ 11Eo & 13Eo ផ្លូវលេខ 118 សង្កាត់ផ្សារកណ្ដាល១ ខណ្ឌដូនពេញ រាជធានីភ្នំពេញ</p>
+            <p>#11E0 & 13E0, Street 118, Sanakat Phsar Kandal 1, Khan Duan Penh, Phnom Penh, Cambodia</p>
+            <p>TEL: 012 777 848, 095 929 242, 077 888 272</p>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <p><strong>Sale to:</strong> @ViewBag.CustomerName</p>
+                <p><strong>TEL:</strong> @ViewBag.PhoneNumber</p>
+                <p><strong>Item:</strong></p>
+            </div>
+            <div class="col-md-4 text-center">
+                <h3 style="font-size: 24px; text-decoration: underline;">INVOICE</h3>
+            </div>
+            <div class="col-md-4 text-right">
+                <p>
+                    <strong><span style="display: inline-block; margin-right: 130px">No:</span></strong>@ViewBag.InvoiceNo
+                </p>
+                <p><strong>Date:</strong> @ViewBag.InvoiceDate</p>
+            </div>
+        </div>
+
+        <table class="table table-bordered mb-4">
+            <thead>
+                <tr>
+                    <th class="text-center">ល.រ<br>No</th>
+                    <th class="text-center">ឈ្មោះទំនិញ<br>Product Name</th>
+                    <th class="text-center">ទម្ងន់<br>Weight</th>
+                    <th class="text-center">ចំនួន<br>Quantity</th>
+                    <th class="text-center">តម្លៃ<br>Price</th>
+                    <th class="text-center">សរុប<br>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < ((DataTable)ViewBag.InvoiceData).Rows.Count; i++)
+                {
+                    var row = ((DataTable)ViewBag.InvoiceData).Rows[i];
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@row["ProductId"]</td>
+                        <td>@row["UnitId"]</td>
+                        <td>@row["Quantity"]</td>
+                        <td>@(Convert.ToDecimal(row["Price"]).ToString("C2"))</td>
+                        <td>@(Convert.ToDecimal(row["Total"]).ToString("C2"))</td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="5" style="text-align: left;">ថ្លៃឈ្នួល / Labour Cost</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="float: left; margin-right: 20px;">
+            <div class="image-placeholder">
+                <img src="@ViewBag.ImageUrl" alt="Sale Image" style="width: 100px; height: 100px;" />
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6 offset-md-6 text-right" style="text-align: right !important;">
+                <p><strong>សរុប / Total:</strong> <span>@ViewBag.TotalAmount.ToString("C2")</span></p>
+                <p><strong>នាំចូល / Deposit:</strong> <span>@ViewBag.DepositAmount.ToString("C2")</span></p>
+                <p><strong>សំណង់ / Balance:</strong> <span>@ViewBag.Balance.ToString("C2")</span></p>
+            </div>
+        </div>
+
+        <div class="footer text-left">
+            <p>- ទំនិញដែលលក់ហើយមិនអាចដូរវិញបាន លើកលែងតែខូចគុណភាព 0.5 ដុល្លារ</p>
+            <p>- ចំពោះការប្ដូរគ្រាប់ពេជ្រកាត់ខាត 5%​ និងសំបកខាតឈ្នួល</p>
+            <p>- ពេជ្រធានាទិញចូលវិញដោយកាត់ខាត 10%</p>
+            <p>***កំណត់សម្គាល់​:​​ពេជ្រគិតតាមតម្លៃក្នុងវិក័យប័ត្រក្នុងរយ:ពេល១ឆ្នាំ ដំបូងប៉ុណ្ណោះ បើលើសពីនេះត្រូវគិតតាមហាងឆេងថ្មី</p>
+        </div>
+
         <div class="row mb-4">
             <div class="col-md-6">
-                <p><strong>អតិខិជន:</strong></p>
-                <p><strong>Customer:<span class="line-after-colon"></span></strong></p>
+                <p style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong style="margin-right: 5px;">អតិខិជន:</strong>
+                </p>
+                <p style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong style="margin-right: 5px;">Customer:</strong>
+                    <span class="line-after-colon" style="margin-right: 100px;"></span>
+                </p>
             </div>
             <div class="col-md-6 text-right">
-                <p><strong style="margin-right:265px">អ្នកលក់:</strong> </p>
-                <p><strong>Seller:<span class="line-after-colon"></span></strong></p>
+                <p style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong style="margin-left: 100px;">អ្នកលក់:</strong>
+                </p>
+
+                <p style="display: flex; justify-content: space-between; align-items: center;">
+                    <strong style="margin-left: 100px;">Seller:</strong>
+                    <span class="line-after-colon"></span>
+                </p>
             </div>
         </div>
+    }
 </div>
 <link rel="stylesheet" href="~/Content/css/Invoice.css">
-
 <script>
      function goBackToSale() {
         var routeUrl = '@Url.Action("Index", "Sale")';
         window.location.href = routeUrl;
     }
-   function printReport() {
+    var duplicateInvoice = @duplicateInvoice.ToString().ToLower();
+    function printReportBasedOnInvoiceType() {
+        if (duplicateInvoice) {
+            printReport();
+        } else {
+            printReportSingle();
+        }
+    }
+    function printReport() {
+        var content = document.getElementById('reportContent').outerHTML;
+        var printWindow = window.open('', '', 'height=800,width=1200'); // Landscape
+
+        printWindow.document.write('<html><head><title>Invoice Report</title>');
+        printWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">');
+
+        printWindow.document.write('<style>');
+        printWindow.document.write(`
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #fff;
+        margin: 0;
+        padding: 0;
+        font-size: 6.5pt;
+        width: 100%;
+    }
+    .container {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+    .invoice-container {
+        width: 100%;
+        padding: 5px;
+        box-sizing: border-box;
+        background: #fff;
+        margin-bottom: 10px;  /* Optional margin at the bottom */
+    }
+    .invoice-content {
+        transform: scale(0.85);  /* Adjust scale to fit content */
+        transform-origin: top left;
+        width: 100%;
+        height: 100%;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 6.5pt;
+    }
+    table th, table td {
+        padding: 1px 3px;
+        text-align: center;
+        border: 1px solid #ddd;
+        white-space: nowrap;
+    }
+    table th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+    .footer {
+        font-size: 6pt;
+        color: #777;
+        text-align: left;
+        margin-top: 5px;
+    }
+    h1, h2, h3 {
+        font-size: 9pt;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+    h6 {
+        font-size: 6.5pt;
+        text-align: center;
+        margin: 0;
+        padding: 0;
+    }
+    .line-after-colon {
+        border-bottom: 1px solid #000;
+        display: inline-block;
+        width: 18%;
+        margin-left: 4px;
+    }
+    .no-print { display: none; }
+    
+    /* Ensure no overflow */
+    body, .container {
+        overflow: hidden;
+    }
+    `);
+        printWindow.document.write('</style>');
+        printWindow.document.write('</head><body>');
+
+        printWindow.document.write('<div class="container">');
+        printWindow.document.write(`<div class="invoice-container"><div class="invoice-content">${content}</div></div>`);
+        printWindow.document.write('</div>');
+
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+
+        setTimeout(function () {
+            printWindow.print();
+        }, 1000);
+    }
+
+   function printReportSingle() {
     var content = document.getElementById('reportContent').outerHTML;
-    var printWindow = window.open('', '', 'height=600,width=800');
+    var printWindow = window.open('', '', 'height=1122,width=794'); 
 
     printWindow.document.write('<html><head><title>Invoice Report</title>');
     printWindow.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">');
     printWindow.document.write('<style>');
-    printWindow.document.write('body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 20px; padding: 0; }');
-    printWindow.document.write('.container { max-width: 1200px; margin: 0 auto; padding: 20px; }');
-    printWindow.document.write('table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }');
-    printWindow.document.write('table th, table td { padding: 10px; text-align: center; border: 1px solid #ddd; }');
-    printWindow.document.write('table th { background-color: #f4f4f4; }');
-    printWindow.document.write('.line-after-colon { border-bottom: 1px solid #000; display: flex; width:30%; }');
-    printWindow.document.write('.row { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }');
-    printWindow.document.write('.col-md-4 { width: 100%; padding: 5px; }');
-    printWindow.document.write('.text-center { text-align: center; }');
-    printWindow.document.write('.text-right { text-align: right; }');
-    printWindow.document.write('.col-md-4.text-right p { margin-right: 3px; }');
-
-
-    printWindow.document.write('body { font-size: 12pt; margin: 0; padding: 0; }');
-    printWindow.document.write('.container { padding: 0; margin: 0; }');
-    printWindow.document.write('table { width: 100%; font-size: 10pt; border-collapse: collapse; }');
-    printWindow.document.write('table th, table td { padding: 8px; text-align: left; border: 1px solid #ccc; }');
-    printWindow.document.write('table th { background-color: #f4f4f4; font-weight: bold; }');
-    printWindow.document.write('.footer { font-size: 10pt; color: #777; margin-top: 20px; text-align: left; }');
-    printWindow.document.write('.line-after-colon { border-bottom: 1px solid #000; display: inline-block; width: 30%; }');
-    printWindow.document.write('.col-md-6 { width: 100%; padding: 5px; }');
-    printWindow.document.write('.no-print { display: none; }');
-    printWindow.document.write('.page-break { page-break-before: always; }');
-    printWindow.document.write('h1, h2 ,h3 { font-size: 16pt; text-align: center; margin: 0; padding: 0; }');
-    printWindow.document.write('h6 { font-size: 10pt; text-align: center; margin: 0; padding: 0; }');
-    printWindow.document.write('table { width: 100%; margin-bottom: 20px; }');
-    printWindow.document.write('.invoice-header { margin-bottom: 15px; }');
+    printWindow.document.write(`
+        body {
+            font-family: Arial, sans-serif;
+            width: 794px; 
+            height: 1122px; 
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 794px; 
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right !important;; }
+        .col-md-4 { width: 33.33%; padding: 5px; display: inline-block; vertical-align: top; }
+        .col-md-6 { width: 50%; padding: 5px; display: inline-block; vertical-align: top; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 10pt;
+        }
+        table th, table td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+        table th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+        .col-md-6.offset-md-6.text-right {
+            width: 100%; 
+            text-align: right !important;  
+            display: flex;
+            justify-content: flex-end; 
+            flex-direction: column;  
+            }
+        .footer {
+            font-size: 10pt;
+            color: #777;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .line-after-colon {
+            border-bottom: 1px solid #000;
+            display: inline-block;
+            width: 30%;
+            margin-left: 5px;
+        }
+        .no-print { display: none; }
+        .page-break { page-break-before: always; }
+        h1, h2, h3 {
+            font-size: 16pt;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        h6 {
+            font-size: 10pt;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+    `);
     printWindow.document.write('</style>');
 
     printWindow.document.write('</head><body>');
-    printWindow.document.write(content);
+    printWindow.document.write(`<div class="container">${content}</div>`);
     printWindow.document.write('</body></html>');
     printWindow.document.close();
-    printWindow.print();
-}
 
+    setTimeout(function () {
+        printWindow.print();
+    }, 1000);
+}
 </script>
