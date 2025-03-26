@@ -1,0 +1,50 @@
+﻿@model IEnumerable<jotun.Models.CreateServiceViewModel>
+
+<h2 style="margin-top : 76px; margin-left:10px;">List of Service</h2>
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>ឈ្មោះ</th>
+            <th>តម្លៃ</th>
+            <th>ការពិពណ៌នា</th>
+            <th>​ប្រភេទសេវាកម្ម</th>
+            <th>បង្កើតនៅ</th>
+            <th>ផលិតផល</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var service in Model)
+        {
+            <tr>
+                <td>@service.Name</td>
+                <td>@service.Price.ToString("C")</td>
+                <td>@service.Description</td>
+                <td>@service.ServiceTypeName</td>
+                <td>@service.CreatedAt.ToString("yyyy-MM-dd")</td>
+                <td>
+                    @foreach (var product in service.Products)
+                    {
+                        <div>@product.ProductName - @product.Quantity @product.Quality</div>
+                    }
+                </td>
+                <td>
+                    <div class="d-flex" style="gap:3px;">
+                        <!-- Edit Icon -->
+                        <a href="@Url.Action("EditService", "Coffee", new { id = service.ServiceId })" class="btn btn-warning btn-sm d-flex align-items-center">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+
+                        <!-- Delete Icon -->
+                        @using (Html.BeginForm("DeleteService", "Coffee", new { id = service.ServiceId }, FormMethod.Post, new { onsubmit = "return confirm('Are you sure you want to delete this service?');" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-danger btn-sm d-flex align-items-center">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </button>
+                        }
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

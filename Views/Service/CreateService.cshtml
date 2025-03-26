@@ -1,0 +1,286 @@
+﻿@model jotun.Models.CreateServiceViewModel
+
+<h2 style="margin-top : 45px; margin-left:10px;">Create Service</h2>
+
+@using (Html.BeginForm("CreateService", "Service", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="ml-4 mt-4">
+        <div class="form-group">
+            <div class="row">
+                <!-- First Row: Labels -->
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.LabelFor(m => m.Name, new { @class = "col-md-12 control-label" })
+                </div>
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.LabelFor(m => m.ServiceTypeId, "Service Type", new { @class = "col-md-12 control-label" })
+                </div>
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.LabelFor(m => m.Price, new { @class = "col-md-12 control-label" })
+                </div>
+            </div>
+            <div class="row">
+                <!-- Second Row: Inputs -->
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", style = "width: 300px;" })
+                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-4 d-flex align-items-center" style="background-color:transparent;gap:3px;">
+                    @Html.DropDownListFor(m => m.ServiceTypeId, Model.ServiceTypes, "-- Select Service Type --", new { @class = "form-control", style = "width: 300px;" })
+                    @Html.ValidationMessageFor(m => m.ServiceTypeId)
+                    <input type="button" value="New ?" class="btn btn-success ms-2" data-bs-toggle="modal" data-bs-target="#newServiceTypeModal" id="newServiceTypeBtn" />
+                </div>
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", step = "0.01", style = "width: 300px;" })
+                    @Html.ValidationMessageFor(m => m.Price)
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="row">              
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.LabelFor(m => m.Description, new { @class = "col-md-12 control-label" })
+                </div>
+                <div class="col-md-4" style="background-color:transparent">                 
+                </div>
+                <div class="col-md-4" style="background-color:transparent">                  
+                </div>
+            </div>
+            <div class="row">            
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 4, style = "width: 100%;" })
+                    @Html.ValidationMessageFor(m => m.Description)
+                </div>
+                <div class="col-md-4" style="background-color:transparent">               
+                </div>
+                <div class="col-md-4" style="background-color:transparent">               
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-md-4 control-label">Service Includes Products?</label>
+                <div class="col-md-8">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="HasProduct" id="withProduct" value="true" checked>
+                        <label class="form-check-label" for="withProduct">With Product</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="HasProduct" id="withoutProduct" value="false">
+                        <label class="form-check-label" for="withoutProduct">Without Product</label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <button type="button" id="addProductRow" class="btn btn-primary">Add Product</button>
+        <div id="productTableContainer" class="mt-2">
+            <table id="productTable" class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Products.Count(); i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DropDownListFor(m => m.Products[i].ProductId,
+                                    new SelectList(Model.AvailableProducts, "Value", "Text", Model.Products[i].ProductId),
+                                    "-- Select Product --",
+                                    new { @class = "form-control  product-select", style = "width: 300px;" })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Products[i].Quantity, new { @class = "form-control", type = "number", min = "1", style = "width: 300px;" })
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(m => m.Products[i].Unit,
+                                    new SelectList(Enumerable.Empty<SelectListItem>(), "Value", "Text"),
+                                    "-- Select Unit --",
+                                    new { @class = "form-control unit-select", style = "width: 300px;" })
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm delete-row">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-12 mt-3">
+                @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-secondary" })
+                <input type="submit" value="Create" class="btn btn-success" />
+            </div>
+        </div>
+    </div>
+}
+<!-- Modal -->
+<div class="modal fade" id="newServiceTypeModal" tabindex="-1" aria-labelledby="newServiceTypeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newServiceTypeModalLabel">Create New Service Type</h5>
+            </div>
+            <div class="modal-body">
+                <form id="createServiceTypeForm">                
+                    <div class="mb-3">
+                        <label for="newServiceType" class="form-label">Service Type Name</label>
+                        <input type="text" class="form-control" id="newServiceType" name="ServiceTypeName" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="newServiceDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="newServiceDescription" name="ServiceDescription" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveServiceTypeBtn">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/Scripts/jquery-ui.js"></script>
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="~/Content/css/site.css">
+}
+
+<script type="text/javascript">
+    var availableProducts = @Html.Raw(Json.Encode(Model.AvailableProducts));
+
+    // Elements
+    const addProductBtn = document.getElementById("addProductRow");
+    const productTableContainer = document.getElementById("productTableContainer");
+    const withProductRadio = document.getElementById("withProduct");
+    const withoutProductRadio = document.getElementById("withoutProduct");
+
+    // Function to toggle product inputs
+    function toggleProductInputs(hasProduct) {
+        addProductBtn.disabled = !hasProduct;
+        productTableContainer.querySelectorAll("select, input").forEach(input => {
+            input.disabled = !hasProduct;
+        });
+    }
+    withProductRadio.addEventListener("change", function () {
+        if (this.checked) toggleProductInputs(true);
+    });
+
+    withoutProductRadio.addEventListener("change", function () {
+        if (this.checked) toggleProductInputs(false);
+    });
+    window.addEventListener("DOMContentLoaded", function () {
+        toggleProductInputs(withProductRadio.checked);
+    });
+    addProductBtn.addEventListener("click", function () {
+        const productTable = document.getElementById("productTable").querySelector('tbody');
+        const rowCount = productTable.rows.length;
+
+        const row = productTable.insertRow(rowCount);
+
+        // Create dropdown for product
+        const productSelect = document.createElement("select");
+        productSelect.name = `Products[${rowCount}].ProductId`;
+        productSelect.className = "form-control product-select"; 
+        productSelect.style.width = "300px";
+        productSelect.setAttribute("data-index", rowCount); 
+        availableProducts.forEach(product => {
+            const option = new Option(product.Text, product.Value);
+            productSelect.appendChild(option);
+        });
+
+        // Create quantity input
+        const quantityInput = document.createElement("input");
+        quantityInput.type = "number";
+        quantityInput.name = `Products[${rowCount}].Quantity`;
+        quantityInput.className = "form-control";
+        quantityInput.style.width = "300px";
+        quantityInput.min = "1";
+
+        // Create unit dropdown (instead of input)
+        const unitSelect = document.createElement("select");
+        unitSelect.name = `Products[${rowCount}].Unit`;
+        unitSelect.className = "form-control unit-select";
+        unitSelect.style.width = "300px";
+        unitSelect.innerHTML = '<option value="">-- Select Unit --</option>'; 
+
+        // Delete row button
+        let deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.className = "btn btn-danger btn-sm delete-row";
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteBtn.addEventListener("click", function () {
+            row.remove();
+        });
+        row.innerHTML = `
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+    `;
+        row.cells[0].appendChild(productSelect);
+        row.cells[1].appendChild(quantityInput);
+        row.cells[2].appendChild(unitSelect);
+        row.cells[4].appendChild(deleteBtn);
+    });
+
+$(document).ready(function () {
+    $(document).on("change", ".product-select", function () {
+        var productId = $(this).val();
+        var row = $(this).closest("tr"); 
+        var unitSelect = row.find(".unit-select");
+
+        console.log("Selected Product ID:", productId);
+
+        if (productId) {
+            $.ajax({
+                url: '@Url.Action("GetAvailableUnits", "Service")',
+                data: { productId: productId },
+                success: function (data) {
+                    unitSelect.empty();
+                    unitSelect.append('<option value="">-- Select Unit --</option>');
+
+                    $.each(data, function (i, item) {
+                        unitSelect.append('<option value="' + item.Value + '">' + item.Text + '</option>');
+                    });
+                }
+            });
+        } else {
+            unitSelect.empty().append('<option value="">-- Select Unit --</option>');
+        }
+    });
+});
+    document.getElementById('saveServiceTypeBtn').addEventListener('click', function () {
+        var serviceTypeName = document.getElementById('newServiceType').value;
+        var Description = document.getElementById('newServiceDescription').value;
+
+        if (serviceTypeName && Description) {
+            var data = { name: serviceTypeName, description: Description };
+            fetch('/Service/SaveServiceType', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        var modalElement = document.getElementById('newServiceTypeModal');
+                        var modal = bootstrap.Modal.getInstance(modalElement);
+                        modal.hide();
+                        alert('Service type create successful.');
+                    } else {
+                        alert('Error saving service type.');
+                    }
+                })
+        } else {
+            alert('Please enter a service type name and description.');
+        }
+    });
+</script>

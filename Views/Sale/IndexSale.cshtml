@@ -300,8 +300,89 @@
                 return month + '/' + day + '/' + year;
             }
 
-
             $('#Generrate').click(function (e) {
+                var Todate = $('#orderDate').val();
+                var FromDate = $('#orderDate1').val();
+
+                var t = $("#userstable").DataTable({
+                    "autoWidth": false,
+                    "scrollX": true,
+                    "initComplete": function (settings, json) {
+                        $('#userstable thead tr').css({ visibility: 'collapse' });
+                    },
+                    "ajax": {
+                        "url": "/Sale/GetSale",
+                        "type": "GET",
+                        "datatype": "json",
+                        "data": { 'Todate': Todate, 'FromDate': FromDate },
+                    },
+
+                    "columns": [
+                        { "data": "Id", "visible": false }, // Keep ID hidden but accessible
+                        {
+                            "render": function (data, type, full, meta) {
+                                return '<a href="/Sale/Details/' + full.Id + '">' + full.CustomerId + '</a>';
+                            }
+                        },
+                        { "data": "ProjectLocation" },
+                        { "data": "Amount" },
+                        { "data": "Discount" },
+                        { "data": "RevicedFromCustomer" },
+                        { "data": "Owe" },
+                        { "data": "InvoiceStatus" },
+                        { "data": "Description" },
+                        { "data": "CreatedDate" },
+                        { "data": "InvoiceNo" },
+                        {
+                            "render": function (data, type, full, meta) {
+                                return `<a href="#" class="print-selected">Print</a>`;
+                            }
+                        }
+                    ],
+
+                    "columnDefs": [{ type: 'date', 'targets': [10] }],
+                    "bDestroy": true,
+                    "order": [[10, "desc"]],
+                });
+
+                t.on('order.dt search.dt', function () {
+                    t.column(0, { search: 'applied', order: 'applied' }).nodes().each(function (cell, i) {
+                        cell.innerHTML = i + 1;
+                    });
+                }).draw();
+            });
+            $(document).on('click', '.print-selected', function (e) {
+                e.preventDefault();
+
+                const table = $('#userstable').DataTable();
+                const selectedIds = [];
+                table.rows({ search: 'applied' }).every(function () {
+                    const rowData = this.data();
+                    selectedIds.push(rowData.Id);
+                });
+
+                if (selectedIds.length === 0) {
+                    alert("No invoices found to print.");
+                    return;
+                }
+                const form = $('<form>', {
+                    method: 'post',
+                    action: '/Sale/StoreIds'
+                });
+
+                const input = $('<input>', {
+                    type: 'hidden',
+                    name: 'ids',
+                    value: selectedIds.join(',')
+                });
+
+                form.append(input);
+                $('body').append(form);
+                form.submit();
+            });
+
+
+           /* $('#Generrate').click(function (e) {
                 //  var SalessViewModel = {
                 //$('#userstable').dataTable().fnDestroy();
                 //$('#userstable').dataTable().fnClearTable();
@@ -345,7 +426,7 @@
                         {
                             "render": function (data, type, full, meta) {
                                 //  return '<a  href="/Sale/InvoiceReport/' + full.Id + '">' + "Print" + '</a>' + ' | ' + '<a href="/Sale/InvoiceReportWithPaid/' + full.Id + '">' + "Paid" + '</a>';
-                                return '<a  href="/Sale/InvoiceReport/' + full.Id + '">' + "Print" + '</a>';
+                                return '<a  href="/Sale/StoreIds/' + full.Id + '">' + "Print" + '</a>';
                             }
                         },
 
@@ -364,7 +445,7 @@
 
 
 
-            });
+            });*/
 
 
             function loadInvoiceByCustomer() {

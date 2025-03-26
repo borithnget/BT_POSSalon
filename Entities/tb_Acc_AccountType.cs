@@ -17,7 +17,7 @@ namespace jotun.Entities
         public int Id { get; set; }
         public string AccountTypeCode { get; set; }
         public string AccountTypeName { get; set; }
-        public string Description { get; set; } = string.Empty;
+        public string Description { get; set; }
         public Nullable<bool> IsActive { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }

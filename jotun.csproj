@@ -115,7 +115,7 @@
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.5.3, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
@@ -344,6 +344,9 @@
     <Compile Include="Entities\tblJeweler.cs">
       <DependentUpon>jotunDBEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="Entities\tblModule.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="Entities\tblProduct.cs">
       <DependentUpon>jotunDBEntities.tt</DependentUpon>
     </Compile>
@@ -387,6 +390,12 @@
       <DependentUpon>jotunDBEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\tblShipper.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\tblShop.cs">
+      <DependentUpon>jotunDBEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\tblShopModulePermission.cs">
       <DependentUpon>jotunDBEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Entities\tblStaff.cs">
@@ -453,6 +462,7 @@
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\InvoiceViewModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\PackageViewModel.cs" />
     <Compile Include="Models\ProductHistoryViewModel.cs" />
     <Compile Include="Models\ProductViewModels.cs" />
     <Compile Include="Models\PurchaseViewModels.cs" />
@@ -466,6 +476,9 @@
     <Compile Include="Models\UnitViewModels.cs" />
     <Compile Include="Models\Utility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\PermissionAuthorize.cs" />
+    <Compile Include="Services\PermissionService.cs" />
+    <Compile Include="Services\UnityDependencyResolver.cs" />
     <Compile Include="SqlServerTypes\Loader.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -476,6 +489,7 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\css\all2.css" />
     <Content Include="Content\css\bootstrap.min2.css" />
+    <Content Include="Content\css\Invoice.css" />
     <Content Include="Content\css\sb-admin.css" />
     <Content Include="Content\css\sb-admin.min.css" />
     <Content Include="Content\css\site.css" />
@@ -2548,7 +2562,6 @@
     <Content Include="Views\Coffee\CreateCustomerType.cshtml" />
     <Content Include="Views\Coffee\Receipt.cshtml" />
     <Content Include="Views\Coffee\InvoiceReport.cshtml" />
-    <Content Include="Views\Service\Create.cshtml" />
     <Content Include="Views\Service\Index.cshtml" />
     <Content Include="Views\Appointment\Create.cshtml" />
     <Content Include="Views\Appointment\Index.cshtml" />
@@ -2567,9 +2580,20 @@
     <Content Include="Views\Accounting\ExpenseDiture.cshtml" />
     <Content Include="Views\Accounting\_EditAccountTypeForm.cshtml" />
     <Content Include="Views\Accounting\_EditAccountListForm.cshtml" />
+    <Content Include="Views\Sale\IvoiceReportCopy.cshtml" />
+    <Content Include="Views\Coffee\ListServices.cshtml" />
+    <Content Include="Views\Coffee\EditService.cshtml" />
+    <Content Include="Views\Service\EditService.cshtml" />
+    <Content Include="Views\Service\CreateService.cshtml" />
+    <Content Include="Views\Service\DetailService.cshtml" />
+    <Content Include="Views\Service\CreatePackage.cshtml" />
+    <Content Include="Views\Service\ListPackage.cshtml" />
+    <Content Include="Views\Service\EditPackage.cshtml" />
+    <Content Include="Views\Service\_DetailPackage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Module\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
@@ -2605,7 +2629,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EntityFramework">
-      <Version>6.2.0</Version>
+      <Version>6.4.4</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core">
       <Version>2.3.0</Version>
@@ -2617,6 +2641,12 @@
       <Version>11.0.1</Version>
     </PackageReference>
     <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>4.5.3</Version>
+    </PackageReference>
+    <PackageReference Include="Unity">
+      <Version>5.11.10</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EPPlus" Version="7.5.2" />

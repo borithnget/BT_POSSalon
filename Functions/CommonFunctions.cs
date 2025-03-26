@@ -205,7 +205,6 @@ namespace jotun.Functions
                 throw ex;
             }
         }
-
         public void revert_stock_balance(string sale_detail_id)
         {
             try

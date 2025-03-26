@@ -1,0 +1,230 @@
+﻿@using jotun.Models
+@model List<PackageViewModel>
+@{
+    var successMessage = TempData["UpdateSuccess"] as string ?? TempData["DeleteSuccess"] as string ?? TempData["CreateSuccess"] as string;
+    var alertClass = "";
+    var alertMessage = "";
+
+    if (!string.IsNullOrEmpty(TempData["UpdateSuccess"] as string))
+    {
+        alertClass = "alert-success";
+        alertMessage = TempData["UpdateSuccess"] as string;
+    }
+    else if (!string.IsNullOrEmpty(TempData["DeleteSuccess"] as string))
+    {
+        alertClass = "alert-danger";
+        alertMessage = TempData["DeleteSuccess"] as string;
+
+    }
+    else if (!string.IsNullOrEmpty(TempData["CreateSuccess"] as string))
+    {
+        alertClass = "alert-info";
+        alertMessage = TempData["CreateSuccess"] as string;
+    }
+}
+
+@if (!string.IsNullOrEmpty(alertMessage))
+{
+    <div id="successAlert" class="alert @alertClass alert-dismissible fade show mt-3" role="alert"
+         style="position: fixed; top: 20px; right: 10px; z-index: 1050; max-width: 300px; width: 100%; box-shadow: 0px 4px 6px rgba(0,0,0,0.1);">
+        @alertMessage
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+}
+<div class="container mt-3">
+    <div class="d-flex justify-content-between align-items-center">
+        <h2 class="text-primary fw-bold">PACKAGE LIST</h2>
+        <div class="d-flex align-items-center">
+            <div class="form-floating me-3">
+                <input type="text" class="form-control" id="searchInput" placeholder="Search by name...">
+                <label for="searchInput">Search by name...</label>
+            </div>
+            <button type="button" class="btn btn-primary" id="searchButton">
+                <i id="searchIcon" class="fas fa-search"></i>
+                <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            </button>
+            <a href="@Url.Action("CreatePackage", "Service")" class="btn btn-primary ms-2"><i class="fa fa-plus"></i></a>
+        </div>
+    </div>
+</div>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12" style="max-height: 500px; overflow-y: auto;">
+            <div class="row row-cols-1 row-cols-md-4 g-4">
+                @foreach (var package in Model)
+                {
+                    <div class="col mb-4">
+                        <div class="card border-0 d-flex flex-column mt-2 h-100">
+                            <span class="position-absolute top-0 end-0 m-2 px-3 py-2 bg-success text-white rounded fw-bold">
+                                @(package.Price % 1 == 0 ? string.Format("${0:0}", package.Price) : string.Format("${0:0.00}", package.Price))
+                            </span>
+                            <div class="card-body flex-grow-1">
+                                <h5 class="card-title text-primary fw-bold">@package.PackageName</h5>
+                                <p class="card-text">@package.Description</p>
+
+                                <div class="accordion" id="accordion-@package.Id">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#services-@package.Id">
+                                                <i class="bi bi-scissors ms-2"></i> Services
+                                            </button>
+                                        </h2>
+                                        <div id="services-@package.Id" class="accordion-collapse collapse" data-bs-parent="#accordion-@package.Id" lang="km">
+                                            <div class="accordion-body">
+                                                @if (package.Services != null && package.Services.Any())
+                                                {
+                                                    <ul class="list-group">
+                                                        @foreach (var service in package.Services)
+                                                        {
+                                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                                <span>@service.Name</span>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-muted">No services available yet.</p>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#products-@package.Id">
+                                                🛒 Products
+                                            </button>
+                                        </h2>
+                                        <div id="products-@package.Id" class="accordion-collapse collapse" data-bs-parent="#accordion-@package.Id">
+                                            <div class="accordion-body">
+                                                @if (package.Products != null && package.Products.Any())
+                                                {
+                                                    <ul class="list-group">
+                                                        @foreach (var product in package.Products)
+                                                        {
+                                                            <li class="list-group-item d-flex align-items-center" lang="km">
+                                                                <img src="@product.ProductImage" alt="Product Image" class="img-thumbnail me-2" style="width: 50px; height: 50px; object-fit: cover;">
+                                                                <div>
+                                                                    <strong>@product.ProductName</strong>
+                                                                    <span class="text-muted d-block">(@product.UnitQuant)</span>
+                                                                </div>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                }
+                                                else
+                                                {
+                                                    <p class="text-muted">No product available yet.</p>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center p-3">
+                                <div class="d-flex gap-2">
+                                    <a href="@Url.Action("EditPackage", "Service", new { id = package.Id.ToString() })" class="text-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form method="post" action="@Url.Action("DeletePackage", "Service")" onsubmit="return confirm('Are you sure you want to delete the package: @package.PackageName?');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@package.Id" />
+                                        <button type="submit" class="btn btn-link text-danger p-0 border-0">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                                <a href="javascript:void(0);" class="btn btn-outline-primary" data-id="@package.Id">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog custom-width">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Package Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalContent">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<link rel="stylesheet" href="~/Content/css/site.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/Scripts/jquery-ui.js"></script>
+<script>
+    setTimeout(function () {
+        $('#successAlert').alert('close');
+    }, 5000);
+   $(document).ready(function () {  
+    $('a[data-id]').on('click', function (e) {
+        e.preventDefault(); 
+        var packageId = $(this).data('id'); 
+        $.ajax({
+            url: '@Url.Action("DetailPackage", "Service")/' + packageId,
+            type: 'GET',
+            success: function (response) {             
+                $('#modalContent').html(response);          
+                $('#detailsModal').modal('show');
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+                alert('Error loading the details form.');
+            }
+        });
+    });
+   });
+    document.getElementById('searchButton').addEventListener('click', function () {
+        var searchButton = document.getElementById('searchButton');
+        var searchIcon = document.getElementById('searchIcon');
+        var spinner = document.getElementById('loadingSpinner');
+        var searchTerm = document.getElementById('searchInput').value;
+        searchButton.disabled = true;
+        searchIcon.classList.add('d-none');
+        spinner.classList.remove('d-none');
+        setTimeout(function () {
+            window.location.href = '/Service/SearchPackage?searchTerm=' + encodeURIComponent(searchTerm);
+        }, 1000);
+    });
+</script>
+<style>
+    .custom-width {
+        max-width: 80%;
+    }
+    .col-md-12 {      
+        scrollbar-width: thin; 
+        scrollbar-color: #888 #f1f1f1;
+    }
+        .col-md-12::-webkit-scrollbar {
+            width: 8px; 
+        }
+
+        .col-md-12::-webkit-scrollbar-thumb {
+            background-color: #888; 
+            border-radius: 4px;
+        }
+
+        .col-md-12::-webkit-scrollbar-track {
+            background-color: #f1f1f1; 
+        }
+</style>

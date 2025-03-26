@@ -1,0 +1,72 @@
+﻿@model jotun.Models.CreateServiceViewModel
+
+<h2 class="mt-4 ms-3">SERVICE DETAIL</h2>
+
+<div class="container mt-4 d-flex gap-3">
+    @Html.HiddenFor(model => model.ServiceId)
+    <div class="p-3 flex-grow-1" style="flex: 0 0 40%; background-color: #ffffff; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+        <h5 class="text-center">Service Details</h5>
+        <hr>
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <label class="fw-bold" style="min-width: 150px;">Name</label>
+            <p class="mb-0 flex-grow-1 border-bottom pb-1">@Html.DisplayFor(m => m.Name)</p>
+        </div>
+
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <label class="fw-bold" style="min-width: 150px;">Service Type</label>
+            <p class="mb-0 flex-grow-1 border-bottom pb-1">@Html.DisplayFor(m => m.ServiceTypeName)</p>
+        </div>
+
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <label class="fw-bold" style="min-width: 150px;">Price</label>
+            <p class="mb-0 flex-grow-1 border-bottom pb-1">@Html.DisplayFor(m => m.Price)</p>
+        </div>
+
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <label class="fw-bold" style="min-width: 150px;">Description</label>
+            <p class="mb-0 flex-grow-1 border-bottom pb-1">@Html.DisplayFor(m => m.Description)</p>
+        </div>
+    </div>
+    <div class="p-3 flex-grow-1" style="flex: 0 0 60%; background-color: #ffffff; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+        <h5 class="text-center">Product Include</h5>
+        <hr>
+
+        @if (Model.Products.Any())
+        {
+            <div style="max-height: 300px; overflow-y: auto;">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var product in Model.Products)
+                        {
+                            <tr>
+                                <td>@product.ProductName</td>
+                                <td>@product.Quantity</td>
+                                <td>@product.Unit</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-center">No products included for this service.</p>
+        }
+    </div>
+</div>
+<div class="container mt-3">
+    <a href="@Url.Action("Index", "Service")" class="btn btn-secondary">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+</div>
+
+<link rel="stylesheet" href="~/Content/css/site.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

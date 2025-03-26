@@ -1801,7 +1801,7 @@ namespace jotun.Controllers
 			  dt.Columns.Add(new DataColumn("ProductId"));
 			  dt.Columns.Add(new DataColumn("Quantity"));
 			  dt.Columns.Add(new DataColumn("Price"));
-			  dt.Columns.Add(new DataColumn("CustomerId"));
+			  dt.Columns.Add(new DataColumn("CustomerId"));i
 			  dt.Columns.Add(new DataColumn("Date"));
 			  dt.Columns.Add(new DataColumn("Total"));
 			  dt.Columns.Add(new DataColumn("Totals"));
