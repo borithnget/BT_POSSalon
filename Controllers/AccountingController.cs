@@ -194,6 +194,52 @@ namespace jotun.Controllers
 			}
 			return View(model);
 		}
+		public JsonResult GetAccounts()
+		{
+			using (jotunDBEntities db = new jotunDBEntities())
+			{
+				var accounts = db.tb_Acc_AccountType
+								.Select(a => new
+								{
+									AccountType = a.AccountTypeCode,
+									AccountText = a.AccountTypeCode + " : " + a.AccountTypeName
+								})
+								.ToList();
+
+				return Json(accounts, JsonRequestBehavior.AllowGet);
+			}
+		}
+		[HttpPost]
+		public ActionResult CreateAccount(AccountingViewModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				using (jotunDBEntities db = new jotunDBEntities())
+				{
+					var accountTypeId = db.tb_Acc_AccountType
+							 .Where(at => at.AccountTypeCode == model.AccountCode)
+							 .Select(at => at.Id) 
+							 .FirstOrDefault();
+					var newAccount = new tb_Acc_Account
+					{
+						AccountTypeId = accountTypeId,
+						AccountCode = model.AccountCode,   
+						AccountName = model.AccountName,     
+						Description = model.Description,
+						CreatedAt = DateTime.Now,
+						CreatedBy = User.Identity.Name,
+						IsActive = true,
+					};
+					db.tb_Acc_Account.Add(newAccount);
+					db.SaveChanges(); 
+
+				
+					return RedirectToAction("Index", "Accounting");
+				}
+			}
+			return View(model);
+		}
+
 		public ActionResult TopupList()	
 		{
 			using (jotunDBEntities db = new jotunDBEntities())

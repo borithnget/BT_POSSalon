@@ -205,8 +205,6 @@ namespace jotun.Controllers
             jsonResult.MaxJsonLength = int.MaxValue;
             return jsonResult;
         }
-
-
         //
         // GET: /Account/Register
         [AllowAnonymous]

@@ -74,5 +74,8 @@ namespace jotun.Entities
         public virtual DbSet<tb_Expense_Amount> tb_Expense_Amount { get; set; }
         public virtual DbSet<tb_Expense_Topup> tb_Expense_Topup { get; set; }
         public virtual DbSet<tblExchangeRate> tblExchangeRates { get; set; }
+        public virtual DbSet<tblModule> tblModules { get; set; }
+        public virtual DbSet<tblShop> tblShops { get; set; }
+        public virtual DbSet<tblShopModulePermission> tblShopModulePermissions { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using jotun.Entities;
 using jotun.Functions;
 using jotun.Models;
+using jotun.Services;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Reporting.WebForms;
@@ -26,6 +27,12 @@ namespace jotun.Controllers
 	[Authorize]
 	public class CoffeeController : Controller
 	{
+		private readonly PermissionService _permissionService;
+
+		public CoffeeController(PermissionService permissionService)
+		{
+			_permissionService = permissionService;
+		}
 		public ActionResult SomeAction()
 		{
 			// Check if the user is authenticated
@@ -55,7 +62,6 @@ namespace jotun.Controllers
 
 			return View();
 		}
-
 		// GET: Coffee
 		public ActionResult Index(string appointmentId="")
 		{
@@ -378,21 +384,7 @@ namespace jotun.Controllers
 									 .ToList();
 				return Json(new { success = true, data = serviceTypes }, JsonRequestBehavior.AllowGet);
 			}
-		}
-		/*public ActionResult CreateSale()
-		{
-			using (jotunDBEntities db = new jotunDBEntities())
-			{
-				ViewBag.CategoryNamesEng = new SelectList(db.tblCategories.Where(u => !u.Status.ToString().Contains("0") && !u.CategoryNameEng.Contains("Null"))
-											  .ToList(), "CategoryNameEng", "CategoryNameEng");
-				ViewBag.CategoryNamesKh = new SelectList(db.tblCategories.Where(u => !u.Status.ToString().Contains("0") && !u.CategoryNameKh.Contains("Null"))
-											  .ToList(), "CategoryNameKh", "CategoryNameKh");
-				ViewBag.CustomerName = new SelectList(db.tblCustomers.Where(u => !u.Status.ToString().Contains("0") && !u.CustomerName.Contains("Null"))
-											  .ToList(), "CustomerName", "CustomerName");
-			};
-			return View();
-
-		}*/
+		}		
 		public JsonResult GetServicesByServiceType(Guid? serviceTypeId)
 		{
 			using (var db = new jotunDBEntities())
@@ -657,7 +649,7 @@ namespace jotun.Controllers
 							string d = i.ToString().PadLeft(3, '0');
 							s.InvoiceNo = today + '-' + d;
 							s.InvoiceId = item.InvoiceId + 1;
-						}
+						}	
 					}
 
 				}
@@ -684,111 +676,104 @@ namespace jotun.Controllers
 
 		}
 	}
-	public ActionResult InvoiceReport(string id)
-	{
-
-		if (string.IsNullOrEmpty(id))
+		public ActionResult InvoiceReport(string id)
 		{
-			return HttpNotFound("SaleId is missing in the request.");
-		}
-
-		using (jotunDBEntities db = new jotunDBEntities())
-		{
-			tblSale s = db.tblSales.Find(id);
-			if (s == null)
+			if (string.IsNullOrEmpty(id))
 			{
-				return HttpNotFound($"Sale with ID {id} not found.");
+				return HttpNotFound("SaleId is missing in the request.");
 			}
-			var salesList = db.tblSales
-				.Where(sale => DbFunctions.TruncateTime(sale.UpdatedDate) == DbFunctions.TruncateTime(s.UpdatedDate) &&
-			   sale.TableNumber == s.TableNumber)
-				.OrderBy(sale => sale.UpdatedDate)
-				.ToList();
-			int waitingNumber = salesList.FindIndex(sale => sale.Id.Equals(s.Id)) + 1;
-
-			/*	string imageUrl = string.IsNullOrEmpty(s.SaleImage)
-					? "/Images/defaultimage.jpg"
-					: Request.Url.GetLeftPart(UriPartial.Authority) + Url.Content(s.SaleImage);*/
-
-			DataTable dt = new DataTable();
-			dt.Columns.Add(new DataColumn("Id"));
-			dt.Columns.Add(new DataColumn("ProductId"));
-			dt.Columns.Add(new DataColumn("Quantity"));
-			dt.Columns.Add(new DataColumn("Price"));
-			dt.Columns.Add(new DataColumn("CustomerId"));
-			dt.Columns.Add(new DataColumn("Date"));
-			dt.Columns.Add(new DataColumn("Total"));
-			dt.Columns.Add(new DataColumn("Totals"));
-			dt.Columns.Add(new DataColumn("VAT"));
-			dt.Columns.Add(new DataColumn("Phone"));
-			dt.Columns.Add(new DataColumn("Address"));
-			dt.Columns.Add(new DataColumn("Discount"));
-			dt.Columns.Add(new DataColumn("RevicedFromCustomer"));
-			dt.Columns.Add(new DataColumn("Owe"));
-			dt.Columns.Add(new DataColumn("InvoiceNo"));
-			dt.Columns.Add(new DataColumn("ColorCode"));
-			dt.Columns.Add(new DataColumn("UnitId"));
-			dt.Columns.Add(new DataColumn("SaleImage"/*, typeof(string)*/));
-			dt.Columns.Add(new DataColumn("SaleCode"));
-			dt.Columns.Add(new DataColumn("Size"));
-			dt.Columns.Add(new DataColumn("Sugar"));
-			dt.Columns.Add(new DataColumn("TableNumber"));
-			dt.Columns.Add(new DataColumn("WaitingNumber"));
-			var salesDetails = db.tblSalesDetails.Where(d => d.SaleId == id).ToList();
-			var customer = db.tblCustomers.FirstOrDefault(c => c.Id == s.CustomerId);
-
-			if (salesDetails.Any())
+			using (jotunDBEntities db = new jotunDBEntities())
 			{
-				foreach (var detail in salesDetails)
+				tblSale s = db.tblSales.Find(id);
+				if (s == null)
 				{
-					var product = db.tblProducts.FirstOrDefault(p => p.Id == detail.ProductId);
-					var unit = db.tblUnits.FirstOrDefault(u => u.Id == detail.UnitTypeId);
-
-					DataRow dr = dt.NewRow();
-					dr["CustomerId"] = customer?.CustomerName ?? "N/A";
-					dr["Date"] = DateTime.Now.ToString("dd-MMM-yyyy hh:mm tt");
-					dr["Id"] = detail.Id;
-					dr["ProductId"] = product?.ProductName ?? "Unknown Product";
-					dr["Quantity"] = detail.Quantity;
-					dr["Price"] = detail.Price.HasValue ? detail.Price.Value.ToString("N") : "0.00";
-					dr["Total"] = (detail.Price.HasValue ? detail.Price.Value : 0) * detail.Quantity;
-					dr["Totals"] = s.Amount.HasValue ? s.Amount.Value.ToString("N") : "0.00";
-					dr["VAT"] = (s.RevicedFromCustomer ?? 0) - (s.Amount.HasValue ? s.Amount.Value : 0);
-					dr["Phone"] = customer?.PhoneNumber ?? "N/A";
-					dr["Address"] = customer?.ProjectLocation ?? "N/A";
-					dr["Discount"] = s.Discount;
-					dr["RevicedFromCustomer"] = s.RevicedFromCustomer;
-					dr["Owe"] = s.Amount - ((s.Amount * s.Discount) / 100 + s.RevicedFromCustomer);
-					dr["InvoiceNo"] = s.InvoiceNo;
-					dr["ColorCode"] = detail.color_code;
-					dr["UnitId"] = detail.UnitTypeId ?? "Unknown Unit";
-					dr["SaleImage"] = s.SaleCode;
-					dr["SaleCode"] = s.SaleCode;
-					dr["Size"] = detail.Size;
-					dr["Sugar"] = detail.Sugar;
-					dr["TableNumber"] = s.TableNumber;
-					dr["WaitingNumber"] = waitingNumber;
-					dt.Rows.Add(dr);
-				}
+					return HttpNotFound($"Sale with ID {id} not found.");
+				}				
+				var salesList = db.tblSales
+					.Where(sale => DbFunctions.TruncateTime(sale.UpdatedDate) == DbFunctions.TruncateTime(s.UpdatedDate) &&
+								   sale.TableNumber == s.TableNumber)
+					.OrderBy(sale => sale.UpdatedDate)
+					.ToList();
+				int waitingNumber = salesList.FindIndex(sale => sale.Id.Equals(s.Id)) + 1;
+				DataTable dt = new DataTable();
+				dt.Columns.Add(new DataColumn("Id"));
+				dt.Columns.Add(new DataColumn("ProductId"));
+				dt.Columns.Add(new DataColumn("Quantity"));
+				dt.Columns.Add(new DataColumn("Price"));
+				dt.Columns.Add(new DataColumn("CustomerId"));
+				dt.Columns.Add(new DataColumn("Date"));
+				dt.Columns.Add(new DataColumn("Total"));
+				dt.Columns.Add(new DataColumn("Totals"));
+				dt.Columns.Add(new DataColumn("VAT"));
+				dt.Columns.Add(new DataColumn("Phone"));
+				dt.Columns.Add(new DataColumn("Address"));
+				dt.Columns.Add(new DataColumn("Discount"));
+				dt.Columns.Add(new DataColumn("RevicedFromCustomer"));
+				dt.Columns.Add(new DataColumn("Owe"));
+				dt.Columns.Add(new DataColumn("InvoiceNo"));
+				dt.Columns.Add(new DataColumn("ColorCode"));
+				dt.Columns.Add(new DataColumn("UnitId"));
+				dt.Columns.Add(new DataColumn("SaleImage"));
+				dt.Columns.Add(new DataColumn("SaleCode"));
+				dt.Columns.Add(new DataColumn("Size"));
+				dt.Columns.Add(new DataColumn("Sugar"));
+				dt.Columns.Add(new DataColumn("TableNumber"));
+				dt.Columns.Add(new DataColumn("WaitingNumber"));
+				var salesDetails = db.tblSalesDetails.Where(d => d.SaleId == id).ToList();
+				var customer = db.tblCustomers.FirstOrDefault(c => c.Id == s.CustomerId);
+				if (salesDetails.Any())
+				{
+					foreach (var detail in salesDetails)
+					{
+						var product = db.tblProducts.FirstOrDefault(p => p.Id == detail.ProductId);
+						var unit = db.tblUnits.FirstOrDefault(u => u.Id == detail.UnitTypeId);						
+						DataRow dr = dt.NewRow();
+						dr["CustomerId"] = customer?.CustomerName ?? "N/A";
+						dr["Date"] = DateTime.Now.ToString("dd-MMM-yyyy hh:mm tt");
+						dr["Id"] = detail.Id;
+						dr["ProductId"] = product?.ProductName ?? "Unknown Product";					
+						dr["Quantity"] = Convert.ToInt32(detail.Quantity);
+						dr["Price"] = detail.Price.HasValue ? detail.Price.Value.ToString("N") : "0.00";
+						dr["Total"] = (detail.Price.HasValue ? detail.Price.Value : 0) * detail.Quantity;
+						dr["Totals"] = s.Amount.HasValue ? s.Amount.Value.ToString("N") : "0.00";
+						dr["VAT"] = (s.RevicedFromCustomer ?? 0) - (s.Amount.HasValue ? s.Amount.Value : 0);
+						dr["Phone"] = customer?.PhoneNumber ?? "N/A";
+						dr["Address"] = customer?.ProjectLocation ?? "N/A";
+						dr["Discount"] = s.Discount;
+						dr["RevicedFromCustomer"] = s.RevicedFromCustomer;
+						dr["Owe"] = s.Amount - ((s.Amount * s.Discount) / 100 + s.RevicedFromCustomer);
+						dr["InvoiceNo"] = s.InvoiceNo;
+						dr["ColorCode"] = detail.color_code;
+						dr["UnitId"] = detail.UnitTypeId ?? "Unknown Unit";
+						dr["SaleImage"] = s.SaleCode;
+						dr["SaleCode"] = s.SaleCode;
+						dr["Size"] = detail.Size;
+						dr["Sugar"] = detail.Sugar;	
+						dr["TableNumber"] = s.TableNumber;
+						dr["WaitingNumber"] = waitingNumber;
+						dt.Rows.Add(dr);
+					}
+				}			
+				decimal totalAmount = (decimal)salesDetails.Sum(d => (d.Price ?? 0) * d.Quantity) - (decimal)s.Discount;
+				decimal receivedAmount = (decimal)(s.RevicedFromCustomer ?? 0);
+				decimal Deposit = receivedAmount - totalAmount;
+				ViewBag.InvoiceData = dt;
+				ViewBag.TotalAmount = totalAmount;
+				ViewBag.ReceivedAmount = receivedAmount;
+				ViewBag.Deposit = Deposit;
+				ViewBag.CustomerName = customer?.CustomerName ?? "N/A";
+				ViewBag.PhoneNumber = customer?.PhoneNumber ?? "N/A";
+				ViewBag.CustomerAddress = customer?.ProjectLocation ?? "N/A";
+				ViewBag.InvoiceNo = s.InvoiceNo;
+				ViewBag.InvoiceDate = DateTime.Now.ToString("dd-MMM-yyyy h:mm tt");
+				ViewBag.Discount = s.Discount ?? 0;
+				ViewBag.Tax = s.Tax ?? 0;
+				/*ViewBag.CashierName = cashier?.FullName ?? "Unknown Cashier";*/	
+				ViewBag.WaitingNo = waitingNumber; 
+				return View();
 			}
-			ReportViewer rv = new ReportViewer();
-			rv.ProcessingMode = ProcessingMode.Local;
-			rv.SizeToReportContent = true;
-			rv.Width = Unit.Percentage(100);
-			rv.Height = Unit.Percentage(100);
-			rv.LocalReport.ReportPath = Request.MapPath(Request.ApplicationPath) + @"ReportDesign\CoffeeInvoice.rdlc";
-			rv.LocalReport.DataSources.Clear();
-			ReportDataSource rds = new ReportDataSource("DSSaleInvoice", dt);
-			rv.LocalReport.DataSources.Add(rds);
-			rv.ShowPrintButton = true;
-			rv.ShowRefreshButton = true;
-			rv.LocalReport.EnableExternalImages = true;
-
-			ViewBag.ReportViewer = rv;
-			return View();
 		}
-	}
-	public ActionResult ExportToPDF(string id)
+		public ActionResult ExportToPDF(string id)
 	{
 		try
 		{
@@ -948,58 +933,7 @@ namespace jotun.Controllers
 	private class FromBodyAttribute : Attribute
 	{
 	}
-	[HttpPost]
-	public JsonResult SaveServiceType([FromBody] tblServiceType model)
-	{
-			
-				if (model != null && !string.IsNullOrEmpty(model.Name))
-				{
-					using (var db = new jotunDBEntities())
-					{
-						var newServiceType = new tblServiceType
-						{
-							ServiceTypeId = Guid.NewGuid(),
-							Name = model.Name,
-							Description = model.Description,
-							IsActive = true,
-							CreatedAt = DateTime.Now,
-						};
-
-						db.tblServiceTypes.Add(newServiceType);
-						db.SaveChanges();
-					}
-
-					return Json(new { success = true, message = "Service type saved successfully." });
-				}
-				return Json(new { success = false, message = "Invalid data." });
-		}
-		public ActionResult CreateService()
-		{
-			using (var db = new jotunDBEntities())
-			{
-				var model = new CreateServiceViewModel
-				{
-					ServiceTypes = db.tblServiceTypes
-						.Where(st => st.IsActive)
-						.Select(st => new SelectListItem
-						{
-							Value = st.ServiceTypeId.ToString(),
-							Text = st.Name
-						})
-						.ToList(),
-					AvailableProducts = db.tblProducts
-						.Where(p => p.CreatedDate.Value.Year == 2025)
-						.Select(p => new SelectListItem
-						{
-							Value = p.Id.ToString(),
-							Text = p.ProductName
-						})
-						.ToList(),
-					Products = new List<ServiceProductViewModel> { new ServiceProductViewModel() }
-				};
-				return View(model);
-			}
-		}
+	/*[HttpPost]
 		public ActionResult GetAvailableUnits(string productId)
 		{
 			using (var db = new jotunDBEntities())
@@ -1021,73 +955,17 @@ namespace jotun.Controllers
 				}
 				return Json(new List<SelectListItem>(), JsonRequestBehavior.AllowGet);
 			}
-		}
-		[HttpPost]
-	[ValidateAntiForgeryToken]
-	public ActionResult CreateService(CreateServiceViewModel model)
-		{
-			if (!ModelState.IsValid)
-			{
-				using (var db = new jotunDBEntities())
-				{
-					model.ServiceTypes = db.tblServiceTypes
-						.Where(st => st.IsActive)
-						.Select(st => new SelectListItem
-						{
-							Value = st.ServiceTypeId.ToString(),
-							Text = st.Name
-						})
-						.ToList();
-				}
-				return View(model);
-			}
-			using (var db = new jotunDBEntities())
-			{
-				var service = new tblService
-				{
-					ServiceId = Guid.NewGuid(),
-					Name = model.Name,
-					Price = model.Price,
-					Description = model.Description,
-					ServiceTypeId = model.ServiceTypeId,
-					CreatedAt = DateTime.Now,
-					IsActive = true,
-				}; 
-				db.tblServices.Add(service);
-				db.SaveChanges();
-
-				if (model.Products != null && model.Products.Any())
-				{
-					foreach (var product in model.Products)
-					{
-						var unitName = db.tblUnits
-							.Where(u => u.Id == product.Unit) 
-							.Select(u => u.UnitNameKh)
-							.FirstOrDefault();
-						var serviceProduct = new tblServiceProduct
-						{
-							ServiceProductId = Guid.NewGuid(),
-							ServiceId = service.ServiceId,
-							ProductId = product.ProductId.ToString(), 
-							Unit = unitName,
-							Quantity = product.Quantity,
-							Quality = product.Quality
-						};
-
-						db.tblServiceProducts.Add(serviceProduct);
-					}
-					db.SaveChanges();
-				}
-			}
-			return RedirectToAction("Index");
-		}
+		}*/
+		[PermissionAuthorize(moduleId: 1, permissionTypes: "view")]
 		public ActionResult CreatePackage()
 		{
+			var userId = User.Identity.GetUserId();
+			var hasViewPermission = _permissionService.HasPermission(userId, 1, "view");
+			ViewBag.HasViewPermission = hasViewPermission;
 			using (var db = new jotunDBEntities())
 			{
 				var model = new CreatePackageViewModel
-				{
-					// Load available services for selection
+				{			
 					AvailableServices = db.tblServices
 						.Where(s => s.IsActive)
 						.Select(s => new SelectListItem
@@ -1096,8 +974,6 @@ namespace jotun.Controllers
 							Text = s.Name
 						})
 						.ToList(),
-
-					// Load available products for selection
 					AvailableProducts = db.tblProducts
 						.Where(p => p.CreatedDate.Value.Year == 2025)
 						.Select(p => new SelectListItem
@@ -1105,9 +981,7 @@ namespace jotun.Controllers
 							Value = p.Id.ToString(),
 							Text = p.ProductName
 						})
-						.ToList(),
-
-					// Initialize empty lists for selection
+						.ToList(),				
 					SelectedServices = new List<ServiceSelectionViewModel> { new ServiceSelectionViewModel() },
 					SelectedProducts = new List<ProductSelectionViewModel> { new ProductSelectionViewModel() }
 				};
@@ -1157,9 +1031,7 @@ namespace jotun.Controllers
 					Status = 1,
 				};
 				db.Packages.Add(package);
-				db.SaveChanges();
-
-				// Save selected services
+				db.SaveChanges();			
 				if (model.SelectedServices != null && model.SelectedServices.Any())
 				{
 					foreach (var service in model.SelectedServices)
@@ -1174,7 +1046,6 @@ namespace jotun.Controllers
 					}
 					db.SaveChanges();
 				}
-
 				// Save selected products
 				if (model.SelectedProducts != null && model.SelectedProducts.Any())
 				{

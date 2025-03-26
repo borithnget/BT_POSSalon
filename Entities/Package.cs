@@ -28,6 +28,8 @@ namespace jotun.Entities
         public Nullable<decimal> Price { get; set; }
         public Nullable<System.DateTime> CreatedAt { get; set; }
         public string CreatedBy { get; set; }
+        public Nullable<System.DateTime> UpdateDate { get; set; }
+        public string UpdatedBy { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PackageProduct> PackageProducts { get; set; }

@@ -317,7 +317,71 @@
                                     </li>
                                 </ul>
                             </li>
+                            <li class="nav-item has-treeview">
+                                <a href="#" class="nav-link" style="color:white">
+                                    <i class="fas fa-box nav-icon"></i>
+                                    <p>
+                                        Services
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
 
+                                    <li class="nav-item has-treeview">
+                                        <a href="#" class="nav-link" style="color:blue">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>
+                                                Service Product
+                                                <i class="right fas fa-angle-left"></i>
+                                            </p>
+                                        </a>
+                                        <ul class="nav nav-treeview">
+                                            <li class="nav-item">
+                                                <a href="/Service/Index" class="nav-link @ViewBag.reportsaleactive" style="color:blue">
+                                                    <i class="far fa-dot-circle nav-icon"></i>
+                                                    <p>Service List</p>
+                                                </a>
+                                            </li>
+                                          @*  @if (User.IsInRole("SuperAdmin") || User.IsInRole("Administrator"))
+                                            {*@
+                                                <li class="nav-item">
+                                                    <a href="/Service/CreateService" class="nav-link @ViewBag.reportsalenetincomeactive" style="color:blue">
+                                                        <i class="far fa-dot-circle nav-icon"></i>
+                                                        <p>Create Service</p>
+                                                    </a>
+                                                </li>
+                                          @*  }  *@                                                                            
+                                        </ul>
+                                    </li>
+@*
+                                    @if (User.IsInRole("SuperAdmin") || User.IsInRole("Administrator"))
+                                    {*@
+                                        <li class="nav-item has-treeview">
+                                            <a href="#" class="nav-link" style="color:blue">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>
+                                                    Package Services
+                                                    <i class="right fas fa-angle-left"></i>
+                                                </p>
+                                            </a>
+                                            <ul class="nav nav-treeview">
+                                                <li class="nav-item">
+                                                    <a href="/Services/PackageList" class="nav-link @ViewBag.reportpurchaseactive" style="color:blue">
+                                                        <i class="far fa-dot-circle nav-icon"></i>
+                                                        <p>Package List</p>
+                                                    </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="/Serviecs/CreatePackage" class="nav-link @ViewBag.reportpurchasedetailactive" style="color:blue">
+                                                        <i class="far fa-dot-circle nav-icon"></i>
+                                                        <p>Create Package</p>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>                                     
+                                  @*  }*@
+
+                                </ul>
+                            </li>
                         }
                         @if (User.IsInRole("SuperAdmin") || User.IsInRole("Administrator"))
                         {

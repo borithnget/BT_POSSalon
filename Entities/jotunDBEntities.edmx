@@ -65,6 +65,7 @@
           <Property Name="LockoutEnabled" Type="bit" Nullable="false" />
           <Property Name="AccessFailedCount" Type="int" Nullable="false" />
           <Property Name="UserName" Type="nvarchar" MaxLength="256" Nullable="false" />
+          <Property Name="ShopId" Type="int" />
         </EntityType>
         <EntityType Name="PackageProducts">
           <Key>
@@ -88,6 +89,8 @@
           <Property Name="Price" Type="decimal" Precision="18" Scale="2" />
           <Property Name="CreatedAt" Type="datetime" />
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="100" />
+          <Property Name="UpdateDate" Type="datetime" />
+          <Property Name="UpdatedBy" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="PackageServices">
           <Key>
@@ -341,6 +344,18 @@
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
           <Property Name="UpdatedAt" Type="datetime" />
         </EntityType>
+        <EntityType Name="tblModule">
+          <Key>
+            <PropertyRef Name="module_id" />
+          </Key>
+          <Property Name="module_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="module_name" Type="nvarchar" MaxLength="255" />
+          <Property Name="is_active" Type="bit" />
+          <Property Name="module_url" Type="nvarchar" MaxLength="255" />
+          <Property Name="module_icon" Type="nvarchar" MaxLength="50" />
+          <Property Name="is_parent" Type="bit" />
+          <Property Name="parent_id" Type="int" />
+        </EntityType>
         <EntityType Name="tblProductAttribute">
           <Key>
             <PropertyRef Name="ProductAttributeId" />
@@ -580,6 +595,35 @@
           <Property Name="CreatedDate" Type="datetime" />
           <Property Name="UpdatedDate" Type="datetime" />
         </EntityType>
+        <EntityType Name="tblShop">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ShopCode" Type="nvarchar" MaxLength="50" />
+          <Property Name="ShopName" Type="nvarchar" MaxLength="255" />
+          <Property Name="ShopAddress" Type="nvarchar(max)" />
+          <Property Name="ShopPhone" Type="nvarchar(max)" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="ShopImageURL" Type="nvarchar(max)" />
+          <Property Name="Active" Type="bit" />
+          <Property Name="CreatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblShopModulePermission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ShopId" Type="int" Nullable="false" />
+          <Property Name="ModuleId" Type="int" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+          <Property Name="CanView" Type="bit" Nullable="false" />
+          <Property Name="CanEdit" Type="bit" Nullable="false" />
+          <Property Name="CanDelete" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="tblStaff">
           <Key>
             <PropertyRef Name="StaffId" />
@@ -755,6 +799,30 @@
             </Principal>
             <Dependent Role="tblProductByUnit">
               <PropertyRef Name="CustomerType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tblShopMo__Modul__43D61337">
+          <End Role="tblModule" Type="Self.tblModule" Multiplicity="1" />
+          <End Role="tblShopModulePermission" Type="Self.tblShopModulePermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblModule">
+              <PropertyRef Name="module_id" />
+            </Principal>
+            <Dependent Role="tblShopModulePermission">
+              <PropertyRef Name="ModuleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tblShopMo__ShopI__42E1EEFE">
+          <End Role="tblShop" Type="Self.tblShop" Multiplicity="1" />
+          <End Role="tblShopModulePermission" Type="Self.tblShopModulePermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblShop">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblShopModulePermission">
+              <PropertyRef Name="ShopId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -987,6 +1055,7 @@
           <EntitySet Name="tblExchangeRate" EntityType="Self.tblExchangeRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblInvoices" EntityType="Self.tblInvoices" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblJeweler" EntityType="Self.tblJeweler" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblModule" EntityType="Self.tblModule" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblProductAttribute" EntityType="Self.tblProductAttribute" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblProductByUnit" EntityType="Self.tblProductByUnit" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblProducts" EntityType="Self.tblProducts" Schema="dbo" store:Type="Tables" />
@@ -1002,6 +1071,8 @@
           <EntitySet Name="tblServiceProvided" EntityType="Self.tblServiceProvided" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblServiceType" EntityType="Self.tblServiceType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblShippers" EntityType="Self.tblShippers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblShop" EntityType="Self.tblShop" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblShopModulePermission" EntityType="Self.tblShopModulePermission" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblStaff" EntityType="Self.tblStaff" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSuppliers" EntityType="Self.tblSuppliers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblTable" EntityType="Self.tblTable" Schema="dbo" store:Type="Tables" />
@@ -1031,6 +1102,14 @@
           <AssociationSet Name="FK__tblProduc__Custo__02FC7413" Association="Self.FK__tblProduc__Custo__02FC7413">
             <End Role="tblCustomerType" EntitySet="tblCustomerType" />
             <End Role="tblProductByUnit" EntitySet="tblProductByUnit" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tblShopMo__Modul__43D61337" Association="Self.FK__tblShopMo__Modul__43D61337">
+            <End Role="tblModule" EntitySet="tblModule" />
+            <End Role="tblShopModulePermission" EntitySet="tblShopModulePermission" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tblShopMo__ShopI__42E1EEFE" Association="Self.FK__tblShopMo__ShopI__42E1EEFE">
+            <End Role="tblShop" EntitySet="tblShop" />
+            <End Role="tblShopModulePermission" EntitySet="tblShopModulePermission" />
           </AssociationSet>
           <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -1159,6 +1238,7 @@
           <NavigationProperty Name="AspNetUserClaims" Relationship="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserClaims" />
           <NavigationProperty Name="AspNetUserLogins" Relationship="Self.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" FromRole="AspNetUsers" ToRole="AspNetUserLogins" />
           <NavigationProperty Name="AspNetRoles" Relationship="Self.AspNetUserRoles" FromRole="AspNetUsers" ToRole="AspNetRoles" />
+          <Property Name="ShopId" Type="Int32" />
         </EntityType>
         <EntityType Name="tblAppointment">
           <Key>
@@ -1961,6 +2041,17 @@
           <EntitySet Name="tb_Expense_Amount" EntityType="CoffeePOSDataModel.tb_Expense_Amount" />
           <EntitySet Name="tb_Expense_Topup" EntityType="CoffeePOSDataModel.tb_Expense_Topup" />
           <EntitySet Name="tblExchangeRates" EntityType="CoffeePOSDataModel.tblExchangeRate" />
+          <EntitySet Name="tblModules" EntityType="CoffeePOSDataModel.tblModule" />
+          <EntitySet Name="tblShops" EntityType="CoffeePOSDataModel.tblShop" />
+          <EntitySet Name="tblShopModulePermissions" EntityType="CoffeePOSDataModel.tblShopModulePermission" />
+          <AssociationSet Name="FK__tblShopMo__Modul__43D61337" Association="CoffeePOSDataModel.FK__tblShopMo__Modul__43D61337">
+            <End Role="tblModule" EntitySet="tblModules" />
+            <End Role="tblShopModulePermission" EntitySet="tblShopModulePermissions" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tblShopMo__ShopI__42E1EEFE" Association="CoffeePOSDataModel.FK__tblShopMo__ShopI__42E1EEFE">
+            <End Role="tblShop" EntitySet="tblShops" />
+            <End Role="tblShopModulePermission" EntitySet="tblShopModulePermissions" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PackageProduct">
           <Key>
@@ -1988,6 +2079,8 @@
           <Property Name="Price" Type="Decimal" Precision="18" Scale="2" />
           <Property Name="CreatedAt" Type="DateTime" Precision="3" />
           <Property Name="CreatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="PackageService">
           <Key>
@@ -2161,6 +2254,75 @@
           <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
         </EntityType>
+        <EntityType Name="tblModule">
+          <Key>
+            <PropertyRef Name="module_id" />
+          </Key>
+          <Property Name="module_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="module_name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="is_active" Type="Boolean" />
+          <Property Name="module_url" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="module_icon" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="is_parent" Type="Boolean" />
+          <Property Name="parent_id" Type="Int32" />
+          <NavigationProperty Name="tblShopModulePermissions" Relationship="CoffeePOSDataModel.FK__tblShopMo__Modul__43D61337" FromRole="tblModule" ToRole="tblShopModulePermission" />
+        </EntityType>
+        <EntityType Name="tblShop">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ShopCode" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ShopName" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="ShopAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ShopPhone" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="ShopImageURL" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Active" Type="Boolean" />
+          <Property Name="CreatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="tblShopModulePermissions" Relationship="CoffeePOSDataModel.FK__tblShopMo__ShopI__42E1EEFE" FromRole="tblShop" ToRole="tblShopModulePermission" />
+        </EntityType>
+        <EntityType Name="tblShopModulePermission">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ShopId" Type="Int32" Nullable="false" />
+          <Property Name="ModuleId" Type="Int32" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="tblModule" Relationship="CoffeePOSDataModel.FK__tblShopMo__Modul__43D61337" FromRole="tblShopModulePermission" ToRole="tblModule" />
+          <NavigationProperty Name="tblShop" Relationship="CoffeePOSDataModel.FK__tblShopMo__ShopI__42E1EEFE" FromRole="tblShopModulePermission" ToRole="tblShop" />
+          <Property Name="CanView" Type="Boolean" Nullable="false" />
+          <Property Name="CanEdit" Type="Boolean" Nullable="false" />
+          <Property Name="CanDelete" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__tblShopMo__Modul__43D61337">
+          <End Type="CoffeePOSDataModel.tblModule" Role="tblModule" Multiplicity="1" />
+          <End Type="CoffeePOSDataModel.tblShopModulePermission" Role="tblShopModulePermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblModule">
+              <PropertyRef Name="module_id" />
+            </Principal>
+            <Dependent Role="tblShopModulePermission">
+              <PropertyRef Name="ModuleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tblShopMo__ShopI__42E1EEFE">
+          <End Type="CoffeePOSDataModel.tblShop" Role="tblShop" Multiplicity="1" />
+          <End Type="CoffeePOSDataModel.tblShopModulePermission" Role="tblShopModulePermission" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblShop">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="tblShopModulePermission">
+              <PropertyRef Name="ShopId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2207,6 +2369,7 @@
           <EntitySetMapping Name="AspNetUsers">
             <EntityTypeMapping TypeName="CoffeePOSDataModel.AspNetUser">
               <MappingFragment StoreEntitySet="AspNetUsers">
+                <ScalarProperty Name="ShopId" ColumnName="ShopId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
                 <ScalarProperty Name="EmailConfirmed" ColumnName="EmailConfirmed" />
@@ -2764,6 +2927,8 @@
           <EntitySetMapping Name="Packages">
             <EntityTypeMapping TypeName="CoffeePOSDataModel.Package">
               <MappingFragment StoreEntitySet="Packages">
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
                 <ScalarProperty Name="CreatedAt" ColumnName="CreatedAt" />
                 <ScalarProperty Name="Price" ColumnName="Price" />
@@ -2891,6 +3056,50 @@
                 <ScalarProperty Name="Active" ColumnName="Active" />
                 <ScalarProperty Name="RateKHR" ColumnName="RateKHR" />
                 <ScalarProperty Name="ExchangeRateDate" ColumnName="ExchangeRateDate" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblModules">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblModule">
+              <MappingFragment StoreEntitySet="tblModule">
+                <ScalarProperty Name="parent_id" ColumnName="parent_id" />
+                <ScalarProperty Name="is_parent" ColumnName="is_parent" />
+                <ScalarProperty Name="module_icon" ColumnName="module_icon" />
+                <ScalarProperty Name="module_url" ColumnName="module_url" />
+                <ScalarProperty Name="is_active" ColumnName="is_active" />
+                <ScalarProperty Name="module_name" ColumnName="module_name" />
+                <ScalarProperty Name="module_id" ColumnName="module_id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblShops">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblShop">
+              <MappingFragment StoreEntitySet="tblShop">
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
+                <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
+                <ScalarProperty Name="Active" ColumnName="Active" />
+                <ScalarProperty Name="ShopImageURL" ColumnName="ShopImageURL" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="ShopPhone" ColumnName="ShopPhone" />
+                <ScalarProperty Name="ShopAddress" ColumnName="ShopAddress" />
+                <ScalarProperty Name="ShopName" ColumnName="ShopName" />
+                <ScalarProperty Name="ShopCode" ColumnName="ShopCode" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblShopModulePermissions">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblShopModulePermission">
+              <MappingFragment StoreEntitySet="tblShopModulePermission">
+                <ScalarProperty Name="CanDelete" ColumnName="CanDelete" />
+                <ScalarProperty Name="CanEdit" ColumnName="CanEdit" />
+                <ScalarProperty Name="CanView" ColumnName="CanView" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="ModuleId" ColumnName="ModuleId" />
+                <ScalarProperty Name="ShopId" ColumnName="ShopId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>

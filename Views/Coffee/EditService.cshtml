@@ -1,0 +1,230 @@
+﻿@model jotun.Models.CreateServiceViewModel
+
+<h2 style="margin-top : 76px; margin-left:10px;">Edit Service</h2>
+
+@using (Html.BeginForm("EditService", "Coffee", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="ml-4 mt-4">
+        <div class="form-group">
+            <div class="row">
+                @Html.HiddenFor(model => model.ServiceId)
+
+                <!-- First Row: Labels -->
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.LabelFor(m => m.Name, new { @class = "col-md-12 control-label" })
+                </div>
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.LabelFor(m => m.ServiceTypeId, "Service Type", new { @class = "col-md-12 control-label" })
+                </div>
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.LabelFor(m => m.Price, new { @class = "col-md-12 control-label" })
+                </div>
+            </div>
+            <div class="row">
+                <!-- Second Row: Inputs -->
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control", style = "width: 300px;" })
+                    @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
+                </div>
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.DropDownListFor(m => m.ServiceTypeId, Model.ServiceTypes, "-- Select Service Type --", new { @class = "form-control", style = "width: 300px;" })
+                    @Html.ValidationMessageFor(m => m.ServiceTypeId)
+                </div>
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", step = "0.01", style = "width: 300px;" })
+                    @Html.ValidationMessageFor(m => m.Price)
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="row">
+                <!-- First Row: Labels for Description -->
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.LabelFor(m => m.Description, new { @class = "col-md-12 control-label" })
+                </div>
+                <div class="col-md-4" style="background-color:transparent">
+                    <!-- Empty column for spacing -->
+                </div>
+                <div class="col-md-4" style="background-color:transparent">
+                    <!-- Empty column for spacing -->
+                </div>
+            </div>
+            <div class="row">
+                <!-- Second Row: Input for Description -->
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 4, style = "width: 100%;" })
+                    @Html.ValidationMessageFor(m => m.Description)
+                </div>
+                <div class="col-md-4" style="background-color:transparent">
+                    <!-- Empty column for spacing -->
+                </div>
+                <div class="col-md-4" style="background-color:transparent">
+                    <!-- Empty column for spacing -->
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="col-md-4 control-label">Service Includes Products?</label>
+            <div class="col-md-8">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="HasProduct" id="withProduct" value="true" @(Model.Products.Any() ? "checked" : "")>
+                    <label class="form-check-label" for="withProduct">With Product</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="HasProduct" id="withoutProduct" value="false" @(Model.Products.Any() ? "" : "checked")>
+                    <label class="form-check-label" for="withoutProduct">Without Product</label>
+                </div>
+            </div>
+        </div>
+        <button type="button" id="addProductRow" class="btn btn-primary">Add Product</button>
+        <div id="productTableContainer" class="mt-2">
+            <table id="productTable" class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Quality</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Products.Count(); i++)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DropDownListFor(m => m.Products[i].ProductId,
+                                    new SelectList(Model.AvailableProducts, "Value", "Text", Model.Products[i].ProductId),
+                                    "-- Select Product --",
+                                    new { @class = "form-control", style = "width: 300px;" })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Products[i].Quantity, new { @class = "form-control", type = "number", min = "1", style = "width: 300px;" })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(m => m.Products[i].Quality, new { @class = "form-control", style = "width: 300px;" })
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger remove-product-btn">Remove</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="form-group row">
+            <div class="col-md-12 mt-3">
+                @Html.ActionLink("Cancel", "ListServices", null, new { @class = "btn btn-secondary" })
+                <input type="submit" value="Save Changes" class="btn btn-success" />
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    var availableProducts = @Html.Raw(Json.Encode(Model.AvailableProducts));
+
+    // Elements
+    const addProductBtn = document.getElementById("addProductRow");
+    const productTableContainer = document.getElementById("productTableContainer");
+    const withProductRadio = document.getElementById("withProduct");
+    const withoutProductRadio = document.getElementById("withoutProduct");
+    const submitBtn = document.querySelector("input[type='submit']");
+
+    // Function to toggle product inputs
+    function toggleProductInputs(hasProduct) {
+        addProductBtn.disabled = !hasProduct; // Disable Add Product button
+        productTableContainer.querySelectorAll("select, input").forEach(input => {
+            input.disabled = !hasProduct; // Disable all product-related inputs
+        });
+    }
+
+    // Event listeners for radio buttons
+    withProductRadio.addEventListener("change", function () {
+        if (this.checked) toggleProductInputs(true);
+    });
+
+    withoutProductRadio.addEventListener("change", function () {
+        if (this.checked) toggleProductInputs(false);
+    });
+
+    // Initialize on page load based on selected option
+    window.addEventListener("DOMContentLoaded", function () {
+        toggleProductInputs(withProductRadio.checked);
+    });
+
+    // Add product row dynamically
+    addProductBtn.addEventListener("click", function () {
+        const productTable = document.getElementById("productTable").querySelector('tbody');
+        const rowCount = productTable.rows.length;
+
+        const row = productTable.insertRow(rowCount);
+
+        // Create dropdown for product
+        const productSelect = document.createElement("select");
+        productSelect.name = `Products[${rowCount}].ProductId`;
+        productSelect.className = "form-control";
+        productSelect.style.width = "300px";
+        availableProducts.forEach(product => {
+            const option = new Option(product.Text, product.Value);
+            productSelect.appendChild(option);
+        });
+
+        // Create quantity input
+        const quantityInput = document.createElement("input");
+        quantityInput.type = "number";
+        quantityInput.name = `Products[${rowCount}].Quantity`;
+        quantityInput.className = "form-control";
+        quantityInput.style.width = "300px";
+        quantityInput.min = "1";
+
+        // Create quality input
+        const qualityInput = document.createElement("input");
+        qualityInput.type = "text";
+        qualityInput.name = `Products[${rowCount}].Quality`;
+        qualityInput.className = "form-control";
+        qualityInput.style.width = "300px";
+
+        // Create remove button
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "btn btn-danger remove-product-btn";
+        removeBtn.textContent = "Remove";
+
+        // Append to table row
+        row.innerHTML = `
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td> <!-- Empty cell for the remove button -->
+    `;
+        row.cells[0].appendChild(productSelect);
+        row.cells[1].appendChild(quantityInput);
+        row.cells[2].appendChild(qualityInput);
+        row.cells[3].appendChild(removeBtn);
+    });
+
+    // Remove product row
+    const productTable = document.getElementById("productTable");
+    productTable.addEventListener("click", function (event) {
+        if (event.target && event.target.classList.contains("remove-product-btn")) {
+            const row = event.target.closest("tr");
+            if (row) {
+                row.remove();
+            }
+        }
+    });
+    // Client-side form validation before submitting
+    submitBtn.addEventListener("click", function (event) {
+        // Check if "With Product" is selected and no products are added
+        if (withProductRadio.checked) {
+            const productRows = document.querySelectorAll("#productTable tbody tr");
+            if (productRows.length === 0) {
+                event.preventDefault();
+                alert("Please add product before saving.");
+            }
+        }
+    });
+</script>
