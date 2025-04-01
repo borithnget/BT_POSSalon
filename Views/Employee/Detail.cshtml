@@ -1,7 +1,138 @@
-﻿
+﻿@model jotun.Models.EmployeeRoleViewModel
+
 @{
-    ViewBag.Title = "Detail";
+    ViewBag.Title = "Employee Details";
 }
 
-<h2>Detail</h2>
+<h2 class="mt-4 ms-3">EMPLOYEE DETAIL</h2>
+<div class="container mt-4 d-flex gap-3">
+    <div class="p-3 flex-grow-1" style="flex: 0 0 40%; background-color: #ffffff; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+        <h5 class="text-center">Employee Details</h5>
+        <hr>
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <label class="fw-bold" style="min-width: 150px;">Name</label>
+            <p class="mb-0 flex-grow-1 border-bottom pb-1">@Html.DisplayFor(m => m.Name)</p>
+        </div>
 
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <label class="fw-bold" style="min-width: 150px;">Role</label>
+            <p class="mb-0 flex-grow-1 border-bottom pb-1">@Html.DisplayFor(m => m.RoleName)</p>
+        </div>
+
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <label class="fw-bold" style="min-width: 150px;">Email</label>
+            <p class="mb-0 flex-grow-1 border-bottom pb-1">@Html.DisplayFor(m => m.Email)</p>
+        </div>
+
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <label class="fw-bold" style="min-width: 150px;">Phone</label>
+            <p class="mb-0 flex-grow-1 border-bottom pb-1">@Html.DisplayFor(m => m.Phone)</p>
+        </div>
+
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+            <label class="fw-bold" style="min-width: 150px;">Status</label>
+            <p class="mb-0 flex-grow-1 border-bottom pb-1">@(Model.IsActive ? "Active" : "Inactive")</p>
+        </div>
+    </div>
+
+    <div class="p-3 flex-grow-1" style="flex: 0 0 60%; background-color: #ffffff; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+        <h5 class="text-center">Shift Schedule</h5>
+        <hr>
+        <div style="max-height: 300px; overflow-y: auto;">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.ShiftSchedules != null && Model.ShiftSchedules.Any())
+                    {
+                        foreach (var shift in Model.ShiftSchedules)
+                        {
+                            <tr>                 
+                                <td>@shift.ShiftDate.ToString("yyyy-MM-dd")</td>
+                                <td>@(DateTime.Today.Add(shift.StartTime).ToString("hh:mm tt"))</td>
+                                <td>@(DateTime.Today.Add(shift.EndTime).ToString("hh:mm tt"))</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3" class="text-center text-muted">No shift schedules yet.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <h5 class="text-center mt-4">Attendance Records</h5>
+        <hr>
+        <div style="max-height: 300px; overflow-y: auto;">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AttendanceRecords != null && Model.AttendanceRecords.Any())
+                    {
+                        foreach (var record in Model.AttendanceRecords)
+                        {
+                            <tr>
+                                <td>@record.Date.ToString("yyyy-MM-dd")</td>
+                                <td>@record.Status</td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>    
+                            <td colspan="2" class="text-center text-muted">No attendance records yet.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="container mt-4">
+    <div class="p-3" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);">
+        <h5 class="text-center">Salary Details</h5>
+        <hr>
+        <table class="table table-bordered">
+            <tr>
+                <th>Base Salary:</th>
+                <td>@Model.SalaryDetails.BaseSalary</td>
+            </tr>
+            <tr>
+                <th>Bonus:</th>
+                <td>@Model.SalaryDetails.Bonus</td>
+            </tr>
+            <tr>
+                <th>Commission:</th>
+                <td>@Model.SalaryDetails.Commission</td>
+            </tr>
+            <tr>
+                <th>Total Salary:</th>
+                <td>@Model.SalaryDetails.TotalSalary</td>
+            </tr>
+            <tr>
+                <th>Salary Date:</th>
+                <td>@Model.SalaryDetails.SalaryDate.ToString("yyyy-MM-dd")</td>
+            </tr>
+        </table>
+    </div>
+    <a href="@Url.Action("Index")" class="btn btn-secondary mt-1">
+        <i class="fa fa-arrow-left"></i> Back
+    </a>
+</div>
+
+<link rel="stylesheet" href="~/Content/css/site.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

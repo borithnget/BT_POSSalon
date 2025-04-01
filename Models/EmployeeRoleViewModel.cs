@@ -12,8 +12,16 @@ using System.Web;
 		public string Phone { get; set; }
 		public bool IsActive { get; set; }
 		public string RoleName { get; set; }
+		public DateTime ShiftDate { get; set; }
+		public TimeSpan ShiftStartTime { get; set; }
+		public TimeSpan ShiftEndTime { get; set; }
+		public decimal BaseSalary { get; set; }
+		public decimal Commission { get; set; }
+		public decimal Bonus { get; set; }
+		public DateTime SalaryDate { get; set; }
 		public List<int> SelectedRoles { get; set; } 
 		public List<SelectRoles> Roles { get; set; }
+		public List<SelectRoles> AvailableRoles { get; set; }
 		public List<ShiftScheduleViewModel> ShiftSchedules { get; set; }
 
 		public List<AttendanceViewModel> AttendanceRecords { get; set; }
@@ -34,7 +42,7 @@ using System.Web;
 
 	public class AttendanceViewModel
 	{
-		public DateTime Date { get; set; }
+		public DateTime Date { get; set; } 
 		public string Status { get; set; }
 	}
 

@@ -3,41 +3,63 @@
     ViewBag.Title = "Employee List";
 }
 
-<h2>Employee List</h2>
 
-<a href="@Url.Action("Create")" class="btn btn-primary">
-    <i class="fas fa-plus" style="margin-right: 5px;"></i> Add New
-</a>
-
-<table id="employeeTable" class="table table-striped">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Role</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Active</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var employee in Model)
-        {
-            <tr>
-                <td>@employee.Name</td>
-                <td>@employee.RoleName</td>
-                <td>@employee.Email</td>
-                <td>@employee.Phone</td>
-                <td>@(employee.IsActive ? "Active" : "Inactive")</td>
-                <td>
-                    <a href="@Url.Action("Detail", new { id = employee.EmployeeId })" class="btn btn-info">View</a>
-                    <a href="@Url.Action("Edit", new { id = employee.EmployeeId })" class="btn btn-warning">Edit</a>
-                    <a href="@Url.Action("Delete", new { id = employee.EmployeeId })" class="btn btn-danger">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<h2 class="ml-3 mt-4">Employee List</h2>
+<div class="ml-3 mt-4 mr-3">
+    <a href="@Url.Action("Create")" class="btn btn-primary">
+        <i class="fas fa-plus" style="margin-right: 5px;"></i> Add New
+    </a>
+    <div class="mt-4">
+        <table id="employeeTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Active</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var employee in Model)
+                {
+                    <tr>
+                        <td>@employee.Name</td>
+                        <td>@employee.RoleName</td>
+                        <td>@employee.Email</td>
+                        <td>@employee.Phone</td>
+                        <td>@(employee.IsActive ? "Active" : "Inactive")</td>
+                        <td>
+                            <a href="@Url.Action("Detail", "Employee", new { id = employee.EmployeeId })" class="btn btn-info"><i class="fas fa-eye"></i></a>
+                            <a href="@Url.Action("Edit","Employee", new { id = employee.EmployeeId })" class="btn btn-primary"><i class="fas fa-edit"></i></a>
+                            <a href="javascript:void(0);" data-id="@employee.EmployeeId" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal"><i class="fas fa-trash-alt"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this employee?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button id="confirmDelete" class="btn btn-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <link rel="stylesheet" href="~/Content/css/site.css">
@@ -59,6 +81,42 @@
                 "lengthMenu": [5, 10, 25, 50, 100],
                 "language": {
                     "search": "Search Employee :"
+                }
+            });
+        });
+        $(document).on('click', '.btn-danger', function (e) {
+            e.preventDefault(); 
+            var employeeId = $(this).data('id'); 
+
+            if (employeeId) {
+                var deleteUrl = '/Employee/Delete/' + employeeId;
+                $('#confirmDelete').data('id', employeeId);
+                $('#confirmDelete').data('url', deleteUrl);
+                $('#deleteModal').modal('show');
+            }
+        });
+
+        $('#confirmDelete').on('click', function () {
+            var deleteUrl = $(this).data('url');
+            var employeeId = $(this).data('id');
+            $.ajax({
+                url: deleteUrl,
+                type: 'POST', 
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        $('#deleteModal').modal('hide');
+                        $('a[data-id="' + employeeId + '"]').closest('tr').remove();
+                        alert('Employee deleted successfully.');
+                        $('.modal-backdrop').remove();
+                    } else {
+                        alert('Error deleting employee.');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while deleting the employee.');
                 }
             });
         });
