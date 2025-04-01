@@ -11,25 +11,21 @@ namespace jotun.Entities
 {
     using System;
     using System.Collections.Generic;
-	using System.ComponentModel.DataAnnotations;
-
-	public partial class tblModule
+    
+    public partial class tblRole
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public tblModule()
+        public tblRole()
         {
-            this.tblShopModulePermissions = new HashSet<tblShopModulePermission>();
+            this.tblEmployeeRoles = new HashSet<tblEmployeeRole>();
         }
-        [Key]
-        public int module_id { get; set; }
-        public string module_name { get; set; }
-        public Nullable<bool> is_active { get; set; }
-        public string module_url { get; set; }
-        public string module_icon { get; set; }
-        public Nullable<bool> is_parent { get; set; }
-        public Nullable<int> parent_id { get; set; }
+    
+        public int RoleId { get; set; }
+        public string RoleName { get; set; }
+        public Nullable<System.DateTime> CreateDate { get; set; }
+        public Nullable<System.DateTime> UpdateDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<tblShopModulePermission> tblShopModulePermissions { get; set; }
+        public virtual ICollection<tblEmployeeRole> tblEmployeeRoles { get; set; }
     }
 }

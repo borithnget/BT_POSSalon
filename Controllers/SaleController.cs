@@ -681,95 +681,117 @@ namespace jotun.Controllers
 
             }
         }
-        public ActionResult Edit(string id)
-        {
-            using (jotunDBEntities db = new jotunDBEntities())
-            {
-                ViewBag.CategoryNamesEng = new SelectList(db.tblCategories.Where(u => !u.Status.ToString().Contains("0") && !u.CategoryNameEng.Contains("Null"))
-                                              .ToList(), "CategoryNameEng", "CategoryNameEng");
-                ViewBag.CategoryNamesKh = new SelectList(db.tblCategories.Where(u => !u.Status.ToString().Contains("0") && !u.CategoryNameKh.Contains("Null"))
-                                              .ToList(), "CategoryNameKh", "CategoryNameKh");
-                ViewBag.Customers = new SelectList(db.tblCustomers.Where(u => !u.Status.ToString().Contains("0"))
-                                              .ToList(), "CustomerName", "CustomerName");
+		public ActionResult Edit(string id)
+		{
+			var saleViewModel = new SaleViewModels();
+			List<ProductViewModel> products = null;
+			using (jotunDBEntities db = new jotunDBEntities())
+			{
+				ViewBag.CategoryNamesEng = new SelectList(db.tblCategories.Where(u => !u.Status.ToString().Contains("0") && !u.CategoryNameEng.Contains("Null"))
+												 .ToList(), "CategoryNameEng", "CategoryNameEng");
+				ViewBag.CategoryNamesKh = new SelectList(db.tblCategories.Where(u => !u.Status.ToString().Contains("0") && !u.CategoryNameKh.Contains("Null"))
+												 .ToList(), "CategoryNameKh", "CategoryNameKh");
+				ViewBag.Customers = new SelectList(db.tblCustomers.Where(u => !u.Status.ToString().Contains("0"))
+												 .ToList(), "CustomerName", "CustomerName");
 
-            };
-            if (string.IsNullOrEmpty(id)) return RedirectToAction("Index");
-            return View(SaleViewModels.GetNoDetail(id));
-        }
+				var productList = db.tblProducts.Where(p => p.Status != 0).ToList();
+				products = productList.Select(p => new ProductViewModel
+				{
+					ProductId = p.Id,
+					ProductName = p.ProductName,
+					Price = p.PriceInStock
+				}).ToList();
 
-        // POST: Client/Edit/5
+				saleViewModel.Products = products;
+			}	
+			if (string.IsNullOrEmpty(id)) return RedirectToAction("Index");		
+			saleViewModel = (SaleViewModels)SaleViewModels.GetNoDetail(id);	
+			saleViewModel.Products = saleViewModel.Products ?? products;
+			if (saleViewModel.Products == null)
+			{
+				saleViewModel.Products = new List<ProductViewModel>();
+			}
+
+			return View(saleViewModel);
+		}
         [HttpPost]
-        public ActionResult Edit(string id, SaleViewModels model)
-        {
-            try
-            {
-                jotunDBEntities db = new jotunDBEntities();
-                //if (!ModelState.IsValid) return View(model);
-                CommonFunctions functions = new CommonFunctions();
-                tblSale client = db.tblSales.Find(id);
-                if (client != null)
-                {
+		public ActionResult Edit(string id, SaleViewModels model)
+		{
+			try
+			{
+				using (jotunDBEntities db = new jotunDBEntities())
+				{
+					CommonFunctions functions = new CommonFunctions();
+					tblSale client = db.tblSales.Find(id);
 
-                    var customer = (from p in db.tblCustomers
-                                    where p.CustomerName == model.CustomerId
-                                    select p).FirstOrDefault();
-                    client.CustomerId = customer.Id;
+					if (client != null)
+					{				
+						var customer = db.tblCustomers
+										 .FirstOrDefault(p => p.CustomerName == model.CustomerId);						
+						if (customer != null)
+						{
+							client.CustomerId = customer.Id;
+						}					
+						client.Id = model.Id;
+						client.CreatedDate = DateTime.Now;
+						client.Description = model.Description;					
+						client.Amount = (double?)(decimal.TryParse(model.Amount, out var amount) ? amount : 0);
+						client.Discount = (double?)(decimal.TryParse(model.Discount, out var discount) ? discount : 0);
+						client.RevicedFromCustomer = (double?)(decimal.TryParse(model.RevicedFromCustomer, out var received) ? received : 0);			
+						db.SaveChanges();
+						var GetDetail = db.tblSalesDetails.Where(w => string.Compare(w.SaleId, id) == 0).ToList();
+						if (GetDetail.Any())
+						{
+							foreach (var item in GetDetail)
+							{
+								tblSalesDetail clientDetail = db.tblSalesDetails
+																 .FirstOrDefault(w => string.Compare(w.Id, item.Id) == 0);
+								if (clientDetail != null)
+								{
+									clientDetail.Quantity = item.Quantity;
+									db.SaveChanges();
+								}
+							}
 
-                    client.Id = model.Id;
-                    client.CreatedDate = DateTime.Now;
-                    client.Description = model.Description;
-
-                    db.SaveChanges();
-
-                    var GetDetail = db.tblSalesDetails.Where(w => string.Compare(w.SaleId, id) == 0).ToList();
-                    if (GetDetail.Any())
-                    {
-                        foreach (var item in GetDetail)
-                        {
-                            tblSalesDetail clientDetail = db.tblSalesDetails.Where(w => string.Compare(w.Id, item.Id) == 0).FirstOrDefault();
-                            clientDetail.Quantity = item.Quantity;
-                            db.SaveChanges();
-                            if (model.GetDetail != null)
-                            {
-
-                                var GetDetail2 = db.tblSalesDetails.Where(w => string.Compare(w.SaleId, id) == 0).ToList();
-
-                                foreach (var ii in GetDetail2)
-                                {
-                                    tblSalesDetail clientd2 = db.tblSalesDetails.Find(ii.Id);
-
-                                    functions.revert_stock_balance(clientd2.Id);
-
-                                    db.tblSalesDetails.Remove(clientd2);
-                                    db.SaveChanges();
-                                }
-
-                                foreach (SaleDetailViewModel items in model.GetDetail)
-                                {
-                                    tblSalesDetail clientd = new tblSalesDetail();
-                                    clientd.Id = Guid.NewGuid().ToString();
-                                    clientd.SaleId = client.Id;
-                                    clientd.ProductId = items.ProductId;
-                                    clientd.UnitTypeId = items.UnitTypeId;
-                                    clientd.Price = Convert.ToDecimal(items.Price);
-                                    clientd.Quantity = Convert.ToDecimal(items.Quantity);
-                                    db.tblSalesDetails.Add(clientd);
-                                    db.SaveChanges();
-                                    functions.stock_adjustment(items.ProductId, Convert.ToDecimal(items.Quantity), items.UnitTypeId);
-                                }
-                            }
-                        }
-                    }
-                }
-                return RedirectToAction("Index", "Sale");
-            }
-            catch (Exception ex)
-            {
-                return Json(new { result = "error", message = ex.Message }, JsonRequestBehavior.AllowGet);
-            }
-        }
-
-        public ActionResult EditNew(string id)
+							if (model.GetDetail != null)
+							{						
+								foreach (var ii in GetDetail)
+								{
+									tblSalesDetail clientd2 = db.tblSalesDetails.Find(ii.Id);
+									if (clientd2 != null)
+									{
+										functions.revert_stock_balance(clientd2.Id);
+										db.tblSalesDetails.Remove(clientd2);
+										db.SaveChanges();
+									}
+								}						
+								foreach (SaleDetailViewModel items in model.GetDetail)
+								{
+									tblSalesDetail clientd = new tblSalesDetail
+									{
+										Id = Guid.NewGuid().ToString(),
+										SaleId = client.Id,
+										ProductId = items.ProductId,
+										UnitTypeId = items.UnitTypeId,
+										Price = Convert.ToDecimal(items.Price),
+										Quantity = Convert.ToDecimal(items.Quantity)
+									};
+									db.tblSalesDetails.Add(clientd);
+									db.SaveChanges();								
+									functions.stock_adjustment(items.ProductId, Convert.ToDecimal(items.Quantity), items.UnitTypeId);
+								}
+							}
+						}
+					}
+					return Json(new { result = "success", message = "Sale edited successfully." });
+				}
+			}
+			catch (Exception ex)
+			{
+				return Json(new { result = "error", message = ex.Message }, JsonRequestBehavior.AllowGet);
+			}			
+		}
+		public ActionResult EditNew(string id)
         {
             if (string.IsNullOrEmpty(id)) return RedirectToAction("Index");
             return View(SaleViewModels.GetNoDetail(id));
@@ -1311,28 +1333,6 @@ namespace jotun.Controllers
 
             return View();
         }
-        /* public ActionResult CustomerHistory(string customer_id)
-         {
-
-             using (jotunDBEntities db = new jotunDBEntities())
-             {
-                 ViewBag.CategoryNamesEng = new SelectList(db.tblCategories.Where(u => !u.Status.ToString().Contains("0") && !u.CategoryNameEng.Contains("Null"))
-                                               .ToList(), "CategoryNameEng", "CategoryNameEng");
-                 ViewBag.CategoryNamesKh = new SelectList(db.tblCategories.Where(u => !u.Status.ToString().Contains("0") && !u.CategoryNameKh.Contains("Null"))
-                                               .ToList(), "CategoryNameKh", "CategoryNameKh");
-                 ViewBag.CustomerName = new SelectList(db.tblCustomers.Where(u => !u.Status.ToString().Contains("0") && !u.CustomerName.Contains("Null"))
-                                               .ToList(), "CustomerName", "CustomerName");
-             };
-             if (isAdminUser())
-             {
-
-                 return View();
-             }
-             else
-             {
-                 return RedirectToAction("Login", "Account");
-             }
-         }*/
         [HttpGet]
         public ActionResult CustomerHistory(string id, string CustomerName = "", string PhoneNumber = "")
         {
@@ -1444,12 +1444,6 @@ namespace jotun.Controllers
                 var customer_name = db.tblCustomers.Where(x => x.Id == customer_id).FirstOrDefault();
                 if (old_record)
                 {
-
-					/* sale_list = (from s in db.tblSales
-                                      join c in db.tblCustomers on s.CustomerId equals c.Id
-                                      where c.CustomerName == customer_name.CustomerName && s.Status == 1
-                                      select s)
-                                      .ToList();  */
 					 sale_list = db.tblSales
 								 .Where(s => s.Status == 1 && s.CustomerId == customer_name.Id)
 								 .Join(db.tblCustomers,
@@ -1495,186 +1489,6 @@ namespace jotun.Controllers
             jsonResult.MaxJsonLength = int.MaxValue;
             return jsonResult;
         }
-        /* public ActionResult InvoiceReport(string id)
-         {
-             *//* jotunDBEntities db = new jotunDBEntities();
-              var aa = 0;
-              tblSale s = db.tblSales.Find(id);
-              var ss = db.tblSalesDetails.Where(ID => ID.SaleId == id).ToList();
-              var firstId = (from p in db.tblSales where p.InvoiceNo != null && p.Status == 1 select p).ToList();
-              var maxid = (from x in db.tblSales where x.InvoiceNo != null && x.Status == 1 select x.InvoiceId).Max();
-              string imageUrl = Request.Url.GetLeftPart(UriPartial.Authority) + Url.Content(s.SaleImage);
-  *//*
-             jotunDBEntities db = new jotunDBEntities();
-             var aa = 0;
-             var idList = id.Split(',')
-                 .Select(i => i.Trim())
-                 .Where(i => int.TryParse(i, out _))  // Filter only valid integers
-                 .Select(i => int.Parse(i))
-                 .ToList();
-             var invoiceDetailsList = new List<object>();
-             foreach (var singleIdStr in idList)
-             {
-                 string singleIdAsString = singleIdStr.ToString();
-                 tblSale s = db.tblSales.Find(singleIdStr);
-                 if (s == null)
-                 {
-                     return HttpNotFound($"Sale with ID {singleIdStr} not found.");
-                 }
-                 var ss = db.tblSalesDetails.Where(ID => ID.SaleId == singleIdAsString).ToList();
-                 var firstId = (from p in db.tblSales
-                                where p.InvoiceNo != null && p.Status == 1
-                                select p).ToList();
-                 var maxid = (from x in db.tblSales
-                              where x.InvoiceNo != null && x.Status == 1
-                              select x.InvoiceId).Max();
-                 string imageUrl = Request.Url.GetLeftPart(UriPartial.Authority) + Url.Content(s.SaleImage);
-                 string today = DateTime.Now.ToString("yyMMdd");
-                 if (maxid == null)
-                 {
-                     var i = 1;
-                     string d = i.ToString().PadLeft(3, '0');
-                     s.InvoiceNo = today + '-' + d;
-                     s.InvoiceId = +1;
-                 }
-                 if (s.InvoiceNo != null)
-                 {
-                     s.InvoiceNo = s.InvoiceNo;
-                 }
-                 else
-                 {
-                     foreach (var item in firstId)
-                     {
-
-                         if (item.InvoiceId == maxid)
-                         {
-                             string firstId1 = item.InvoiceNo;
-                             string splits = firstId1;
-
-                             string[] arrayString = splits.Split('-');
-                             var j = arrayString[0];
-                             var j1 = arrayString[1];
-
-                             var sum = Convert.ToInt32(j1) + 1;
-                             string c = sum.ToString().PadLeft(3, '0');
-
-                             if (today == j)
-                             {
-                                 s.InvoiceNo = today + '-' + c;
-                                 s.InvoiceId = item.InvoiceId + 1;
-                             }
-                             else
-                             {
-                                 var i = 1;
-                                 string d = i.ToString().PadLeft(3, '0');
-                                 s.InvoiceNo = today + '-' + d;
-                                 s.InvoiceId = item.InvoiceId + 1;
-                             }
-                         }
-                     }
-                 }
-
-                 if (s.Amount == null)
-                 {
-                     s.Amount = aa;
-                 }
-                 if (s.Discount == null)
-                 {
-                     s.Discount = aa;
-                 }
-                 if (s.RevicedFromCustomer == null)
-                 {
-                     s.RevicedFromCustomer = aa;
-                 }
-
-                 decimal k = (decimal)(s.Amount - (((s.Amount * s.Discount) / 100) + s.RevicedFromCustomer));
-                 if (k <= 0)
-                 {
-                     s.InvoiceStatus = "Paid";
-                 }
-                 else
-                 {
-                     s.InvoiceStatus = "Not Paid";
-                 }
-                 db.SaveChanges();
-                 ReportViewer rv = new ReportViewer();
-                 rv.ProcessingMode = ProcessingMode.Local;
-                 rv.SizeToReportContent = true;
-                 rv.Width = Unit.Percentage(100);
-                 rv.Height = Unit.Percentage(100);
-                 DataTable dt = new DataTable();
-                 dt.Columns.Add(new DataColumn("Id"));
-                 dt.Columns.Add(new DataColumn("ProductId"));
-                 dt.Columns.Add(new DataColumn("Quantity"));
-                 dt.Columns.Add(new DataColumn("Price"));
-                 dt.Columns.Add(new DataColumn("CustomerId"));
-                 dt.Columns.Add(new DataColumn("Date"));
-                 dt.Columns.Add(new DataColumn("Total"));
-                 dt.Columns.Add(new DataColumn("Totals"));
-                 dt.Columns.Add(new DataColumn("VAT"));
-                 dt.Columns.Add(new DataColumn("Phone"));
-                 dt.Columns.Add(new DataColumn("Address"));
-                 dt.Columns.Add(new DataColumn("Discount"));
-                 dt.Columns.Add(new DataColumn("RevicedFromCustomer"));
-                 dt.Columns.Add(new DataColumn("Owe"));
-                 dt.Columns.Add(new DataColumn("InvoiceNo"));
-                 dt.Columns.Add(new DataColumn("ColorCode"));
-                 dt.Columns.Add(new DataColumn("UnitId"));
-                 dt.Columns.Add(new DataColumn("SaleImage", typeof(string)));
-                 var saless = db.tblSalesDetails.Where(ID => ID.SaleId == id);
-                 var customer = db.tblSales.Where(ID => ID.Id == id);
-                 if (saless.Any())
-                 {
-                     foreach (var cuss in customer)
-                     {
-                         foreach (var ii in saless)
-                         {
-                             var proname = (from p in db.tblProducts
-                                            where p.Id == ii.ProductId
-                                            select p).FirstOrDefault();
-                             var cus = (from c in db.tblCustomers
-                                        where c.Id == cuss.CustomerId
-                                        select c).FirstOrDefault();
-                             var unit = (from u in db.tblUnits
-                                         where u.Id == ii.UnitTypeId
-                                         select u).FirstOrDefault();
-                             DataRow dr = dt.NewRow();
-                             dr["CustomerId"] = cus.CustomerName;
-                             dr["Date"] = Convert.ToDateTime(DateTime.Now).ToString("dd-MMM-yyyy");
-                             dr["Id"] = ii.Id;
-                             dr["ProductId"] = proname.ProductName;
-                             dr["Quantity"] = float.Parse((ii.Quantity).ToString());
-                             dr["Price"] = float.Parse((ii.actual_price).ToString()).ToString("N");
-                             dr["Total"] = float.Parse((ii.actual_price * ii.Quantity).ToString()).ToString("N");
-                             dr["Totals"] = float.Parse((ii.actual_price).ToString()).ToString("N");
-                             dr["VAT"] = float.Parse((ii.actual_price).ToString()).ToString("N");
-                             dr["Phone"] = cus.PhoneNumber;
-                             dr["Address"] = cus.ProjectLocation;
-                             dr["Discount"] = cuss.Discount;
-                             dr["RevicedFromCustomer"] = float.Parse((cuss.RevicedFromCustomer).ToString()).ToString("N");
-                             //dr["Owe"] = float.Parse((cuss.Owe).ToString()).ToString("0.000");
-                             dr["Owe"] = cuss.Amount - (((cuss.Amount * cuss.Discount) / 100) + cuss.RevicedFromCustomer);
-                             dr["InvoiceNo"] = cuss.InvoiceNo;
-                             dr["ColorCode"] = ii.color_code;
-                             dr["UnitId"] = unit.UnitNameEng;
-                             dr["SaleImage"] = imageUrl;
-
-                             dt.Rows.Add(dr);
-                         }
-                     }
-                 }
-                 rv.LocalReport.ReportPath = Request.MapPath(Request.ApplicationPath) + @"ReportDesign\Invoice.rdlc";
-                 rv.LocalReport.DataSources.Clear();
-                 ReportDataSource rds = new ReportDataSource("DSSaleInvoice", dt);
-                 rv.LocalReport.DataSources.Add(rds);
-                 rv.ShowPrintButton = true;
-                 rv.ShowRefreshButton = true;
-                 rv.LocalReport.EnableExternalImages = true;
-                 ViewBag.ReportViewer = rv;
-             }
-                 return View();
-
-         }*/
         [HttpPost]
         public ActionResult StoreIds(string ids)
         {

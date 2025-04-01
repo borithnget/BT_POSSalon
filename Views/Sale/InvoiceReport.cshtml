@@ -231,7 +231,7 @@
 <link rel="stylesheet" href="~/Content/css/Invoice.css">
 <script>
      function goBackToSale() {
-        var routeUrl = '@Url.Action("Index", "Sale")';
+        var routeUrl = '@Url.Action("CustomerHistory", "Sale")';
         window.location.href = routeUrl;
     }
     var duplicateInvoice = @duplicateInvoice.ToString().ToLower();

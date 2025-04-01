@@ -767,7 +767,7 @@ namespace jotun.Controllers
 				ViewBag.InvoiceNo = s.InvoiceNo;
 				ViewBag.InvoiceDate = DateTime.Now.ToString("dd-MMM-yyyy h:mm tt");
 				ViewBag.Discount = s.Discount ?? 0;
-				ViewBag.Tax = s.Tax ?? 0;
+				/*ViewBag.Tax = s.Tax ?? 0;*/
 				/*ViewBag.CashierName = cashier?.FullName ?? "Unknown Cashier";*/	
 				ViewBag.WaitingNo = waitingNumber; 
 				return View();

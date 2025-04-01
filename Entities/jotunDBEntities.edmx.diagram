@@ -78,6 +78,17 @@
         <EntityTypeShape EntityType="CoffeePOSDataModel.tblShopModulePermission" Width="1.5" PointX="12.625" PointY="23.625" />
         <AssociationConnector Association="CoffeePOSDataModel.FK__tblShopMo__Modul__43D61337" />
         <AssociationConnector Association="CoffeePOSDataModel.FK__tblShopMo__ShopI__42E1EEFE" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblAttendance" Width="1.5" PointX="17.625" PointY="31.125" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblEmployee" Width="1.5" PointX="15.375" PointY="27.625" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblEmployeeRole" Width="1.5" PointX="20.625" PointY="27.875" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblRole" Width="1.5" PointX="18.375" PointY="28.125" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblSalary" Width="1.5" PointX="17.625" PointY="25" />
+        <EntityTypeShape EntityType="CoffeePOSDataModel.tblShiftSchedule" Width="1.5" PointX="17.625" PointY="33.875" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK__tblAttend__Emplo__671F4F74" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK__tblEmploy__Emplo__04AFB25B" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK__tblSalary__Emplo__69FBBC1F" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK__tblShiftS__Emplo__6442E2C9" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK__tblEmploy__RoleI__05A3D694" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

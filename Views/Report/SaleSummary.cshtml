@@ -10,13 +10,19 @@
     #printerDiv iframe {
         position: absolute;
         top: -1000px;
+        width: 0;
+        height: 0;
     }
 </style>
+
 
 @using (Html.BeginForm("SaleSummary", "Report", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     <div style="background-color:#e9ecef; padding:15px;">
         <h4>Sale Summary</h4>
+        <div id="divPDF">
+            <div id="printerDiv"><iframe id="frmPDF"></iframe></div>
+        </div>
         <div class="container-fluid">
             <div class="col-md-12" style="background-color:transparent;">
                 <div class="col-md-12" style="background-color:transparent">
@@ -43,9 +49,15 @@
                             </div>*@
 
                         <div class="col-md-4">
-                            <input style="margin-top:25px" type="submit" class="btn btn-success" value="Generate" />
-                            <input style="margin-top:25px" class="btn btn-danger" type="button" value="Back" onclick="window.location='/Home';" />
-                            <input style="margin-top:25px" class="btn btn-success" type="button" value="Print" onclick="funExportToPDF()" />
+                            <button style="margin-top:25px" type="submit" class="btn btn-success">
+                                <i class="fas fa-file-alt"></i> Generate
+                            </button>
+                            <button style="margin-top:25px" class="btn btn-success" type="button" onclick="funExportToPDF()">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                            <button style="margin-top:25px" class="btn btn-danger" type="button" onclick="window.location='/Home';">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -66,6 +78,9 @@
 @section scripts{
     <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
     <script src="~/Scripts/jquery-ui.js"></script>
+    <link rel="stylesheet" href="~/Content/css/site.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script type="text/javascript">
         $(function () {
             $('#dateFrom').datepicker({
@@ -75,6 +90,56 @@
                 dateFormat: 'dd-MM-yy'
             });
         });
+  function funExportToPDF() {
+    $('#wait_print').text("Waiting...");
+      var dateFrom = $('#dateFrom').val();   // From Date
+      var dateTo = $('#dateTo').val();       // To Date
+
+      // Convert the date values to "yyyy-MM-dd" format if needed
+      var formattedDateFrom = moment(dateFrom, "DD-MMM-YY").format("YYYY-MM-DD");
+      var formattedDateTo = moment(dateTo, "DD-MMM-YY").format("YYYY-MM-DD");
+      // Perform the AJAX request to export to PDF
+      console.log("Original Date From:", dateFrom);
+      console.log("Original Date To:", dateTo);
+      console.log("Formatted Date From:", formattedDateFrom);
+      console.log("Formatted Date To:", formattedDateTo);
+    $.ajax({
+        url: '@Url.Action("ExportToPDFSaleSummary", "Report")', // Ensure the correct action and controller name
+        type: 'GET',
+        data: {
+            datefrom: formattedDateFrom,
+            dateto: formattedDateTo
+},
+        contentType: 'application/json; charset=utf-8',
+        success: function (result) {
+            // Place the report URL in the iframe for printing
+            var iframe = document.getElementById('frmPDF');
+            iframe.src = result; // The server-side action should return the PDF file URL
+
+            // Ensure the iframe content is ready and then trigger the print
+            iframe.onload = function() {
+                // Focus and trigger print
+                iframe.contentWindow.focus();
+                iframe.contentWindow.print();
+
+                // Revert the button text back to "Generate"
+                $('#wait_print').text("Generate");
+            };
+        },
+        error: function (xhr, status, err) {
+            // Handle the error case
+            alert("An error occurred while exporting: " + err);
+
+            // Revert the button text back to "Generate" after error
+            $('#wait_print').text("Generate");
+        }
+    });
+
+    return false; // Prevent default form submission or event bubbling
+}
+
+
+
 
     </script>
 }

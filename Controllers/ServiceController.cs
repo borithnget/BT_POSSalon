@@ -651,8 +651,100 @@ namespace jotun.Controllers
 				return PartialView("_DetailPackage", model);
 			}
 		}
-		// GET: EditPackage
 		public ActionResult EditPackage(int id)
+		{
+			using (var db = new jotunDBEntities())
+			{
+				var package = db.Packages
+					.Include(p => p.PackageServices.Select(s => s.tblService))
+					.Include(p => p.PackageProducts.Select(e => e.tblProduct))
+					.FirstOrDefault(p => p.Id == id);
+
+				if (package == null)
+				{
+					return HttpNotFound();
+				}
+
+				var selectedServiceIds = package.PackageServices.Select(s => s.ServiceId).ToList();
+				var selectedProductIds = package.PackageProducts.Select(p => p.ProductId).ToList();
+
+				var model = new CreatePackageViewModel
+				{
+					Id = package.Id,
+					Name = package.PackageName,
+					Price = (decimal)package.Price,
+					Description = package.Description,
+
+					// Initially empty lists, we will populate them with Select2 later
+					AvailableServices = new List<SelectListItem>(),
+					AvailableProducts = new List<SelectListItem>(),
+
+					// Selected Services mapped to ViewModel
+					SelectedServices = package.PackageServices?
+						.Select(s => new ServiceSelectionViewModel
+						{
+							Id = s.ServiceId,
+							Quantity = s.Quantity ?? 0
+						}).ToList() ?? new List<ServiceSelectionViewModel>(),
+
+					// Selected Products mapped to ViewModel
+					SelectedProducts = package.PackageProducts?
+						.Select(p => new ProductSelectionViewModel
+						{
+							Id = p.ProductId,
+							Quantity = p.Quantity ?? 0,
+							Unit = p.Unit,
+							Qty = p.Qty ?? 0
+						}).ToList() ?? new List<ProductSelectionViewModel>()
+				};
+				return View(model);
+			}
+		}
+
+		public ActionResult GetServices(int page = 1, string searchQuery = "")
+		{
+			using (var db = new jotunDBEntities())
+			{
+				int pageSize = 10;
+				var services = db.tblServices
+								 .Where(s => s.IsActive && (string.IsNullOrEmpty(searchQuery) || s.Name.Contains(searchQuery)))
+								 .OrderBy(s => s.Name)
+								 .Skip((page - 1) * pageSize)
+								 .Take(pageSize)
+								 .Select(s => new SelectListItem
+								 {
+									 Value = s.ServiceId.ToString(),
+									 Text = s.Name
+								 })
+								 .ToList();
+
+				return Json(services, JsonRequestBehavior.AllowGet);
+			}
+		}
+
+		public ActionResult GetProducts(int page = 1, string searchQuery = "")
+		{
+			using (var db = new jotunDBEntities())
+			{
+				int pageSize = 10;
+				var products = db.tblProducts
+								 .Where(p => p.CreatedDate.HasValue && p.CreatedDate.Value.Year == 2025 && (string.IsNullOrEmpty(searchQuery) || p.ProductName.Contains(searchQuery)))
+								 .OrderBy(p => p.ProductName)
+								 .Skip((page - 1) * pageSize)
+								 .Take(pageSize)
+								 .Select(p => new SelectListItem
+								 {
+									 Value = p.Id.ToString(),
+									 Text = p.ProductName
+								 })
+								 .ToList();
+
+				return Json(products, JsonRequestBehavior.AllowGet);
+			}
+		}
+
+		// GET: EditPackage
+		/*public ActionResult EditPackage(int id)
 		{
 			using (var db = new jotunDBEntities())
 			{
@@ -718,7 +810,7 @@ namespace jotun.Controllers
 				};
 				return View(model);
 			}
-		}
+		}*/
 		[HttpPost]	
 		[ValidateAntiForgeryToken]
 		public ActionResult EditPackage(CreatePackageViewModel model)

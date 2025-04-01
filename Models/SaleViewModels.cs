@@ -1,4 +1,5 @@
 ﻿using jotun.Entities;
+using Org.BouncyCastle.Bcpg;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -21,7 +22,9 @@ namespace jotun.Models
 		public string Discount { get; set; }
 		public string RevicedFromCustomer { get; set; }
 		public string RevicedFromCustomer1 { get; set; }
+		public string PaymentType { get; set; }
 		public string InvoiceStatus { get; set; }
+		public string OrderType { get; set; }
 		public string CustomerNo { get; set; }
 		public string CustomerId { get; set; }
 		public string filter_project_location_id { get; set; }
@@ -83,17 +86,12 @@ namespace jotun.Models
 		public string LocationText { get; set; }
 		public Nullable<decimal> ReceivedByABA { get; set; }
 		public Nullable<decimal> NewReceivedByABA { get; set; }
-		//public Nullable<decimal> TotalReceivedFromCustomer
-		//{
-		//    get { return ReceivedByABA + TotalReceivedFromCustomer; }
-		//    set { TotalReceivedFromCustomer = value; }
-		//}
-
+		public List<ProductViewModel> Products { get; set; }
 		public List<SaleDetailViewModel> GetDetail { get; set; }
 		public string UnitType { get; set; }
 		public string ColorCode { get; set; }
 		public decimal? Price { get; set; }
-		public int Quantity { get; set; }
+		public decimal? Quantity { get; set; }
 		public string Sugar { get; set; }
 		public string Size { get; set; }
 		public string Item { get; internal set; }
@@ -102,17 +100,13 @@ namespace jotun.Models
 		public static object GetNoDetail(string id)
 		{
 			using (jotunDBEntities db = new jotunDBEntities())
-			{
-				// Fetch sales for the customer (handle both multiple and single sales)
-				var salesList = db.tblSales.Where(s => s.CustomerId == id || s.Id == id).ToList();
-				// If only one sale is found, return a single SaleViewModel
+			{				
+				var salesList = db.tblSales.Where(s => s.CustomerId == id || s.Id == id).ToList();			
 				if (salesList.Count == 1)
 				{
 					var sale = salesList.First();
 					var customer = db.tblCustomers.FirstOrDefault(p => p.Id == sale.CustomerId || p.Id == sale.Id);
-					var customer_location = db.tblCustomer_location.FirstOrDefault(cl => cl.id == sale.customer_location && cl.status == true);
-
-					// Prepare customer location details
+					var customer_location = db.tblCustomer_location.FirstOrDefault(cl => cl.id == sale.customer_location && cl.status == true);					
 					var resultcustomer_location = customer_location?.location ?? "";
 					var location_id = customer_location?.id.ToString() ?? "";
 
@@ -133,7 +127,9 @@ namespace jotun.Models
 						UpdatedDate = sale.UpdatedDate.ToString(),
 						Status = sale.Status,
 						CustomerLocation = location_id,
-						LocationText = resultcustomer_location
+						LocationText = resultcustomer_location,
+						OrderType = sale.OrderType,
+						PaymentType = sale.PaymentType,
 					};
 
 					// Fetch sale details for this sale
@@ -145,7 +141,7 @@ namespace jotun.Models
 							SaleId = s.SaleId,
 							ProductId = s.ProductId,
 							ProductIdn = s.ProductId,
-							Quantity = s.Quantity.ToString(),
+							Quantity = (s.Quantity.HasValue ? (int)s.Quantity.Value : 0).ToString(),
 							Price = s.Price.ToString(),
 							Total = (s.Price * s.Quantity).ToString(),
 							color_code = s.color_code,
@@ -222,7 +218,7 @@ namespace jotun.Models
 								SaleId = s.SaleId,
 								ProductId = s.ProductId,
 								ProductIdn = s.ProductId,
-								Quantity = s.Quantity.ToString(),
+								Quantity = (s.Quantity.HasValue ? (int)s.Quantity.Value : 0).ToString(),
 								Price = s.Price.ToString(),
 								Total = (s.Price * s.Quantity).ToString(),
 								color_code = s.color_code,
@@ -255,154 +251,12 @@ namespace jotun.Models
 						sales.Add(saleViewModel);
 					}
 
-					return sales;  // Return a list of SaleViewModels for multiple sales
+					return sales;  
 				}
 			}
 		}
 	}
-		/* public static SaleViewModels GetNoDetail(string id )
-		  {
-			  using (jotunDBEntities db = new jotunDBEntities())
-			  {
-				  SaleViewModels sale = new SaleViewModels();
-				  List<SaleDetailViewModel> GetDetail = new List<SaleDetailViewModel>();
-				  tblSale ts = db.tblSales.FirstOrDefault(s => s.Id == id || s.CustomerId == id);
-				  tblSalesDetail pd = new tblSalesDetail();
-				  var customer = (from p in db.tblCustomers
-								  where p.Id == ts.CustomerId
-								  select p).FirstOrDefault();
-				  var customer_location = (from cl in db.tblCustomer_location
-										   where cl.id == ts.customer_location && cl.status == true
-										   select cl).FirstOrDefault();
-				  var resultcustomer_location = "";
-				  var location_id = "";
-				  if (customer_location != null)
-				  {
-					  resultcustomer_location = customer_location.location;
-					  location_id = customer_location.id.ToString();
-				  }
-				  else
-				  {
-					  resultcustomer_location = "";
-					  location_id = "";
-				  }
-				  var ss = db.tblSales.Where(w => string.Compare(w.Id, id) == 0 || string.Compare(w.CustomerId, id) == 0).FirstOrDefault();
-				  if (ss != null)
-				  {
-					  ss.ReceivedByABA = ss.ReceivedByABA ?? 0;
-					  ss.RevicedFromCustomer = ss.RevicedFromCustomer ?? 0;
-					  sale = new SaleViewModels()
-					  {
-						  Id = ss.Id,
-						  CustomerId = customer.Id,
-						  CustomerName = customer.CustomerName,
-						  Description = ss.Description,
-						  Discount = ss.Discount.ToString(),
-						  RevicedFromCustomer = ss.RevicedFromCustomer.ToString(),
-						  ReceivedByABA = ss.ReceivedByABA ?? 0,
-						  Amount = ss.Amount.ToString(),
-						  ////Owe = ((s.Amount - ((s.Amount * s.Discount) / 100)) - s.RevicedFromCustomer).ToString(),
-						  Owe = ((ss.Amount - ss.Discount) - (ss.RevicedFromCustomer + (double)(ss.ReceivedByABA))).ToString(),
-						  CreatedDate = ss.CreatedDate.ToString(),
-						  UpdatedDate = ss.UpdatedDate.ToString(),
-						  Status = ss.Status,
-						  CustomerLocation = location_id,
-						  LocationText = resultcustomer_location,
-					  };
-				  }
-				  GetDetail = db.tblSalesDetails.Where(w => string.Compare(w.SaleId, id) == 0).Select(s => new SaleDetailViewModel()
-				  {
-					  Id = s.Id,
-					  SaleId = s.SaleId,
-					  ProductId = s.ProductId,
-					  ProductIdn = s.ProductId,
-					  Quantity = s.Quantity.ToString(),
-					  Price = s.Price.ToString(),
-					  Total = (s.Price * s.Quantity).ToString(),
-					  color_code = s.color_code,
-					  actual_price = s.actual_price.ToString(),
-					  UnitTypeId = s.UnitTypeId,
-					  UNit = s.UnitTypeId,
-					  Sugar = s.Sugar,
-					  Size = s.Size,     
-				  }).ToList();
-				  foreach (var list in GetDetail)
-				  {
-					  var un = (from u in db.tblUnits
-								where u.Id == list.UnitTypeId
-								select u).ToList();
-					  foreach (var u1 in un)
-					  {
-						  list.UnitTypeId = u1.Id;
-						  list.UNit = u1.UnitNameEng;
-					  }
-					  var productdetail = (from s in db.tblProducts
-										   where s.Id == list.ProductId
-										   select s).ToList();
-
-					  foreach (var list2 in productdetail)
-					  {
-						  list.ProductIdn = list2.ProductName;
-						  list.ProductId = list2.Id;
-					  }
-
-
-				  }
-				  List<SaleDetailViewModel> models = new List<SaleDetailViewModel>();
-				  foreach (var sale_obj in GetDetail)
-				  {
-					  if ( !String.IsNullOrEmpty(sale_obj.actual_price))
-					  {
-						  if (Convert.ToDouble(sale_obj.Price) > 0 || Convert.ToDouble(sale_obj.actual_price) > 0)
-						  {
-							  models.Add(new SaleDetailViewModel()
-							  {
-								  Id = sale_obj.Id,
-								  SaleId = sale_obj.SaleId,
-								  ProductId = sale_obj.ProductId,
-								  ProductIdn = sale_obj.ProductIdn,
-								  Size = sale_obj.Size,
-								  Sugar = sale_obj.Sugar,
-								  Quantity = Convert.ToDouble(sale_obj.Quantity).ToString("0"),
-								  Price = Convert.ToDouble(sale_obj.Price).ToString("0.00"),
-								  Total = (Convert.ToDouble(sale_obj.Price ) * Convert.ToDouble(sale_obj.Quantity)).ToString("0.00"),
-								  color_code = sale_obj.color_code,
-								  actual_price = Convert.ToDouble(sale_obj.actual_price ).ToString("0.00"),
-								  UnitTypeId = sale_obj.UnitTypeId,
-								  UNit = sale_obj.UNit,
-							  });
-						  }
-					  }
-					  else
-					  {
-						  models.Add(new SaleDetailViewModel()
-						  {
-
-							  Id = sale_obj.Id,
-							  SaleId = sale_obj.SaleId,
-							  ProductId = sale_obj.ProductId,
-							  ProductIdn = sale_obj.ProductIdn,
-							  Size = sale_obj.Size,
-							  Sugar = sale_obj.Sugar,
-							  Quantity = Convert.ToDouble(sale_obj.Quantity).ToString("0"),
-							  Price = Convert.ToDouble(sale_obj.Price).ToString("0.00"),
-							  Total = (Convert.ToDouble(sale_obj.Price) * Convert.ToDouble(sale_obj.Quantity)).ToString("0.00"),
-							  color_code = sale_obj.color_code,
-							  actual_price = Convert.ToDouble(sale_obj.Price).ToString("0.00"),
-							  UnitTypeId = sale_obj.UnitTypeId,
-							  UNit = sale_obj.UNit,
-
-						  });
-					  }
-				  }
-				  sale.GetDetail = models;
-				  return sale;
-			  }
-		  }
-	  }
-
-  }*/
-		public class SaleDetailViewModel
+	public class SaleDetailViewModel
 		{
 			[Key]
 			public string Id { get; set; }
@@ -438,5 +292,14 @@ namespace jotun.Models
 				}
 			}
 		}
+	public class ProductViewModel
+	{
+		public string ProductId { get; set; }
+		public string ProductName { get; set; }
+		public int Quantity { get; set; }
+		public string Unit { get; set; }
+		public int Qty { get; set; }
+		public Nullable<double> Price { get; set; }
 	}
+}
 

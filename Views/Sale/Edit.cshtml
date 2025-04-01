@@ -6,7 +6,7 @@
 @using (Html.BeginForm("Edit", "Sale", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
 
-    <div style="background-color:#e9ecef; padding:15px;">
+    <div style="background-color:#ffffff; padding:15px; height:660px">
         <h4>Edit Sale </h4>
         <hr />
         <div class="center-block" style="background-color:transparent">
@@ -16,11 +16,12 @@
 
             <div class="form-group">
                 <div class="row">
-                    <div class="col-md-8" style="background-color:transparent">
+                    <!-- Column 1: 40% width -->
+                    <div class="col-md-5" style="background-color:transparent">
                         <div class="form-group">
                             <div class="row">
                                 <div hidden class="col-md-6" style="background-color:transparent">
-                                    <div class="form-group ">
+                                    <div class="form-group">
                                         @Html.Label("ID", new { @class = "col-md-12 control-label" })
                                         <div class="col-md-12">
                                             @Html.TextBoxFor(m => m.Id, new { id = "orderNo", @class = " form-control", @readonly = "readonly" })
@@ -28,7 +29,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6" style="background-color:transparent">
-                                    <div class="form-group ">
+                                    <div class="form-group">
                                         @Html.Label("Date", new { @class = "col-md-12 control-label" })
                                         <div class="col-md-12">
                                             @Html.TextBoxFor(m => m.CreatedDate, new { id = "orderDate", @class = " form-control", @readonly = "readonly" })
@@ -37,59 +38,60 @@
                                 </div>
                                 <div class="col-md-6" style="background-color:transparent;">
                                     <div class="form-group">
-                                        <span style=" float:left">
-                                            @Html.Label("Customer", new { @class = "col-md-12 control-label disabled" })
-                                        </span>
+                                        @Html.Label("Customer", new { @class = "col-md-12 control-label disabled" })
                                         <div class="col-md-12">
                                             @Html.DropDownList("CustomerName", (SelectList)ViewBag.Customers, "--- Select ---", new { id = "suppid", @class = "form-control" })
                                             <input type="hidden" id="suppid" />
                                             <span class="error">Reqiured CustomerName</span>
-                                            @* @Html.TextBoxFor(m => m.SupplierId, new { id = "suppid", @class = "form-control " })*@
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="background-color:transparent; ">
+                                    <div class="row">
+                                        <div class="col-md-12" style="background-color:transparent;">
+                                            <div class="form-group">
+                                                <span style="float:left">
+                                                    @Html.Label("Description", new { @class = "col-md-12 control-label disabled" })
+                                                </span>
+                                                <div class="col-md-12">
+                                                    @Html.TextAreaFor(m => m.Description, new { id = "description", @class = "form-control " })
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group" style="background-color:transparent; margin-top:-30px">
-                            <div class="row">
-                                <div class="col-md-12" style="background-color:transparent;">
-                                    <div class="form-group">
-                                        <span style=" float:left">
-                                            @Html.Label("Description", new { @class = "col-md-12 control-label disabled" })
-                                        </span>
-                                        <div class="col-md-12">
-                                            @Html.TextAreaFor(m => m.Description, new { id = "description", @class = "form-control " })
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
+
+                    <!-- Column 2: 60% width -->
+                    <div class="col-md-7" style="background-color:transparent">
                         <div class="row table-responsive" style="padding:0 0 0 20px">
-                            <table id="clientlist" class="table table-bordered" width="100%">
+                            <table id="clientlist" class="tabl  e table-bordered" width="100%">
                                 <thead>
                                     <tr>
                                         <td>Item Name</td>
                                         <td>Quantity</td>
                                         <td>Price</td>
                                         <td>Total</td>
-                                        <td>Action</td>
+                                        <td></td>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-
                                         <td>
-                                            <input class="form-control" type="text" id="itemName" />
+                                            <select class="form-control" id="itemName">
+                                                <option value="">--- Select Product ---</option>
+                                                @foreach (var product in Model.Products)
+                                                {
+                                                    <option value="@product.ProductId" data-price="@product.Price">@product.ProductName</option>
+                                                }
+                                            </select>
                                             <input type="hidden" id="itemid" />
                                             <span class="error">Item name required</span>
                                         </td>
-                                        <td hidden>
-                                            <input class="form-control" type="text" id="itempid" />
-
-                                        </td>
-
                                         <td>
-                                            <input class="form-control" type="text" id="quantity" />
+                                            <input class="form-control" type="number" id="quantity" placeholder="Enter Quantity" />
                                             <span class="error">Valid quantity required</span>
                                         </td>
                                         <td>
@@ -97,37 +99,30 @@
                                             <span class="error">Valid rate required</span>
                                         </td>
                                         <td>
-                                            <input readonly class="form-control" type="text" />
-                                            <span class="error">Valid rate required</span>
+                                            <input readonly class="form-control" type="text" id="total" />
+                                            <span class="error">Valid total required</span>
                                         </td>
-
                                         <td>
                                             <input type="button" id="add" value="Add" class="btn btn-success" />
                                         </td>
-
                                     </tr>
-
-
                                     @foreach (var item in Model.GetDetail)
                                     {
                                         <tr>
                                             <td>
                                                 <input hidden type="text" class='form-control contect-person' value="@item.ProductIdn" />
-
                                                 <input readonly type="text" class='form-control ' value="@item.ProductId" />
                                             </td>
                                             <td>
                                                 <input readonly type="text" class='form-control phone' value="@item.Quantity" />
                                             </td>
                                             <td>
-                                                <input readonly type="text" class='form-control position' value="@item.Price" />
-
+                                                <input readonly type="text" class="form-control position" value="@(decimal.Parse(item.Price).ToString("F2"))" />
                                             </td>
                                             <td class="totals">
-                                                <input readonly type="text" class='form-control ' value="@item.Total" />
+                                                <input readonly type="text" class="form-control" value="@(decimal.Parse(item.Total).ToString("F2"))" />
                                             </td>
-
-                                            <td><input type="button" value="Remove" class="btn btn-danger" onclick="deleteRow(this)" /></td>
+                                            <td class="text-center"><button type="button" id="remove" class="btn btn-danger btn-sm" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i></button></td>
                                         </tr>
                                     }
                                 </tbody>
@@ -135,59 +130,46 @@
                                     <tr>
                                         <th colspan="3" style="text-align:right !important;">Sub Total: </th>
                                         <th colspan="2">
-                                            <label id="subTotal">0</label>
+                                            @Html.TextBoxFor(m => m.Amount, new { id = "Amount", @class = "form-control" })
                                         </th>
                                     </tr>
                                     <tr>
                                         <th colspan="3" style="text-align:right !important;">Discount (%):</th>
                                         <th colspan="2">
                                             @Html.TextBoxFor(m => m.Discount, new { id = "Discount", @class = "form-control" })
-
                                         </th>
                                     </tr>
-
                                     <tr>
                                         <th colspan="3" style="text-align:right !important;">Received From Customer:</th>
                                         <th colspan="2">
                                             @Html.TextBoxFor(m => m.RevicedFromCustomer, new { id = "RevicedFromCustomer", @class = "form-control" })
-
                                         </th>
                                     </tr>
-
-
-
                                 </tfoot>
                             </table>
-                            <div id="orderItems" class="tablecontainer">
-
-                            </div>
-
                         </div>
                     </div>
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-9">
+                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Sale/CustomerHistory';" />
                     <input id="submit" class="btn btn-success" type="button" value="Save" />
-                    <input type="reset" value="Cancel" class="btn btn-danger" onclick="window.location='/Sale';" />
                 </div>
             </div>
         </div>
     </div>
-
-    <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
     @section Scripts{
         <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+        <link rel="stylesheet" href="~/Content/css/site.css">
         <link href="~/Content/vendor/jquery/jquery-ui.css" rel="stylesheet" />
         <script src="~/Scripts/jquery-1.12.4.js"></script>
         <script src="~/Scripts/jquery-ui.js"></script>
         <script src="~/Scripts/datatables.min.js"></script>
-
-        @*<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-        <link rel="stylesheet" href="/resources/demos/style.css">
-        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">*@
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+        <link href="~/Scripts/datatables.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
         <script>
@@ -207,141 +189,158 @@
                             $('#itemid').val(pn);
                             $('#itempid').val(pid);
                             $('#rate').val(pr);
-                        }
+                    }
                     })
             });
             $(document).ready(function () {
-            var orderItems = [];
-            //Add button click function
-            $('#add').click(function () {
-                //Check validation of order item
-                var isValidItem = true;
-                if ($('#itemName').val().trim() == '') {
-                    isValidItem = false;
-                    $('#itemName').siblings('span.error').css('visibility', 'visible');
-                }
-                else {
-                    $('#itemName').siblings('span.error').css('visibility', 'hidden');
-                }
+                var orderItems = [];
 
-                if (!($('#quantity').val().trim() != '' && !isNaN($('#quantity').val().trim()))) {
-                    isValidItem = false;
-                    $('#quantity').siblings('span.error').css('visibility', 'visible');
-                }
-                else {
-                    $('#quantity').siblings('span.error').css('visibility', 'hidden');
-                }
+                $('#add').click(function () {
+                    var isValidItem = true;
+                    var orderAmount = 0;
 
-                if (!($('#rate').val().trim() != '' && !isNaN($('#rate').val().trim()))) {
-                    isValidItem = false;
-                    $('#rate').siblings('span.error').css('visibility', 'visible');
-                }
-                else {
-                    $('#rate').siblings('span.error').css('visibility', 'hidden');
-                }
-                //Add item to list if valid
-                if (isValidItem) {
-                    orderItems.push({
-                        //PurchaseBySupplierId: $('#orderNo').val().trim(),
-                        ProductName: $('#itemid').val().trim(),
-                        ProductId: $('#itempid').val().trim(),
-                        Quantity: parseInt($('#quantity').val().trim()),
-                        Price: parseFloat($('#rate').val().trim()),
-                    });
-                    //Clear fields
-                    $('#itemName').val('').focus();
-                    $('#quantity,#rate').val('');
+                    // Validate Product Name
+                    var itemName = $('#itemName').val().trim();
+                    if (itemName === '') {
+                        console.log("Trimmed Name:", itemName);
+                        isValidItem = false;
+                        $('#itemName').siblings('span.error').css('visibility', 'visible');
+                    } else {
+                        $('#itemName').siblings('span.error').css('visibility', 'hidden');
+                    }
 
-                }
-                GeneratedItemsTable();
+                    // Validate Quantity
+                    var quantity = parseInt($('#quantity').val().trim()) || 0;
+                    if (quantity <= 0) {
+                        isValidItem = false;
+                        $('#quantity').siblings('span.error').css('visibility', 'visible');
+                    } else {
+                        $('#quantity').siblings('span.error').css('visibility', 'hidden');
+                    }
 
+                    // Validate Price
+                    var rate = parseFloat($('#rate').val().trim()) || 0;
+                    if (rate <= 0) {
+                        isValidItem = false;
+                        $('#rate').siblings('span.error').css('visibility', 'visible');
+                    } else {
+                        $('#rate').siblings('span.error').css('visibility', 'hidden');
+                    }
 
-            });
+                    // Validate Total
+                    var total = parseFloat($('#total').val().trim()) || 0;
+                    console.log("Total (after parse):", total);
+                    if (total <= 0) {
+                        isValidItem = false;
+                        $('#total').siblings('span.error').css('visibility', 'visible');
+                    } else {
+                        $('#total').siblings('span.error').css('visibility', 'hidden');
+                    }
+
+                    // If all fields are valid, add the item to the array
+                    if (isValidItem) {
+                        var currentAmount = parseFloat($('#Amount').val().trim()) || 0;
+                        var newAmount = currentAmount + parseFloat(total);
+                        orderAmount = newAmount;
+                        var newItem = {
+                            ProductName: itemName,
+                            ProductId: $('#itemid').val().trim(),
+                            Quantity: quantity,
+                            Price: rate,
+                            Total: total
+                        };
+
+                        orderItems.push(newItem);
+                        console.log("Updated Order Items Array:", orderItems);
+                        $('#Amount').val(orderAmount.toFixed(2));
+                        // Clear fields AFTER pushing data
+                        $('#itemName, #itemid, #quantity, #rate, #total').val('');
+                        $('#itemName').focus();
+
+                        // Ensure the new item is displayed
+                        GeneratedItemsTable();
+                    }
+                });
             //Save button click function
-            $('#submit').click(function () {
-                //alert("hello");
-                //validation of order
-                var isAllValid = true;
+                $('#submit').click(function () {
+                    var isAllValid = true;
 
-
-                if ($('#orderNo').val().trim() == '') {
-                    $('#orderNo').siblings('span.error').css('visibility', 'visible');
-                    isAllValid = false;
-                }
-                else {
-                    $('#orderNo').siblings('span.error').css('visibility', 'hidden');
-                }
-                if ($('#suppid').val().trim() == '') {
-                    $('#suppid').siblings('span.error').css('visibility', 'visible');
-                    isAllValid = false;
-                }
-                else {
-                    $('#suppid').siblings('span.error').css('visibility', 'hidden');
-                }
-
-                if ($('#orderDate').val().trim() == '') {
-                    $('#orderDate').siblings('span.error').css('visibility', 'visible');
-                    isAllValid = false;
-                }
-                else {
-                    $('#orderDate').siblings('span.error').css('visibility', 'hidden');
-                }
-
-
-                var GetDetail = [];
-                var contactpersons = $('.contect-person');
-                var contactphones = $('.phone');
-                var contactpositions = $('.position');
-
-                if (contactpersons.length > 0) {
-                    for (var i = 0; i < contactpersons.length; i++) {
-                        item_element = {};
-                        item_element.ProductId = contactpersons[i].value;
-                        item_element.Quantity = contactphones[i].value;
-                        item_element.Price = contactpositions[i].value;
-                        GetDetail.push(item_element);
+                    // Validate the fields
+                    if ($('#orderNo').val().trim() == '') {
+                        $('#orderNo').siblings('span.error').css('visibility', 'visible');
+                        isAllValid = false;
+                    } else {
+                        $('#orderNo').siblings('span.error').css('visibility', 'hidden');
                     }
-                }
 
-
-
-                //Save if valid
-                if (isAllValid) {
-                    var data = {
-                        ID: $('#orderNo').val().trim(),
-                        CreatedDate: $('#orderDate').val().trim(),
-                        CustomerId: $('#suppid').val().trim(),
-                        RevicedFromCustomer: $('#RevicedFromCustomer').val().trim(),
-                        Discount: $('#Discount').val().trim(),
-                        Description: $('#description').val().trim(),
-                        GetDetail: GetDetail
-
+                    if ($('#suppid').val().trim() == '') {
+                        $('#suppid').siblings('span.error').css('visibility', 'visible');
+                        isAllValid = false;
+                    } else {
+                        $('#suppid').siblings('span.error').css('visibility', 'hidden');
                     }
-                    console.log(data);
-                    $(this).val('Please wait...');
 
-                    $.ajax({
-                        url: '/Sale/Edit',
-                        type: "POST",
-                        data: JSON.stringify(data),
-                        dataType: "JSON",
-                        contentType: "application/json",
-                        success: successFunc,
-                        error: errorFunc
-
-                    });
-                    function successFunc(data, status) {
-                        // alert(data);
-                        window.location = '/Sale'
-
+                    if ($('#orderDate').val().trim() == '') {
+                        $('#orderDate').siblings('span.error').css('visibility', 'visible');
+                        isAllValid = false;
+                    } else {
+                        $('#orderDate').siblings('span.error').css('visibility', 'hidden');
                     }
-                    function errorFunc() {
-                        window.location = '/Sale'
-                    }
-                }
 
-            });
-            //function for show added items in table
+                    // Collect details from the order items
+                    var GetDetail = [];
+                    var contactpersons = $('.contect-person');
+                    var contactphones = $('.phone');
+                    var contactpositions = $('.position');
+
+                    if (contactpersons.length > 0) {
+                        for (var i = 0; i < contactpersons.length; i++) {
+                            var item_element = {};
+                            item_element.ProductId = contactpersons[i].value;
+                            item_element.Quantity = contactphones[i].value;
+                            item_element.Price = contactpositions[i].value;
+                            GetDetail.push(item_element);
+                        }
+                    }
+
+                    // If the form is valid, prepare the data to send
+                    if (isAllValid) {
+                        var data = {
+                            ID: $('#orderNo').val().trim(),
+                            CreatedDate: $('#orderDate').val().trim(),
+                            CustomerId: $('#suppid').val().trim(),
+                            RevicedFromCustomer: $('#RevicedFromCustomer').val().trim(),
+                            Discount: $('#Discount').val().trim(),
+                            Amount: $('#Amount').val().trim(),
+                            Description: $('#description').val().trim(),
+                            GetDetail: GetDetail
+                        };
+
+                        console.log(data);
+
+                        // Disable the submit button
+                        $(this).val('Saving...');
+
+                        // Send the data via AJAX
+                        $.ajax({
+                            url: '/Sale/Edit',
+                            type: "POST",
+                            data: JSON.stringify(data),
+                            dataType: "JSON",
+                            contentType: "application/json",
+                            success: successFunc,
+                            error: errorFunc
+                        });                 
+                        function successFunc(data, status) {
+                            // Redirect to the Sale page
+                            window.location = '/Sale/CustomerHistory';
+                        }                       
+                        function errorFunc(error) {
+                            alert("Edit not complete!");
+                        }
+                    }
+                });
+
             function GeneratedItemsTable() {
 
                     console.log(orderItems[orderItems.length - 1]);
@@ -352,13 +351,10 @@
                         '<td hidden><input type="text"  class="form-control contect-person" value="' + orderItems[orderItems.length - 1].ProductId + '" /></td>' +
                         '<td><input type="text"  class="form-control phone"  value="' + orderItems[orderItems.length - 1].Quantity + '" /></td>' +
                         '<td><input type="text"  class="form-control position" value="' + orderItems[orderItems.length - 1].Price + '" /></td>' +
-                        '<td><input type="button" id="remove" value="Remove" class="btn btn-danger" onclick="deleteRow(this)"/></td>' +
+                        '<td><input type="text"  class="form-control position" value="' + orderItems[orderItems.length - 1].Total + '" /></td>' +
+                        '<td class="text-center"><button type="button" id="remove" class="btn btn-danger btn-sm" onclick="deleteRow(this)"><i class="fas fa-trash-alt"></i></button></td>'+
                         "</tr>"
-
-
                 );
-
-
             }
         });
         function deleteRow(r) {
@@ -388,15 +384,42 @@
                     + (Math.floor(Math.random() * 10000) + 1));
 
             });
+            $(document).ready(function () {
+                // When product is selected
+                $('#itemName').change(function () {
+                    var selectedOption = $(this).find('option:selected');
+                    var productId = selectedOption.val();
+                    var productPrice = selectedOption.data('price');
 
-
+                    // If a valid product is selected
+                    if (productId) {
+                        $('#itemid').val(productId);  // Set hidden item ID
+                        $('#rate').val(productPrice);  // Set price in rate field
+                        $('#quantity').val('');        // Clear the quantity field
+                        $('#total').val('');           // Clear the total field
+                    } else {
+                        // Clear fields if no product is selected
+                        $('#itemid').val('');
+                        $('#rate').val('');
+                        $('#quantity').val('');
+                        $('#total').val('');
+                    }
+                });
+                $('#quantity').on('input', function () {
+                    var quantity = $(this).val();
+                    var rate = $('#rate').val();
+                    if (quantity && rate) {
+                        var total = parseFloat(rate) * parseFloat(quantity);
+                        $('#total').val(total.toFixed(2));
+                    } else {
+                        $('#total').val('');
+                    }
+                });
+            });
         </script>
-
     }
 }
-
 <style>
-    /*Adding some css for looks good*/
     span.error {
         display: block;
         visibility: hidden;
@@ -404,8 +427,6 @@
         font-size: 90%;
     }
 
-
-    /*css for table*/
     .container td {
         vertical-align: top;
     }

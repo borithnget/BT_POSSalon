@@ -261,3 +261,7 @@ __pycache__/
 *.pyc
 /Jotun.zip
 /jotunshv.zip
+Web.config
+jotun.csproj
+*.csproj
+
