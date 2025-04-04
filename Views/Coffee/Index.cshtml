@@ -1406,7 +1406,6 @@ adjustResponsiveStyles();  // Initial style adjustment
                             $('#serviceList').empty();
                             response.data.forEach(function (serviceType) {
                                 let cardClass = serviceType.IsActive ? "card-background" : "card-background inactive";
-
                                 let serviceCard = `
                                      <div class="col-md-4 d-flex justify-content-center mb-3">
                                      <div id="service-card-${serviceType.ServiceTypeId}" class="${cardClass}">

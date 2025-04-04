@@ -397,7 +397,8 @@ namespace jotun.Controllers
 									 s.Name,
 									 s.Description,
 									 s.Price,
-									 s.IsActive
+									 s.IsActive,
+									 s.ServiceImage
 								 }).ToList();
 				return Json(new { success = true, data = services }, JsonRequestBehavior.AllowGet);
 			}

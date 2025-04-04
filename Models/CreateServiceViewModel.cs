@@ -13,6 +13,8 @@ namespace jotun.Models
         public decimal Price { get; set; }
         public string Description { get; set; }
 		public string ServiceTypeName { get; set; }
+		public string ServiceImage { get; set; }
+		public HttpPostedFileBase ServiceImageFile { get; set; }
 		public DateTime CreatedAt { get; set; }
 		public Guid ServiceTypeId { get; set; }
         public List<SelectListItem> ServiceTypes { get; set; }

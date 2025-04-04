@@ -2,13 +2,12 @@
 
 <h2 style="margin-top : 45px; margin-left:10px;">Create Service</h2>
 
-@using (Html.BeginForm("CreateService", "Service", FormMethod.Post, new { @class = "form-horizontal" }))
+@using (Html.BeginForm("CreateService", "Service", FormMethod.Post, new { @class = "form-horizontal", enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
     <div class="ml-4 mt-4">
         <div class="form-group">
             <div class="row">
-                <!-- First Row: Labels -->
                 <div class="col-md-4" style="background-color:transparent">
                     @Html.LabelFor(m => m.Name, new { @class = "col-md-12 control-label" })
                 </div>
@@ -20,7 +19,6 @@
                 </div>
             </div>
             <div class="row">
-                <!-- Second Row: Inputs -->
                 <div class="col-md-4" style="background-color:transparent">
                     @Html.TextBoxFor(m => m.Name, new { @class = "form-control", style = "width: 300px;" })
                     @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
@@ -37,23 +35,27 @@
             </div>
         </div>
         <div class="form-group">
-            <div class="row">              
+            <div class="row">
                 <div class="col-md-4" style="background-color:transparent">
                     @Html.LabelFor(m => m.Description, new { @class = "col-md-12 control-label" })
                 </div>
-                <div class="col-md-4" style="background-color:transparent">                 
+                <div class="col-md-4" style="background-color:transparent">
+                    @Html.LabelFor(m => m.ServiceImageFile, new { @class = "col-md-12 control-label" })
                 </div>
-                <div class="col-md-4" style="background-color:transparent">                  
+                <div class="col-md-4" style="background-color:transparent">
+                    <label class="control-label">Preview Image</label>
                 </div>
             </div>
-            <div class="row">            
+            <div class="row">
                 <div class="col-md-4" style="background-color:transparent">
                     @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 4, style = "width: 100%;" })
                     @Html.ValidationMessageFor(m => m.Description)
                 </div>
-                <div class="col-md-4" style="background-color:transparent">               
+                <div class="col-md-4" style="background-color:transparent">
+                    <input type="file" name="ServiceImageFile" class="form-control" id="imageInput" accept="image/*" />
                 </div>
-                <div class="col-md-4" style="background-color:transparent">               
+                <div class="col-md-4" style="background-color:transparent">
+                    <img id="imagePreview" src="#" alt="Image Preview" style="display:none; width:150px; height:150px; border:1px solid #ccc; border-radius:8px;" />
                 </div>
             </div>
             <div class="form-group">
@@ -69,7 +71,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
         <button type="button" id="addProductRow" class="btn btn-primary">Add Product</button>
         <div id="productTableContainer" class="mt-2">
@@ -126,7 +127,7 @@
                 <h5 class="modal-title" id="newServiceTypeModalLabel">Create New Service Type</h5>
             </div>
             <div class="modal-body">
-                <form id="createServiceTypeForm">                
+                <form id="createServiceTypeForm">
                     <div class="mb-3">
                         <label for="newServiceType" class="form-label">Service Type Name</label>
                         <input type="text" class="form-control" id="newServiceType" name="ServiceTypeName" required />
@@ -148,6 +149,7 @@
 <script src="~/Scripts/jquery-ui.js"></script>
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="~/Content/css/site.css">
 }
 
@@ -186,9 +188,9 @@
         // Create dropdown for product
         const productSelect = document.createElement("select");
         productSelect.name = `Products[${rowCount}].ProductId`;
-        productSelect.className = "form-control product-select"; 
+        productSelect.className = "form-control product-select";
         productSelect.style.width = "300px";
-        productSelect.setAttribute("data-index", rowCount); 
+        productSelect.setAttribute("data-index", rowCount);
         availableProducts.forEach(product => {
             const option = new Option(product.Text, product.Value);
             productSelect.appendChild(option);
@@ -207,7 +209,7 @@
         unitSelect.name = `Products[${rowCount}].Unit`;
         unitSelect.className = "form-control unit-select";
         unitSelect.style.width = "300px";
-        unitSelect.innerHTML = '<option value="">-- Select Unit --</option>'; 
+        unitSelect.innerHTML = '<option value="">-- Select Unit --</option>';
 
         // Delete row button
         let deleteBtn = document.createElement("button");
@@ -232,7 +234,7 @@
 $(document).ready(function () {
     $(document).on("change", ".product-select", function () {
         var productId = $(this).val();
-        var row = $(this).closest("tr"); 
+        var row = $(this).closest("tr");
         var unitSelect = row.find(".unit-select");
 
         console.log("Selected Product ID:", productId);
@@ -281,6 +283,18 @@ $(document).ready(function () {
                 })
         } else {
             alert('Please enter a service type name and description.');
+        }
+    });
+    document.getElementById("imageInput").addEventListener("change", function (event) {
+        const [file] = event.target.files;
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.getElementById("imagePreview");
+                img.src = e.target.result;
+                img.style.display = "block";
+            };
+            reader.readAsDataURL(file);
         }
     });
 </script>

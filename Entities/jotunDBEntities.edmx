@@ -91,6 +91,7 @@
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="100" />
           <Property Name="UpdateDate" Type="datetime" />
           <Property Name="UpdatedBy" Type="varchar" MaxLength="255" />
+          <Property Name="PackageImage" Type="nvarchar" MaxLength="4000" />
         </EntityType>
         <EntityType Name="PackageServices">
           <Key>
@@ -590,6 +591,7 @@
           <Property Name="Description" Type="nvarchar" MaxLength="255" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="ServiceImage" Type="nvarchar" MaxLength="4000" />
         </EntityType>
         <EntityType Name="tblServiceBooked">
           <Key>
@@ -1749,6 +1751,7 @@
           <NavigationProperty Name="tblServiceType" Relationship="Self.FK_Service_ServiceType" FromRole="tblService" ToRole="tblServiceType" />
           <NavigationProperty Name="tblServiceProducts" Relationship="Self.FK_ServiceProduct_Service" FromRole="tblService" ToRole="tblServiceProduct" />
           <NavigationProperty Name="PackageServices" Relationship="CoffeePOSDataModel.FK__PackageSe__Servi__1AD3FDA4" FromRole="tblService" ToRole="PackageService" />
+          <Property Name="ServiceImage" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblServiceBooked">
           <Key>
@@ -2279,6 +2282,7 @@
           <Property Name="CreatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="UpdateDate" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="PackageImage" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="PackageService">
           <Key>
@@ -3062,6 +3066,7 @@
           <EntitySetMapping Name="tblServices">
             <EntityTypeMapping TypeName="CoffeePOSDataModel.tblService">
               <MappingFragment StoreEntitySet="tblService">
+                <ScalarProperty Name="ServiceImage" ColumnName="ServiceImage" />
                 <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
                 <ScalarProperty Name="ServiceTypeId" ColumnName="ServiceTypeId" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -3272,6 +3277,7 @@
           <EntitySetMapping Name="Packages">
             <EntityTypeMapping TypeName="CoffeePOSDataModel.Package">
               <MappingFragment StoreEntitySet="Packages">
+                <ScalarProperty Name="PackageImage" ColumnName="PackageImage" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
                 <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
