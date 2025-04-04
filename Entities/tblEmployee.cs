@@ -21,6 +21,7 @@ namespace jotun.Entities
             this.tblEmployeeRoles = new HashSet<tblEmployeeRole>();
             this.tblSalaries = new HashSet<tblSalary>();
             this.tblShiftSchedules = new HashSet<tblShiftSchedule>();
+            this.tblAppointments = new HashSet<tblAppointment>();
         }
     
         public int EmployeeId { get; set; }
@@ -38,5 +39,7 @@ namespace jotun.Entities
         public virtual ICollection<tblSalary> tblSalaries { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<tblShiftSchedule> tblShiftSchedules { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<tblAppointment> tblAppointments { get; set; }
     }
 }

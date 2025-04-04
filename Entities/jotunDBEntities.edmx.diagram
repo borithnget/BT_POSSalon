@@ -89,6 +89,7 @@
         <AssociationConnector Association="CoffeePOSDataModel.FK__tblSalary__Emplo__69FBBC1F" />
         <AssociationConnector Association="CoffeePOSDataModel.FK__tblShiftS__Emplo__6442E2C9" />
         <AssociationConnector Association="CoffeePOSDataModel.FK__tblEmploy__RoleI__05A3D694" />
+        <AssociationConnector Association="CoffeePOSDataModel.FK_Appointment_Employee" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

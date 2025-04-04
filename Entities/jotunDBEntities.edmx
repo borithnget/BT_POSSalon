@@ -218,6 +218,7 @@
           <Property Name="CreatedAt" Type="datetime" />
           <Property Name="UpdatedAt" Type="datetime" />
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="EmployeeId" Type="int" />
         </EntityType>
         <EntityType Name="tblAttendance">
           <Key>
@@ -947,6 +948,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Appointment_Employee">
+          <End Role="tblEmployee" Type="Self.tblEmployee" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblAppointment" Type="Self.tblAppointment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEmployee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="tblAppointment">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
           <End Role="AspNetUsers" Type="Self.AspNetUsers" Multiplicity="1">
             <OnDelete Action="Cascade" />
@@ -1258,6 +1273,10 @@
             <End Role="tblShop" EntitySet="tblShop" />
             <End Role="tblShopModulePermission" EntitySet="tblShopModulePermission" />
           </AssociationSet>
+          <AssociationSet Name="FK_Appointment_Employee" Association="Self.FK_Appointment_Employee">
+            <End Role="tblEmployee" EntitySet="tblEmployee" />
+            <End Role="tblAppointment" EntitySet="tblAppointment" />
+          </AssociationSet>
           <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
             <End Role="AspNetUserClaims" EntitySet="AspNetUserClaims" />
@@ -1412,6 +1431,8 @@
           <Property Name="CreatedAt" Type="DateTime" Precision="3" />
           <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="EmployeeId" Type="Int32" />
+          <NavigationProperty Name="tblEmployee" Relationship="CoffeePOSDataModel.FK_Appointment_Employee" FromRole="tblAppointment" ToRole="tblEmployee" />
         </EntityType>
         <EntityType Name="tblAttribute">
           <Key>
@@ -2225,6 +2246,10 @@
             <End Role="tblRole" EntitySet="tblRoles" />
             <End Role="tblEmployeeRole" EntitySet="tblEmployeeRoles" />
           </AssociationSet>
+          <AssociationSet Name="FK_Appointment_Employee" Association="CoffeePOSDataModel.FK_Appointment_Employee">
+            <End Role="tblEmployee" EntitySet="tblEmployees" />
+            <End Role="tblAppointment" EntitySet="tblAppointments" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PackageProduct">
           <Key>
@@ -2520,6 +2545,7 @@
           <NavigationProperty Name="tblEmployeeRoles" Relationship="CoffeePOSDataModel.FK__tblEmploy__Emplo__04AFB25B" FromRole="tblEmployee" ToRole="tblEmployeeRole" />
           <NavigationProperty Name="tblSalaries" Relationship="CoffeePOSDataModel.FK__tblSalary__Emplo__69FBBC1F" FromRole="tblEmployee" ToRole="tblSalary" />
           <NavigationProperty Name="tblShiftSchedules" Relationship="CoffeePOSDataModel.FK__tblShiftS__Emplo__6442E2C9" FromRole="tblEmployee" ToRole="tblShiftSchedule" />
+          <NavigationProperty Name="tblAppointments" Relationship="CoffeePOSDataModel.FK_Appointment_Employee" FromRole="tblEmployee" ToRole="tblAppointment" />
         </EntityType>
         <EntityType Name="tblEmployeeRole">
           <Key>
@@ -2627,6 +2653,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Appointment_Employee">
+          <End Type="CoffeePOSDataModel.tblEmployee" Role="tblEmployee" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="CoffeePOSDataModel.tblAppointment" Role="tblAppointment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEmployee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="tblAppointment">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2692,6 +2732,7 @@
           <EntitySetMapping Name="tblAppointments">
             <EntityTypeMapping TypeName="CoffeePOSDataModel.tblAppointment">
               <MappingFragment StoreEntitySet="tblAppointment">
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
                 <ScalarProperty Name="AppointmentId" ColumnName="AppointmentId" />
                 <ScalarProperty Name="AppointmentDate" ColumnName="AppointmentDate" />
                 <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />

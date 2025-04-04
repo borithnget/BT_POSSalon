@@ -35,5 +35,8 @@ namespace jotun.Entities
         public Nullable<System.DateTime> CreatedAt { get; set; }
         public Nullable<System.DateTime> UpdatedAt { get; set; }
         public string UpdatedBy { get; set; }
+        public Nullable<int> EmployeeId { get; set; }
+    
+        public virtual tblEmployee tblEmployee { get; set; }
     }
 }
