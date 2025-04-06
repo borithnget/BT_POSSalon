@@ -5,28 +5,36 @@
 }
 @using (Html.BeginForm("CustomerHistory", "Sale", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
-    <div style="background-color:#e9ecef; padding:15px; height:1000px">
+    <div style="background-color:#ffffff; padding:15px; height:1000px">
         <h2>Customer History</h2>
         <hr />
-        <div class="container-fluid">
+        <div class="container-fluid w-100">
             <div class="row">
-                <div class="col-md-6 col-12 ms-md-auto" style="background-color:white; border-radius:6px; padding-bottom:7px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 20px; margin-left:55px">
-                    <p style="margin-bottom:-13px; font-size: 18px; font-weight: bold;">Customer Search</p>
-                    <hr />
+                <div class="col-md-12 col-12 ms-md-auto rounded-6" style="background-color:white; padding-bottom:7px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-top: 20px; margin-left:0;">
                     <div class="row" style="margin-top:-15px">
-                        <div class="col-md-3">
+                        <!-- Left Side: Date Range -->
+                        @* <div class="col-md-3 col-12">
+                                <span>Date Range</span>
+                                <input type="text" id="date_range" name="date_range" class="form-control" value="@ViewBag.DateRange" />
+                            </div>*@
+
+                        <!-- Right Side: Customer Fields -->
+                        <div class="col-md-2 col-12">
                             <span>Customer ID</span>
                             <input type="text" id="customer_id" name="customer_id" class="form-control" value="@ViewBag.CustomerId" />
                         </div>
-                        <div class="col-md-3">
+
+                        <div class="col-md-2 col-12">
                             <span>Customer Name</span>
                             <input type="text" id="name_eng" name="name_eng" class="form-control" value="@ViewBag.CustomerName" />
                         </div>
-                        <div class="col-md-3">
+
+                        <div class="col-md-2 col-12">
                             <span>Phone Number</span>
                             <input type="text" id="telephone" name="telephone" class="form-control" value="@ViewBag.PhoneNumber" />
                         </div>
-                        <div class="col-md-3 d-flex align-items-end">
+
+                        <div class="col-md-2 col-12 d-flex align-items-end">
                             <button type="submit" class="btn btn-primary w-25">
                                 <i class="fas fa-search"></i>
                             </button>
@@ -37,47 +45,54 @@
         </div>
         <div class="d-flex justify-content-center align-items-center mt-4" style="background-color: transparent;">
             <div class="col-md-12" style="background-color: transparent;">
-                <!-- Adjust width as needed -->
                 <div class="row justify-content-center">
-                    <table style="background-color: white; width: 200vh;" id="userstable" class="table table-striped table-bordered text-center">
+                    <table style="background-color: white; " id="userstable" class="table table-striped table-bordered text-center">
                         <thead>
                             <tr>
                                 <th>Id</th>
                                 <th>Customer</th>
-                                @* <th>Location</th>*@
-                                <th>Amount</th>
-                                <th>Discount($)</th>
-                                <th>Received From Customer</th>
-                                @* <th>Owe</th>*@
-                                <th>Status</th>
-                                <th>Description</th>
-                                <th>Created Date</th>
                                 <th>Invoice No</th>
+                                <th>Created Date</th>
+                                <th>Status</th>
+                                <th>Discount($)</th>
+                                <th>Amount</th>
+                                <th>Received From Customer</th>
+                                <th>Description</th>
                                 <th>Generate Invoice</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Sales Data Rows will be populated here -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-<link href="~/Content/vendor/datatables/dataTables.bootstrap4.css" rel="stylesheet" />
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-@section Scripts{
+    @section Scripts{
+        <link rel="stylesheet" href="~/Content/css/site.css">
+        <script src="~/Content/vendor/jquery/jquery.min.js"></script>
 
-    <script src="~/Content/vendor/jquery/jquery.min.js"></script>
-    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.js"></script>
-    <script src="~/Content/vendor/datatables/jquery.dataTables.min.js"></script>
-    <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
-    <script src="~/Scripts/jquery-ui.js"></script>
-    <script src="~/Scripts/datatables.min.js"></script>
+        <!-- Bootstrap -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
+        <!-- DataTables -->
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.css" />
+        <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.js"></script>
 
+        <!-- FontAwesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+        <!-- jQuery UI -->
+        <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
+        <script src="~/Scripts/jquery-ui.js"></script>
+
+        <!-- Date Range Picker -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+        <script src="https://cdn.jsdelivr.net/npm/moment/min/moment.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.js"></script>
+
+        <script>
                 $(document).ready(function () {
 
                     var t = $("#userstable").DataTable({
@@ -100,26 +115,23 @@
                                     return '<a href="/Sale/Details/' + full.Id + '">' + full.CustomerId + '</a>';
                                 }
                             },
-
-                           /* { "data": "ProjectLocation" },*/
-                            { "data": "Amount" },
-                            { "data": "Discount" },
-                            { "data": "RevicedFromCustomer" },
-                          /*  { "data": "Owe" },*/
-                            { "data": "InvoiceStatus" },
-                            { "data": "Description" },
-                            { "data": "CreatedDate" },
                             { "data": "InvoiceNo" },
-
+                            { "data": "CreatedDate" },
+                            { "data": "InvoiceStatus" },
+                            { "data": "Discount" },
+                            { "data": "Amount" },
+                            { "data": "RevicedFromCustomer" }, 
+                            { "data": "Description" },                           
                             {
                                 "render": function (data, type, full, meta) {
-                                    //  return '<a  href="/Sale/InvoiceReport/' + full.Id + '">' + "Print" + '</a>' + ' | ' + '<a href="/Sale/InvoiceReportWithPaid/' + full.Id + '">' + "Paid" + '</a>';
-                                    return '<a  href="/Sale/InvoiceReport/' + full.Id + '">' + "Print" + '</a>';
+                                    return '<a href="/Sale/Edit/' + full.Id + '" class="btn btn-sm btn-primary me-2">' +
+                                        '<i class="fas fa-edit"></i></a>' +
+                                        '<a href="/Coffee/InvoiceReport/' + full.Id + '" class="btn btn-sm btn-primary">' +
+                                        '<i class="fas fa-print"></i></a>';
                                 }
-                            },
+                            }
 
                         ],
-
                         "columnDefs": [{ type: 'date', 'targets': [8] }],
                         "order": [[8, "desc"]],
                     });
@@ -131,11 +143,6 @@
                     }).draw();
 
                 });
-                //$.fn.dataTable.ext.errMode = 'throw';
-
-
-    </script>
-    <script>
                 function getFormattedDateDDMMYYYY(date) {
                     var year = date.getFullYear();
 
@@ -160,10 +167,6 @@
                 });
 
                 $('#Generrate').click(function (e) {
-                    //  var SalessViewModel = {
-                    //$('#userstable').dataTable().fnDestroy();
-                    //$('#userstable').dataTable().fnClearTable();
-
                     var Todate = $('#orderDate').val();
                     var FromDate = $('#orderDate1').val();
 
@@ -189,26 +192,19 @@
                                     return '<a href="/Sale/Details/' + full.Id + '">' + full.CustomerId + '</a>';
                                 }
                             },
-/*
-                            { "data": "ProjectLocation" },*/
                             { "data": "Amount" },
                             { "data": "Discount" },
                             { "data": "RevicedFromCustomer" },
-                         /*   { "data": "Owe" },*/
                             { "data": "InvoiceStatus" },
                             { "data": "Description" },
                             { "data": "CreatedDate" },
                             { "data": "InvoiceNo" },
-
                             {
                                 "render": function (data, type, full, meta) {
-                                    //  return '<a  href="/Sale/InvoiceReport/' + full.Id + '">' + "Print" + '</a>' + ' | ' + '<a href="/Sale/InvoiceReportWithPaid/' + full.Id + '">' + "Paid" + '</a>';
                                     return '<a  href="/Sale/InvoiceReport/' + full.Id + '">' + "Print" + '</a>';
                                 }
                             },
-
                         ],
-
                         "columnDefs": [{ type: 'date', 'targets': [8] }],
                         "bDestroy": true,
                         "order": [[8, "desc"]],
@@ -226,8 +222,22 @@
                     $('#userstable').dataTable().fnClearTable();
 
                 })
-    </script>
+           /* $(document).ready(function () {
+                $('#date_range').daterangepicker({
+                    autoUpdateInput: false,
+                    locale: {
+                        cancelLabel: 'Clear'
+                    }
+                });
+                $('#date_range').on('apply.daterangepicker', function (ev, picker) {
+                    $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
+                });
+                $('#date_range').on('cancel.daterangepicker', function (ev, picker) {
+                    $(this).val('');
+                });
+            });*/
 
-    @Scripts.Render("~/bundles/jqueryval")
-}
+        </script>
+        @Scripts.Render("~/bundles/jqueryval")
+    }
 }

@@ -20,7 +20,6 @@ namespace jotun.Entities
         {
             this.tblShopModulePermissions = new HashSet<tblShopModulePermission>();
         }
-
         [Key]
         public int module_id { get; set; }
         public string module_name { get; set; }

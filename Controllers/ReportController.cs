@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
@@ -165,7 +166,6 @@ namespace jotun.Controllers
             foreach (var item in treatmentSum)
             {
                 string nonull = "0.000";
-
                 if (item.ps.Status == 1)
                 {
                     DataRow dr = dt.NewRow();
@@ -205,7 +205,6 @@ namespace jotun.Controllers
                         sum += treatmentSum[i].ps.PurchaseAmount;
                         dr["TotalAmount"] = sum;
                     };
-
                     dr["Id"] = item.pd.PurchaseBySupplierId;
                     dr["InvoiceNo"] = item.ps.InvoiceNo;
                     dr["SupplierId"] = sup.SupplierName;
@@ -214,7 +213,6 @@ namespace jotun.Controllers
                     dr["Discount"] = float.Parse(item.ps.Discount.ToString()).ToString("0.000");
                     decimal? dis = ((item.pd.Cost * item.pd.Quantity) * item.pd.Discount) / 100;
                     dr["TotalDiscount"] = float.Parse(dis.ToString()).ToString("0.000");
-
                     var getSomeAmount = (from ps in db.tblPurchaseBySuppliers
                                          orderby ps.CreatedDate descending
                                          where ps.Status == 1 && ps.CreatedDate >= sm.FromDate && ps.CreatedDate <= ToDates
@@ -505,9 +503,7 @@ namespace jotun.Controllers
         public ActionResult SalesDetails(SaleViewModels sm)
         {
 
-            jotunDBEntities db = new jotunDBEntities();
-            // List<string>  = new List<string>();
-
+            jotunDBEntities db = new jotunDBEntities();        
             ReportViewer rv = new ReportViewer();
             rv.ProcessingMode = ProcessingMode.Local;
             rv.SizeToReportContent = true;
@@ -736,14 +732,15 @@ namespace jotun.Controllers
                     dr["FromDate"] = sm.FromDate.ToString("dd-MMM-yyy");
                     dr["ToDate"] = sm.ToDate.ToString("dd-MMM-yyy");
                     dr["ColorCode"] = item.sd.color_code;
-                    if (item.s1.customer_location != null)
+                    if (item.s1.customer_location != null) 
                     {
                         dr["customer_location"] = site == null ? string.Empty: site.location;
                     }
 					/*  dr["Quantity"] = float.Parse(item.sd.Quantity.ToString()).ToString("0.00") + " " + unit.UnitNameEng;*/
-					dr["Quantity"] = (item.sd.Quantity != null ? float.Parse(item.sd.Quantity.ToString()).ToString("0.00") : "0.00") +
-				   " " + (unit != null ? unit.UnitNameEng : "Unknown");
-
+					/*dr["Quantity"] = (item.sd.Quantity != null ? float.Parse(item.sd.Quantity.ToString()).ToString("0.00") : "0.00") +
+				   " " + (unit != null ? unit.UnitNameEng : "Unknown");*/
+					dr["Quantity"] = (item.sd.Quantity != null ? ((int)item.sd.Quantity).ToString() : "0") +
+                    " " + (unit != null ? unit.UnitNameEng : "Unknown");
 					if (item.sd.actual_price != null)
                     {
                         dr["Price"] = Convert.ToDecimal(item.sd.actual_price).ToString("0.000");
@@ -764,10 +761,6 @@ namespace jotun.Controllers
                     {
                         dr["PayDate"] = "";
                     }
-
-
-                    
-
                     decimal sumDP = 0;
                     for (int i = 0; i < resultlistsum2.Count(); i++)
                     {
@@ -797,8 +790,6 @@ namespace jotun.Controllers
                     dt.Rows.Add(dr);
                 }
             }
-
-
             rv.LocalReport.ReportPath = Request.MapPath(Request.ApplicationPath) + @"ReportDesign\SaleDetails.rdlc";
             rv.LocalReport.DataSources.Clear();
             ReportDataSource rds = new ReportDataSource("DSSaleDetails", dt);
@@ -808,8 +799,7 @@ namespace jotun.Controllers
             var start = (endDatetime - startDateTime).TotalSeconds;
 
             return View();
-        }
-        
+        }      
         public ActionResult SalesDetailsCopy(SaleViewModels sm)
         {
 
@@ -2676,8 +2666,9 @@ namespace jotun.Controllers
                         {
                             dr["CustomerId"] = "All";
                         }
-
-                        dr["InvoiceNo"] = item.s1.InvoiceNo;
+						dr["Quantity"] = (item.sd.Quantity != null ? ((int)item.sd.Quantity).ToString() : "0") +
+					    " " + (unit != null ? unit.UnitNameEng : "Unknown");
+						dr["InvoiceNo"] = item.s1.InvoiceNo;
                         dr["Status"] = item.s1.InvoiceStatus;
                         dr["Discount"] = float.Parse(item.s1.Discount.ToString()).ToString("0.000");
                         dr["RevicedFromCustomer"] = float.Parse(item.s1.RevicedFromCustomer.ToString()).ToString("$0.000");
@@ -4721,5 +4712,116 @@ namespace jotun.Controllers
             }
             return View();
         }
-    }
+		public ActionResult ExportToPDFSaleSummary(string datefrom, string dateto)
+		{
+			try
+			{
+				// Initialize the database context
+				jotunDBEntities db = new jotunDBEntities();
+
+				// Parse the input date parameters
+				DateTime dateFrom = Convert.ToDateTime(datefrom);  
+				DateTime dateTo = Convert.ToDateTime(dateto);    			
+				DateTime filterDateFrom = new DateTime(dateFrom.Year, dateFrom.Month, dateFrom.Day, 0, 0, 0);
+				DateTime filterDateTo = dateTo.AddDays(1).AddMilliseconds(-1);
+
+				// Initialize ReportViewer and configure it
+				ReportViewer rv = new ReportViewer();
+				rv.ProcessingMode = ProcessingMode.Local;
+				rv.SizeToReportContent = true;
+				rv.Width = Unit.Percentage(100);
+				rv.Height = Unit.Percentage(100);
+
+				// Create a DataTable for report data
+				DataTable dt = new DataTable();
+				dt.Columns.Add(new DataColumn("Id"));
+				dt.Columns.Add(new DataColumn("SaleDate"));
+				dt.Columns.Add(new DataColumn("Customer"));
+				dt.Columns.Add(new DataColumn("CustomerLocation"));
+				dt.Columns.Add(new DataColumn("Amount"));
+				dt.Columns.Add(new DataColumn("Discount"));
+				dt.Columns.Add(new DataColumn("DepositAmount"));
+				dt.Columns.Add(new DataColumn("OutstandingAmount"));
+
+				// Fetch the sales data based on the date range filter
+				var treatmentSum = (from s1 in db.tblSales
+									where s1.Status == 1 && s1.CreatedDate >= filterDateFrom && s1.CreatedDate <= filterDateTo
+									select s1).ToList();
+
+				// Populate the DataTable with the retrieved data
+				foreach (var s in treatmentSum)
+				{
+					var customer = db.tblCustomers.FirstOrDefault(p => p.Id == s.CustomerId);
+					var site = db.tblCustomer_location.FirstOrDefault(cl => cl.id == s.customer_location);
+					var totalReceivedFromCustomer = Convert.ToDouble(s.ReceivedByABA) + Convert.ToDouble(s.RevicedFromCustomer);
+
+					DataRow dr = dt.NewRow();
+					dr["Id"] = s.Id;
+					dr["SaleDate"] = Convert.ToDateTime(s.UpdatedDate).ToString("dd-MMM-yyyy");
+					dr["Customer"] = customer?.CustomerName ?? string.Empty;
+					dr["CustomerLocation"] = site?.location ?? string.Empty;
+					dr["Amount"] = ((double)s.Amount).ToString("0.000");
+					dr["Discount"] = ((double)s.Discount).ToString("0.000");
+					dr["DepositAmount"] = totalReceivedFromCustomer.ToString("0.000");
+					dr["OutstandingAmount"] = ((double)s.Owe).ToString("0.000");
+					dt.Rows.Add(dr);
+				}
+
+				// Configure the report viewer data source
+				rv.LocalReport.ReportPath = Request.MapPath(Request.ApplicationPath) + @"ReportDesign\SaleSummary.rdlc";
+				rv.LocalReport.DataSources.Clear();
+				ReportDataSource rds = new ReportDataSource("DataSet1", dt);
+				rv.LocalReport.DataSources.Add(rds);
+
+				// Render the report to a byte array (PDF format)
+				byte[] renderedBytes = rv.LocalReport.Render("Pdf");
+
+				// Ensure the pdf directory exists
+				string pdfDirectory = Server.MapPath("~/pdf/");
+				if (!Directory.Exists(pdfDirectory))
+				{
+					Directory.CreateDirectory(pdfDirectory);
+				}
+
+				// Generate file path for saving the PDF
+				string fileName = "SaleSummary_" + DateTime.Now.Ticks.ToString() + ".pdf";
+				string filePath = Path.Combine(pdfDirectory, fileName);
+
+				// Write the rendered PDF to disk
+				System.IO.File.WriteAllBytes(filePath, renderedBytes);
+
+				// Set up PdfReader and PdfStamper for triggering print functionality
+				using (PdfReader reader = new PdfReader(renderedBytes))
+				{
+					using (FileStream output = new FileStream(filePath, FileMode.Create))
+					{
+						string userAgent = HttpContext.Request.Headers["User-Agent"].ToString();
+						PdfStamper pdfStamper = new PdfStamper(reader, output, '0', true);
+
+						// JavaScript for triggering print, based on browser type
+						if (userAgent.Contains("Firefox"))
+						{
+							pdfStamper.JavaScript = "var pp = this.getPrintParams(); pp.interactive = pp.constants.interactionLevel.full; this.print(pp);";
+						}
+						else
+						{
+							pdfStamper.JavaScript = "setTimeout(function() {var pp = this.getPrintParams(); pp.interactive = pp.constants.interactionLevel.full; this.print(pp);}, 200);";
+						}
+
+						pdfStamper.FormFlattening = false;
+						pdfStamper.Close();
+					}
+				}
+
+				// Return the path to the generated PDF file for further use
+				string returnFilePath = "/pdf/" + fileName;
+				return Content(returnFilePath); // This can be used in your front-end for triggering the print
+			}
+			catch (Exception ex)
+			{
+				// Handle any errors and return error view
+				return View("Error", new HandleErrorInfo(ex, "Report", "ExportToPDFSaleSummary"));
+			}
+		}
+	}
 }

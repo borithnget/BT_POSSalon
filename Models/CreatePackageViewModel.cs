@@ -15,6 +15,8 @@ namespace jotun.Models
 		public DateTime CreatedAt { get; set; }
 		public DateTime UpdatedAt { get; set; }
 		public string CreateBy { get; set; }
+		public string PackageImage { get; set; }
+		public HttpPostedFileBase PackageImageFile { get; set; }
 		public string UpdateBy { get; set; }
 		public bool IncludeServices { get; set; }
 		public bool IncludeProducts { get; set; }

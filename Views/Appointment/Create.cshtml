@@ -3,7 +3,6 @@
 @{
     ViewBag.Title = "Create";
 }
-
 <link href="~/Content/themes/base/jquery-ui.css" rel="stylesheet" />
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -13,7 +12,6 @@
         z-index: 1600 !important;
     }
 </style>
-
 <div class="card" style="margin:70px 50px !important;">
     <div class="card-body">
         @using (Html.BeginForm())
@@ -36,11 +34,10 @@
                                 @Html.ValidationMessageFor(model => model.AppointmentDate, "", new { @class = "text-danger" })
                             </div>
                         </div>
-
                         <div class="form-group row">
                             @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label col-md-4" })
                             <div class="col-md-8">
-                                <input type="hidden" id="CustomerId" name="CustomerId"/>
+                                <input type="hidden" id="CustomerId" name="CustomerId" />
                                 @Html.EditorFor(model => model.CustomerName, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
                             </div>
@@ -51,6 +48,27 @@
                             <div class="col-md-8">
                                 @Html.EditorFor(model => model.CustomerContact, new { htmlAttributes = new { @class = "form-control" } })
                                 @Html.ValidationMessageFor(model => model.CustomerContact, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.LabelFor(model => model.EmployeeId, "Assigned Employee", new { @class = "control-label col-md-4" })
+                            <div class="col-md-8">
+                                <select id="EmployeeId" name="EmployeeId" class="form-control select2 rounded" style="width: 100%; border-radius: 8px;">
+                                    <option value=""></option>
+                                    @foreach (var item in ViewBag.Employees as List<SelectListItem>)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            @Html.Label("Available Shift Time ", new { @class = "control-label col-md-4" })
+                            <div class="col-md-4">
+                                <input type="text" id="StartTime" name="StartTime" class="form-control" placeholder="Start Time" readonly>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="text" id="EndTime" name="EndTime" class="form-control" placeholder="End Time" readonly>
                             </div>
                         </div>
 
@@ -69,10 +87,6 @@
                                 @Html.ValidationMessageFor(model => model.EndTimeExpected, "", new { @class = "text-danger" })
                             </div>
                         </div>
-
-
-                        
-
                         <div class="form-group">
                             <div class="col-md-offset-4 col-md-8">
                                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -111,7 +125,7 @@
                         <div class="form-group row">
                             @Html.LabelFor(model => model.PriceFull, htmlAttributes: new { @class = "control-label col-md-4" })
                             <div class="col-md-8">
-                                @Html.EditorFor(model => model.PriceFull, new { htmlAttributes = new { @class = "form-control",@readonly=true } })
+                                @Html.EditorFor(model => model.PriceFull, new { htmlAttributes = new { @class = "form-control", @readonly = true } })
                                 @Html.ValidationMessageFor(model => model.PriceFull, "", new { @class = "text-danger" })
                             </div>
                         </div>
@@ -119,8 +133,8 @@
                         <div class="form-group row">
                             @Html.LabelFor(model => model.DiscountAmount, htmlAttributes: new { @class = "control-label col-md-4" })
                             <div class="col-md-8">
-                                <input type="number" class="form-control" id="DiscountAmount" name="DiscountAmount" min="0" step="any" value="0"/>
-                                
+                                <input type="number" class="form-control" id="DiscountAmount" name="DiscountAmount" min="0" step="any" value="0" />
+
                                 @Html.ValidationMessageFor(model => model.DiscountAmount, "", new { @class = "text-danger" })
                             </div>
                         </div>
@@ -128,7 +142,7 @@
                         <div class="form-group row">
                             @Html.LabelFor(model => model.PriceFinal, htmlAttributes: new { @class = "control-label col-md-4" })
                             <div class="col-md-8">
-                                @Html.EditorFor(model => model.PriceFinal, new { htmlAttributes = new { @class = "form-control",@readonly=true } })
+                                @Html.EditorFor(model => model.PriceFinal, new { htmlAttributes = new { @class = "form-control", @readonly = true } })
                                 @Html.ValidationMessageFor(model => model.PriceFinal, "", new { @class = "text-danger" })
                             </div>
                         </div>
@@ -148,9 +162,13 @@
 </div>
 
 @section scripts{
+    <link rel="stylesheet" href="~/Content/css/site.css">
     <script src="~/Scripts/jquery-ui.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 
     <script type="text/javascript">
         $(function () {
@@ -218,5 +236,38 @@
             $('#PriceFull').val(parseFloat(priceFull).toFixed(2));
             $('#PriceFinal').val(parseFloat(priceFinal).toFixed(2));
         }
+        $(document).ready(function () {
+            $('#EmployeeId').select2({
+                placeholder: "-- Select Employee --",
+                allowClear: true
+            });
+        });
+        $(document).ready(function () {
+        $("#EmployeeId").change(function () {
+            var employeeId = $(this).val();
+            if (employeeId) {
+                $.ajax({
+                    url: '@Url.Action("GetShiftTime", "Appointment")',
+                    type: 'GET',
+                    data: { employeeId: employeeId },
+                    success: function (data) {
+                        if (data) {
+                            $("#StartTime").val(data.StartTime);
+                            $("#EndTime").val(data.EndTime);
+                        } else {
+                            $("#StartTime").val("N/A");
+                            $("#EndTime").val("N/A");
+                        }
+                    },
+                    error: function () {
+                        alert("Failed to fetch shift schedule.");
+                    }
+                });
+            } else {
+                $("#StartTime").val("");
+                $("#EndTime").val("");
+            }
+        });
+    });
     </script>
 }

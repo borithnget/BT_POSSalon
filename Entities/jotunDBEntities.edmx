@@ -91,6 +91,7 @@
           <Property Name="CreatedBy" Type="nvarchar" MaxLength="100" />
           <Property Name="UpdateDate" Type="datetime" />
           <Property Name="UpdatedBy" Type="varchar" MaxLength="255" />
+          <Property Name="PackageImage" Type="nvarchar" MaxLength="4000" />
         </EntityType>
         <EntityType Name="PackageServices">
           <Key>
@@ -218,6 +219,16 @@
           <Property Name="CreatedAt" Type="datetime" />
           <Property Name="UpdatedAt" Type="datetime" />
           <Property Name="UpdatedBy" Type="nvarchar" MaxLength="50" />
+          <Property Name="EmployeeId" Type="int" />
+        </EntityType>
+        <EntityType Name="tblAttendance">
+          <Key>
+            <PropertyRef Name="AttendanceId" />
+          </Key>
+          <Property Name="AttendanceId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EmployeeId" Type="int" />
+          <Property Name="Date" Type="date" />
+          <Property Name="Status" Type="nvarchar" MaxLength="20" />
         </EntityType>
         <EntityType Name="tblAttribute">
           <Key>
@@ -303,6 +314,27 @@
           <Property Name="customer_type" Type="nvarchar" MaxLength="100" Nullable="false" />
           <Property Name="discount" Type="decimal" Precision="5" Scale="4" />
           <Property Name="StoreDiscount" Type="decimal" Precision="10" Scale="2" />
+        </EntityType>
+        <EntityType Name="tblEmployee">
+          <Key>
+            <PropertyRef Name="EmployeeId" />
+          </Key>
+          <Property Name="EmployeeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="100" />
+          <Property Name="Email" Type="nvarchar" MaxLength="100" />
+          <Property Name="Phone" Type="nvarchar" MaxLength="15" />
+          <Property Name="Address" Type="nvarchar" MaxLength="255" />
+          <Property Name="IsActive" Type="bit" />
+        </EntityType>
+        <EntityType Name="tblEmployeeRoles">
+          <Key>
+            <PropertyRef Name="EmployeeRoleId" />
+          </Key>
+          <Property Name="EmployeeRoleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EmployeeId" Type="int" />
+          <Property Name="RoleId" Type="int" />
+          <Property Name="CreatedDate" Type="datetime" />
+          <Property Name="UpdatedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="tblExchangeRate">
           <Key>
@@ -447,6 +479,26 @@
           <Property Name="Discount" Type="decimal" Precision="18" Scale="6" />
           <Property Name="ExpiredDate" Type="datetime" />
         </EntityType>
+        <EntityType Name="tblRoles">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="RoleName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="CreateDate" Type="datetime" />
+          <Property Name="UpdateDate" Type="datetime" />
+        </EntityType>
+        <EntityType Name="tblSalary">
+          <Key>
+            <PropertyRef Name="SalaryId" />
+          </Key>
+          <Property Name="SalaryId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EmployeeId" Type="int" />
+          <Property Name="BaseSalary" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Commission" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Bonus" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="SalaryDate" Type="date" />
+        </EntityType>
         <EntityType Name="tblSaleLabour">
           <Key>
             <PropertyRef Name="Id" />
@@ -539,6 +591,7 @@
           <Property Name="Description" Type="nvarchar" MaxLength="255" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+          <Property Name="ServiceImage" Type="nvarchar" MaxLength="4000" />
         </EntityType>
         <EntityType Name="tblServiceBooked">
           <Key>
@@ -579,6 +632,17 @@
           <Property Name="Description" Type="nvarchar" MaxLength="255" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="CreatedAt" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="tblShiftSchedule">
+          <Key>
+            <PropertyRef Name="ShiftId" />
+          </Key>
+          <Property Name="ShiftId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EmployeeId" Type="int" />
+          <Property Name="ShiftDate" Type="date" />
+          <Property Name="StartTime" Type="time" Precision="7" />
+          <Property Name="EndTime" Type="time" Precision="7" />
+          <Property Name="IsAssigned" Type="bit" />
         </EntityType>
         <EntityType Name="tblShippers">
           <Key>
@@ -790,6 +854,42 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK__tblAttend__Emplo__671F4F74">
+          <End Role="tblEmployee" Type="Self.tblEmployee" Multiplicity="0..1" />
+          <End Role="tblAttendance" Type="Self.tblAttendance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEmployee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="tblAttendance">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tblEmploy__Emplo__04AFB25B">
+          <End Role="tblEmployee" Type="Self.tblEmployee" Multiplicity="0..1" />
+          <End Role="tblEmployeeRoles" Type="Self.tblEmployeeRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEmployee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="tblEmployeeRoles">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tblEmploy__RoleI__05A3D694">
+          <End Role="tblRoles" Type="Self.tblRoles" Multiplicity="0..1" />
+          <End Role="tblEmployeeRoles" Type="Self.tblEmployeeRoles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblRoles">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="tblEmployeeRoles">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__tblProduc__Custo__02FC7413">
           <End Role="tblCustomerType" Type="Self.tblCustomerType" Multiplicity="0..1" />
           <End Role="tblProductByUnit" Type="Self.tblProductByUnit" Multiplicity="*" />
@@ -799,6 +899,30 @@
             </Principal>
             <Dependent Role="tblProductByUnit">
               <PropertyRef Name="CustomerType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tblSalary__Emplo__69FBBC1F">
+          <End Role="tblEmployee" Type="Self.tblEmployee" Multiplicity="0..1" />
+          <End Role="tblSalary" Type="Self.tblSalary" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEmployee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="tblSalary">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tblShiftS__Emplo__6442E2C9">
+          <End Role="tblEmployee" Type="Self.tblEmployee" Multiplicity="0..1" />
+          <End Role="tblShiftSchedule" Type="Self.tblShiftSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEmployee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="tblShiftSchedule">
+              <PropertyRef Name="EmployeeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -823,6 +947,20 @@
             </Principal>
             <Dependent Role="tblShopModulePermission">
               <PropertyRef Name="ShopId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Appointment_Employee">
+          <End Role="tblEmployee" Type="Self.tblEmployee" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="tblAppointment" Type="Self.tblAppointment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEmployee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="tblAppointment">
+              <PropertyRef Name="EmployeeId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1045,6 +1183,7 @@
           <EntitySet Name="tb_Expense_Amount" EntityType="Self.tb_Expense_Amount" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tb_Expense_Topup" EntityType="Self.tb_Expense_Topup" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblAppointment" EntityType="Self.tblAppointment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblAttendance" EntityType="Self.tblAttendance" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblAttribute" EntityType="Self.tblAttribute" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblCategories" EntityType="Self.tblCategories" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblCategoryAttribute" EntityType="Self.tblCategoryAttribute" Schema="dbo" store:Type="Tables" />
@@ -1052,6 +1191,8 @@
           <EntitySet Name="tblCustomerPointHistory" EntityType="Self.tblCustomerPointHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblCustomers" EntityType="Self.tblCustomers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblCustomerType" EntityType="Self.tblCustomerType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblEmployee" EntityType="Self.tblEmployee" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblEmployeeRoles" EntityType="Self.tblEmployeeRoles" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblExchangeRate" EntityType="Self.tblExchangeRate" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblInvoices" EntityType="Self.tblInvoices" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblJeweler" EntityType="Self.tblJeweler" Schema="dbo" store:Type="Tables" />
@@ -1061,6 +1202,8 @@
           <EntitySet Name="tblProducts" EntityType="Self.tblProducts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblPurchaseBySupplier" EntityType="Self.tblPurchaseBySupplier" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblPurchaseBySupplierDetail" EntityType="Self.tblPurchaseBySupplierDetail" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblRoles" EntityType="Self.tblRoles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblSalary" EntityType="Self.tblSalary" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSaleLabour" EntityType="Self.tblSaleLabour" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSaleLabourDetail" EntityType="Self.tblSaleLabourDetail" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblSales" EntityType="Self.tblSales" Schema="dbo" store:Type="Tables" />
@@ -1070,6 +1213,7 @@
           <EntitySet Name="tblServiceProduct" EntityType="Self.tblServiceProduct" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblServiceProvided" EntityType="Self.tblServiceProvided" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblServiceType" EntityType="Self.tblServiceType" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="tblShiftSchedule" EntityType="Self.tblShiftSchedule" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblShippers" EntityType="Self.tblShippers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblShop" EntityType="Self.tblShop" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="tblShopModulePermission" EntityType="Self.tblShopModulePermission" Schema="dbo" store:Type="Tables" />
@@ -1099,9 +1243,29 @@
             <End Role="tblService" EntitySet="tblService" />
             <End Role="PackageServices" EntitySet="PackageServices" />
           </AssociationSet>
+          <AssociationSet Name="FK__tblAttend__Emplo__671F4F74" Association="Self.FK__tblAttend__Emplo__671F4F74">
+            <End Role="tblEmployee" EntitySet="tblEmployee" />
+            <End Role="tblAttendance" EntitySet="tblAttendance" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tblEmploy__Emplo__04AFB25B" Association="Self.FK__tblEmploy__Emplo__04AFB25B">
+            <End Role="tblEmployee" EntitySet="tblEmployee" />
+            <End Role="tblEmployeeRoles" EntitySet="tblEmployeeRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tblEmploy__RoleI__05A3D694" Association="Self.FK__tblEmploy__RoleI__05A3D694">
+            <End Role="tblRoles" EntitySet="tblRoles" />
+            <End Role="tblEmployeeRoles" EntitySet="tblEmployeeRoles" />
+          </AssociationSet>
           <AssociationSet Name="FK__tblProduc__Custo__02FC7413" Association="Self.FK__tblProduc__Custo__02FC7413">
             <End Role="tblCustomerType" EntitySet="tblCustomerType" />
             <End Role="tblProductByUnit" EntitySet="tblProductByUnit" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tblSalary__Emplo__69FBBC1F" Association="Self.FK__tblSalary__Emplo__69FBBC1F">
+            <End Role="tblEmployee" EntitySet="tblEmployee" />
+            <End Role="tblSalary" EntitySet="tblSalary" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tblShiftS__Emplo__6442E2C9" Association="Self.FK__tblShiftS__Emplo__6442E2C9">
+            <End Role="tblEmployee" EntitySet="tblEmployee" />
+            <End Role="tblShiftSchedule" EntitySet="tblShiftSchedule" />
           </AssociationSet>
           <AssociationSet Name="FK__tblShopMo__Modul__43D61337" Association="Self.FK__tblShopMo__Modul__43D61337">
             <End Role="tblModule" EntitySet="tblModule" />
@@ -1110,6 +1274,10 @@
           <AssociationSet Name="FK__tblShopMo__ShopI__42E1EEFE" Association="Self.FK__tblShopMo__ShopI__42E1EEFE">
             <End Role="tblShop" EntitySet="tblShop" />
             <End Role="tblShopModulePermission" EntitySet="tblShopModulePermission" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Appointment_Employee" Association="Self.FK_Appointment_Employee">
+            <End Role="tblEmployee" EntitySet="tblEmployee" />
+            <End Role="tblAppointment" EntitySet="tblAppointment" />
           </AssociationSet>
           <AssociationSet Name="FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" Association="Self.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId">
             <End Role="AspNetUsers" EntitySet="AspNetUsers" />
@@ -1265,6 +1433,8 @@
           <Property Name="CreatedAt" Type="DateTime" Precision="3" />
           <Property Name="UpdatedAt" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="EmployeeId" Type="Int32" />
+          <NavigationProperty Name="tblEmployee" Relationship="CoffeePOSDataModel.FK_Appointment_Employee" FromRole="tblAppointment" ToRole="tblEmployee" />
         </EntityType>
         <EntityType Name="tblAttribute">
           <Key>
@@ -1581,6 +1751,7 @@
           <NavigationProperty Name="tblServiceType" Relationship="Self.FK_Service_ServiceType" FromRole="tblService" ToRole="tblServiceType" />
           <NavigationProperty Name="tblServiceProducts" Relationship="Self.FK_ServiceProduct_Service" FromRole="tblService" ToRole="tblServiceProduct" />
           <NavigationProperty Name="PackageServices" Relationship="CoffeePOSDataModel.FK__PackageSe__Servi__1AD3FDA4" FromRole="tblService" ToRole="PackageService" />
+          <Property Name="ServiceImage" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="tblServiceBooked">
           <Key>
@@ -2052,6 +2223,36 @@
             <End Role="tblShop" EntitySet="tblShops" />
             <End Role="tblShopModulePermission" EntitySet="tblShopModulePermissions" />
           </AssociationSet>
+          <EntitySet Name="tblAttendances" EntityType="CoffeePOSDataModel.tblAttendance" />
+          <EntitySet Name="tblEmployees" EntityType="CoffeePOSDataModel.tblEmployee" />
+          <EntitySet Name="tblEmployeeRoles" EntityType="CoffeePOSDataModel.tblEmployeeRole" />
+          <EntitySet Name="tblRoles" EntityType="CoffeePOSDataModel.tblRole" />
+          <EntitySet Name="tblSalaries" EntityType="CoffeePOSDataModel.tblSalary" />
+          <EntitySet Name="tblShiftSchedules" EntityType="CoffeePOSDataModel.tblShiftSchedule" />
+          <AssociationSet Name="FK__tblAttend__Emplo__671F4F74" Association="CoffeePOSDataModel.FK__tblAttend__Emplo__671F4F74">
+            <End Role="tblEmployee" EntitySet="tblEmployees" />
+            <End Role="tblAttendance" EntitySet="tblAttendances" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tblEmploy__Emplo__04AFB25B" Association="CoffeePOSDataModel.FK__tblEmploy__Emplo__04AFB25B">
+            <End Role="tblEmployee" EntitySet="tblEmployees" />
+            <End Role="tblEmployeeRole" EntitySet="tblEmployeeRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tblSalary__Emplo__69FBBC1F" Association="CoffeePOSDataModel.FK__tblSalary__Emplo__69FBBC1F">
+            <End Role="tblEmployee" EntitySet="tblEmployees" />
+            <End Role="tblSalary" EntitySet="tblSalaries" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tblShiftS__Emplo__6442E2C9" Association="CoffeePOSDataModel.FK__tblShiftS__Emplo__6442E2C9">
+            <End Role="tblEmployee" EntitySet="tblEmployees" />
+            <End Role="tblShiftSchedule" EntitySet="tblShiftSchedules" />
+          </AssociationSet>
+          <AssociationSet Name="FK__tblEmploy__RoleI__05A3D694" Association="CoffeePOSDataModel.FK__tblEmploy__RoleI__05A3D694">
+            <End Role="tblRole" EntitySet="tblRoles" />
+            <End Role="tblEmployeeRole" EntitySet="tblEmployeeRoles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Appointment_Employee" Association="CoffeePOSDataModel.FK_Appointment_Employee">
+            <End Role="tblEmployee" EntitySet="tblEmployees" />
+            <End Role="tblAppointment" EntitySet="tblAppointments" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="PackageProduct">
           <Key>
@@ -2081,6 +2282,7 @@
           <Property Name="CreatedBy" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
           <Property Name="UpdateDate" Type="DateTime" Precision="3" />
           <Property Name="UpdatedBy" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="PackageImage" Type="String" MaxLength="4000" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="PackageService">
           <Key>
@@ -2323,6 +2525,152 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="tblAttendance">
+          <Key>
+            <PropertyRef Name="AttendanceId" />
+          </Key>
+          <Property Name="AttendanceId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EmployeeId" Type="Int32" />
+          <Property Name="Date" Type="DateTime" Precision="0" />
+          <Property Name="Status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="tblEmployee" Relationship="CoffeePOSDataModel.FK__tblAttend__Emplo__671F4F74" FromRole="tblAttendance" ToRole="tblEmployee" />
+        </EntityType>
+        <EntityType Name="tblEmployee">
+          <Key>
+            <PropertyRef Name="EmployeeId" />
+          </Key>
+          <Property Name="EmployeeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Email" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Phone" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="Address" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="IsActive" Type="Boolean" />
+          <NavigationProperty Name="tblAttendances" Relationship="CoffeePOSDataModel.FK__tblAttend__Emplo__671F4F74" FromRole="tblEmployee" ToRole="tblAttendance" />
+          <NavigationProperty Name="tblEmployeeRoles" Relationship="CoffeePOSDataModel.FK__tblEmploy__Emplo__04AFB25B" FromRole="tblEmployee" ToRole="tblEmployeeRole" />
+          <NavigationProperty Name="tblSalaries" Relationship="CoffeePOSDataModel.FK__tblSalary__Emplo__69FBBC1F" FromRole="tblEmployee" ToRole="tblSalary" />
+          <NavigationProperty Name="tblShiftSchedules" Relationship="CoffeePOSDataModel.FK__tblShiftS__Emplo__6442E2C9" FromRole="tblEmployee" ToRole="tblShiftSchedule" />
+          <NavigationProperty Name="tblAppointments" Relationship="CoffeePOSDataModel.FK_Appointment_Employee" FromRole="tblEmployee" ToRole="tblAppointment" />
+        </EntityType>
+        <EntityType Name="tblEmployeeRole">
+          <Key>
+            <PropertyRef Name="EmployeeRoleId" />
+          </Key>
+          <Property Name="EmployeeRoleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EmployeeId" Type="Int32" />
+          <Property Name="RoleId" Type="Int32" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdatedDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="tblEmployee" Relationship="CoffeePOSDataModel.FK__tblEmploy__Emplo__04AFB25B" FromRole="tblEmployeeRole" ToRole="tblEmployee" />
+          <NavigationProperty Name="tblRole" Relationship="CoffeePOSDataModel.FK__tblEmploy__RoleI__05A3D694" FromRole="tblEmployeeRole" ToRole="tblRole" />
+        </EntityType>
+        <EntityType Name="tblRole">
+          <Key>
+            <PropertyRef Name="RoleId" />
+          </Key>
+          <Property Name="RoleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="RoleName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CreateDate" Type="DateTime" Precision="3" />
+          <Property Name="UpdateDate" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="tblEmployeeRoles" Relationship="CoffeePOSDataModel.FK__tblEmploy__RoleI__05A3D694" FromRole="tblRole" ToRole="tblEmployeeRole" />
+        </EntityType>
+        <EntityType Name="tblSalary">
+          <Key>
+            <PropertyRef Name="SalaryId" />
+          </Key>
+          <Property Name="SalaryId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EmployeeId" Type="Int32" />
+          <Property Name="BaseSalary" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Commission" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Bonus" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="SalaryDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="tblEmployee" Relationship="CoffeePOSDataModel.FK__tblSalary__Emplo__69FBBC1F" FromRole="tblSalary" ToRole="tblEmployee" />
+        </EntityType>
+        <EntityType Name="tblShiftSchedule">
+          <Key>
+            <PropertyRef Name="ShiftId" />
+          </Key>
+          <Property Name="ShiftId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EmployeeId" Type="Int32" />
+          <Property Name="ShiftDate" Type="DateTime" Precision="0" />
+          <Property Name="StartTime" Type="Time" Precision="7" />
+          <Property Name="EndTime" Type="Time" Precision="7" />
+          <Property Name="IsAssigned" Type="Boolean" />
+          <NavigationProperty Name="tblEmployee" Relationship="CoffeePOSDataModel.FK__tblShiftS__Emplo__6442E2C9" FromRole="tblShiftSchedule" ToRole="tblEmployee" />
+        </EntityType>
+        <Association Name="FK__tblAttend__Emplo__671F4F74">
+          <End Type="CoffeePOSDataModel.tblEmployee" Role="tblEmployee" Multiplicity="0..1" />
+          <End Type="CoffeePOSDataModel.tblAttendance" Role="tblAttendance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEmployee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="tblAttendance">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tblEmploy__Emplo__04AFB25B">
+          <End Type="CoffeePOSDataModel.tblEmployee" Role="tblEmployee" Multiplicity="0..1" />
+          <End Type="CoffeePOSDataModel.tblEmployeeRole" Role="tblEmployeeRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEmployee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="tblEmployeeRole">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tblSalary__Emplo__69FBBC1F">
+          <End Type="CoffeePOSDataModel.tblEmployee" Role="tblEmployee" Multiplicity="0..1" />
+          <End Type="CoffeePOSDataModel.tblSalary" Role="tblSalary" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEmployee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="tblSalary">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tblShiftS__Emplo__6442E2C9">
+          <End Type="CoffeePOSDataModel.tblEmployee" Role="tblEmployee" Multiplicity="0..1" />
+          <End Type="CoffeePOSDataModel.tblShiftSchedule" Role="tblShiftSchedule" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEmployee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="tblShiftSchedule">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__tblEmploy__RoleI__05A3D694">
+          <End Type="CoffeePOSDataModel.tblRole" Role="tblRole" Multiplicity="0..1" />
+          <End Type="CoffeePOSDataModel.tblEmployeeRole" Role="tblEmployeeRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblRole">
+              <PropertyRef Name="RoleId" />
+            </Principal>
+            <Dependent Role="tblEmployeeRole">
+              <PropertyRef Name="RoleId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Appointment_Employee">
+          <End Type="CoffeePOSDataModel.tblEmployee" Role="tblEmployee" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="CoffeePOSDataModel.tblAppointment" Role="tblAppointment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="tblEmployee">
+              <PropertyRef Name="EmployeeId" />
+            </Principal>
+            <Dependent Role="tblAppointment">
+              <PropertyRef Name="EmployeeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -2388,6 +2736,7 @@
           <EntitySetMapping Name="tblAppointments">
             <EntityTypeMapping TypeName="CoffeePOSDataModel.tblAppointment">
               <MappingFragment StoreEntitySet="tblAppointment">
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
                 <ScalarProperty Name="AppointmentId" ColumnName="AppointmentId" />
                 <ScalarProperty Name="AppointmentDate" ColumnName="AppointmentDate" />
                 <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
@@ -2717,6 +3066,7 @@
           <EntitySetMapping Name="tblServices">
             <EntityTypeMapping TypeName="CoffeePOSDataModel.tblService">
               <MappingFragment StoreEntitySet="tblService">
+                <ScalarProperty Name="ServiceImage" ColumnName="ServiceImage" />
                 <ScalarProperty Name="ServiceId" ColumnName="ServiceId" />
                 <ScalarProperty Name="ServiceTypeId" ColumnName="ServiceTypeId" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -2927,6 +3277,7 @@
           <EntitySetMapping Name="Packages">
             <EntityTypeMapping TypeName="CoffeePOSDataModel.Package">
               <MappingFragment StoreEntitySet="Packages">
+                <ScalarProperty Name="PackageImage" ColumnName="PackageImage" />
                 <ScalarProperty Name="UpdatedBy" ColumnName="UpdatedBy" />
                 <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
                 <ScalarProperty Name="CreatedBy" ColumnName="CreatedBy" />
@@ -3101,6 +3452,73 @@
                 <ScalarProperty Name="ModuleId" ColumnName="ModuleId" />
                 <ScalarProperty Name="ShopId" ColumnName="ShopId" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblAttendances">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblAttendance">
+              <MappingFragment StoreEntitySet="tblAttendance">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="AttendanceId" ColumnName="AttendanceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblEmployees">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblEmployee">
+              <MappingFragment StoreEntitySet="tblEmployee">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="Phone" ColumnName="Phone" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblEmployeeRoles">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblEmployeeRole">
+              <MappingFragment StoreEntitySet="tblEmployeeRoles">
+                <ScalarProperty Name="UpdatedDate" ColumnName="UpdatedDate" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="EmployeeRoleId" ColumnName="EmployeeRoleId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblRoles">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblRole">
+              <MappingFragment StoreEntitySet="tblRoles">
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="CreateDate" ColumnName="CreateDate" />
+                <ScalarProperty Name="RoleName" ColumnName="RoleName" />
+                <ScalarProperty Name="RoleId" ColumnName="RoleId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblSalaries">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblSalary">
+              <MappingFragment StoreEntitySet="tblSalary">
+                <ScalarProperty Name="SalaryDate" ColumnName="SalaryDate" />
+                <ScalarProperty Name="Bonus" ColumnName="Bonus" />
+                <ScalarProperty Name="Commission" ColumnName="Commission" />
+                <ScalarProperty Name="BaseSalary" ColumnName="BaseSalary" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="SalaryId" ColumnName="SalaryId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="tblShiftSchedules">
+            <EntityTypeMapping TypeName="CoffeePOSDataModel.tblShiftSchedule">
+              <MappingFragment StoreEntitySet="tblShiftSchedule">
+                <ScalarProperty Name="IsAssigned" ColumnName="IsAssigned" />
+                <ScalarProperty Name="EndTime" ColumnName="EndTime" />
+                <ScalarProperty Name="StartTime" ColumnName="StartTime" />
+                <ScalarProperty Name="ShiftDate" ColumnName="ShiftDate" />
+                <ScalarProperty Name="EmployeeId" ColumnName="EmployeeId" />
+                <ScalarProperty Name="ShiftId" ColumnName="ShiftId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

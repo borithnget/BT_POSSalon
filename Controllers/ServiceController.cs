@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
@@ -191,6 +192,17 @@ namespace jotun.Controllers
 			}
 			using (var db = new jotunDBEntities())
 			{
+				string imageFileName = null;
+				if (model.ServiceImageFile != null && model.ServiceImageFile.ContentLength > 0)
+				{
+					string uploadDir = "/Uploads/Services/";
+					string absolutePath = Server.MapPath(uploadDir);				
+					if (!Directory.Exists(absolutePath))
+						Directory.CreateDirectory(absolutePath);
+					imageFileName = Guid.NewGuid() + Path.GetExtension(model.ServiceImageFile.FileName);
+					string fullPath = Path.Combine(absolutePath, imageFileName);
+					model.ServiceImageFile.SaveAs(fullPath);
+				}
 				var service = new tblService
 				{
 					ServiceId = Guid.NewGuid(),
@@ -200,10 +212,10 @@ namespace jotun.Controllers
 					ServiceTypeId = model.ServiceTypeId,
 					CreatedAt = DateTime.Now,
 					IsActive = true,
+					ServiceImage = imageFileName
 				};
 				db.tblServices.Add(service);
 				db.SaveChanges();
-
 				if (model.Products != null && model.Products.Any())
 				{
 					foreach (var product in model.Products)
@@ -243,6 +255,7 @@ namespace jotun.Controllers
 						ServiceTypeId = s.ServiceTypeId,
 						ServiceTypeName = s.tblServiceType.Name,
 						CreatedAt = s.CreatedAt,
+						ServiceImage = s.ServiceImage,
 						Products = s.tblServiceProducts.Select(sp => new ServiceProductViewModel
 						{
 							ProductId = sp.ProductId,
@@ -307,6 +320,17 @@ namespace jotun.Controllers
 			}
 			using (var db = new jotunDBEntities())
 			{
+				string imageFileName = null;
+				if (model.ServiceImageFile != null && model.ServiceImageFile.ContentLength > 0)
+				{
+					string uploadDir = "/Uploads/Services/";
+					string absolutePath = Server.MapPath(uploadDir);
+					if (!Directory.Exists(absolutePath))
+						Directory.CreateDirectory(absolutePath);
+					imageFileName = Guid.NewGuid() + Path.GetExtension(model.ServiceImageFile.FileName);
+					string fullPath = Path.Combine(absolutePath, imageFileName);
+					model.ServiceImageFile.SaveAs(fullPath);
+				}
 				var service = db.tblServices
 					.Include(s => s.tblServiceProducts)
 					.FirstOrDefault(s => s.ServiceId == model.ServiceId);
@@ -319,6 +343,7 @@ namespace jotun.Controllers
 				service.Price = model.Price;
 				service.Description = model.Description;
 				service.ServiceTypeId = model.ServiceTypeId;
+				service.ServiceImage = imageFileName;
 				var existingProductIds = service.tblServiceProducts.Select(sp => sp.ProductId).ToList();
 				if (model.Products == null || !model.Products.Any())
 				{
@@ -455,15 +480,27 @@ namespace jotun.Controllers
 
 			using (var db = new jotunDBEntities())
 			{
-				var package = new Package
+				string imageFileName = null;
+				if (model.PackageImageFile != null && model.PackageImageFile.ContentLength > 0)
+				{
+					string uploadDir = "/Uploads/Package/";
+					string absolutePath = Server.MapPath(uploadDir);
+					if (!Directory.Exists(absolutePath))
+						Directory.CreateDirectory(absolutePath);
+					imageFileName = Guid.NewGuid() + Path.GetExtension(model.PackageImageFile.FileName);
+					string fullPath = Path.Combine(absolutePath, imageFileName);
+					model.PackageImageFile.SaveAs(fullPath);
+				}
+					var package = new Package
 				{
 					PackageName = model.Name,
 					Price = model.Price,
 					Description = model.Description,
 					CreatedAt = DateTime.Now,
-					/*CreatedBy = */
+					CreatedBy = User.Identity.Name,
 					Status = 1,
-				};
+					PackageImage = imageFileName,
+					};
 				db.Packages.Add(package);
 				db.SaveChanges();			
 				if (model.SelectedServices != null && model.SelectedServices.Any())
@@ -606,8 +643,7 @@ namespace jotun.Controllers
 					Price = (decimal)package.Price,
 					Description = package.Description,
 					CreatedAt = (DateTime)package.CreatedAt,
-					CreateBy = package.CreatedBy,
-					// Available Services with pre-selection
+					CreateBy = package.CreatedBy,				
 					AvailableServices = db.tblServices
 						.Where(s => s.IsActive)
 						.Select(s => new SelectListItem
@@ -616,9 +652,7 @@ namespace jotun.Controllers
 							Text = s.Name,
 							Selected = selectedServiceIds.Contains(s.ServiceId)
 						})
-						.ToList(),
-
-					// Available Products with pre-selection
+						.ToList(),				
 					AvailableProducts = db.tblProducts
 						.Where(p => p.CreatedDate.HasValue && p.CreatedDate.Value.Year == 2025)
 						.Select(p => new SelectListItem
@@ -651,7 +685,6 @@ namespace jotun.Controllers
 				return PartialView("_DetailPackage", model);
 			}
 		}
-		// GET: EditPackage
 		public ActionResult EditPackage(int id)
 		{
 			using (var db = new jotunDBEntities())
@@ -675,38 +708,15 @@ namespace jotun.Controllers
 					Name = package.PackageName,
 					Price = (decimal)package.Price,
 					Description = package.Description,
-
-					// Available Services with pre-selection
-					AvailableServices = db.tblServices
-						.Where(s => s.IsActive)
-						.Select(s => new SelectListItem
-						{
-							Value = s.ServiceId.ToString(),
-							Text = s.Name,
-							Selected = selectedServiceIds.Contains(s.ServiceId)
-						})
-						.ToList(),
-
-					// Available Products with pre-selection
-					AvailableProducts = db.tblProducts
-						.Where(p => p.CreatedDate.HasValue && p.CreatedDate.Value.Year == 2025)
-						.Select(p => new SelectListItem
-						{
-							Value = p.Id.ToString(),
-							Text = p.ProductName,
-							Selected = selectedProductIds.Contains(p.Id)
-						})
-						.ToList(),
-
-					// Selected Services mapped to ViewModel
+					PackageImage = package.PackageImage,				
+					AvailableServices = new List<SelectListItem>(),
+					AvailableProducts = new List<SelectListItem>(),			
 					SelectedServices = package.PackageServices?
 						.Select(s => new ServiceSelectionViewModel
 						{
 							Id = s.ServiceId,
 							Quantity = s.Quantity ?? 0
-						}).ToList() ?? new List<ServiceSelectionViewModel>(),
-
-					// Selected Products mapped to ViewModel
+						}).ToList() ?? new List<ServiceSelectionViewModel>(),			
 					SelectedProducts = package.PackageProducts?
 						.Select(p => new ProductSelectionViewModel
 						{
@@ -717,6 +727,47 @@ namespace jotun.Controllers
 						}).ToList() ?? new List<ProductSelectionViewModel>()
 				};
 				return View(model);
+			}
+		}
+		public ActionResult GetServices(int page = 1, string searchQuery = "")
+		{
+			using (var db = new jotunDBEntities())
+			{
+				int pageSize = 10;
+				var services = db.tblServices
+								 .Where(s => s.IsActive && (string.IsNullOrEmpty(searchQuery) || s.Name.Contains(searchQuery)))
+								 .OrderBy(s => s.Name)
+								 .Skip((page - 1) * pageSize)
+								 .Take(pageSize)
+								 .Select(s => new SelectListItem
+								 {
+									 Value = s.ServiceId.ToString(),
+									 Text = s.Name
+								 })
+								 .ToList();
+
+				return Json(services, JsonRequestBehavior.AllowGet);
+			}
+		}
+
+		public ActionResult GetProducts(int page = 1, string searchQuery = "")
+		{
+			using (var db = new jotunDBEntities())
+			{
+				int pageSize = 10;
+				var products = db.tblProducts
+								 .Where(p => p.CreatedDate.HasValue && p.CreatedDate.Value.Year == 2025 && (string.IsNullOrEmpty(searchQuery) || p.ProductName.Contains(searchQuery)))
+								 .OrderBy(p => p.ProductName)
+								 .Skip((page - 1) * pageSize)
+								 .Take(pageSize)
+								 .Select(p => new SelectListItem
+								 {
+									 Value = p.Id.ToString(),
+									 Text = p.ProductName
+								 })
+								 .ToList();
+
+				return Json(products, JsonRequestBehavior.AllowGet);
 			}
 		}
 		[HttpPost]	
@@ -735,7 +786,6 @@ namespace jotun.Controllers
 							Text = s.Name
 						})
 						.ToList();
-
 					model.AvailableProducts = db.tblProducts
 						.Where(p => p.CreatedDate.Value.Year == 2025)
 						.Select(p => new SelectListItem
@@ -747,23 +797,31 @@ namespace jotun.Controllers
 				}
 				return View(model);
 			}
-
 			using (var db = new jotunDBEntities())
 			{
+				string imageFileName = null;
+				if (model.PackageImageFile != null && model.PackageImageFile.ContentLength > 0)
+				{
+					string uploadDir = "/Uploads/Package/";
+					string absolutePath = Server.MapPath(uploadDir);
+					if (!Directory.Exists(absolutePath))
+						Directory.CreateDirectory(absolutePath);
+					imageFileName = Guid.NewGuid() + Path.GetExtension(model.PackageImageFile.FileName);
+					string fullPath = Path.Combine(absolutePath, imageFileName);
+					model.PackageImageFile.SaveAs(fullPath);
+				}
 				var package = db.Packages.FirstOrDefault(p => p.Id == model.Id);
 				if (package == null)
 				{
 					return HttpNotFound();
 				}
-
 				package.PackageName = model.Name;
 				package.Price = model.Price;
 				package.Description = model.Description;
 				package.UpdateDate = DateTime.Now;
-				package.CreatedBy = User.Identity.Name;
-				db.SaveChanges();
-
-				// Update selected services
+				package.UpdatedBy = User.Identity.Name;
+				package.PackageImage = imageFileName;
+				db.SaveChanges();				
 				var existingPackageServices = db.PackageServices.Where(ps => ps.PackageId == package.Id).ToList();
 				db.PackageServices.RemoveRange(existingPackageServices);
 				db.SaveChanges();

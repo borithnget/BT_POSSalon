@@ -30,6 +30,7 @@ namespace jotun.Entities
         public string CreatedBy { get; set; }
         public Nullable<System.DateTime> UpdateDate { get; set; }
         public string UpdatedBy { get; set; }
+        public string PackageImage { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<PackageProduct> PackageProducts { get; set; }

@@ -77,5 +77,11 @@ namespace jotun.Entities
         public virtual DbSet<tblModule> tblModules { get; set; }
         public virtual DbSet<tblShop> tblShops { get; set; }
         public virtual DbSet<tblShopModulePermission> tblShopModulePermissions { get; set; }
+        public virtual DbSet<tblAttendance> tblAttendances { get; set; }
+        public virtual DbSet<tblEmployee> tblEmployees { get; set; }
+        public virtual DbSet<tblEmployeeRole> tblEmployeeRoles { get; set; }
+        public virtual DbSet<tblRole> tblRoles { get; set; }
+        public virtual DbSet<tblSalary> tblSalaries { get; set; }
+        public virtual DbSet<tblShiftSchedule> tblShiftSchedules { get; set; }
     }
 }

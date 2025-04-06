@@ -2,222 +2,186 @@
 @{
     ViewBag.Title = "Details";
     Layout = "~/Views/Shared/_Layout.cshtml";
-    Model.RevicedFromCustomer =Convert.ToDecimal(Convert.ToDecimal(Model.RevicedFromCustomer) + Model.ReceivedByABA).ToString("N2");
+    Model.RevicedFromCustomer = Convert.ToDecimal(Convert.ToDecimal(Model.RevicedFromCustomer) + Model.ReceivedByABA).ToString("N2");
 }
 
-@using (Html.BeginForm("Details", "Sale", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
-{
-    <div style="background-color:#ffffff; padding:15px;">
-        <h4>Detail Sale </h4>
-        <hr />
-        <div class="center-block" style="background-color:transparent">
-            @Html.AntiForgeryToken()
-            @*@Html.ValidationSummary("", new { @class = "text-danger" })*@
-            @Html.HiddenFor(model => model.Id)
-            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
-                <div class="modal-dialog modal-sm" role="document">
-                    <div class="modal-content">
-
-                        <div class="modal-body">
-                            Are you sure you want to delete?
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
-                            <input type="reset" value="Delete" i class="btn btn-danger" onclick="window.location='/Sale/Delete/@Html.ValueFor(model => model.Id)';" />
-                        </div>
+<div style="background-color:#ffffff; padding:15px;">
+    <h4>Detail Sale</h4>
+    <hr />
+    <div class="center-block" style="background-color:transparent">
+        @Html.HiddenFor(model => model.Id)
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" data-backdrop="static">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        Are you sure you want to delete?
                     </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="row">
-                    <div class="col-md-8" style="background-color:transparent">
-                        <div class="form-group">
-                            <div class="row">
-                                <div class="col-md-6" style="background-color:transparent">
-                                    <div class="form-group ">
-                                        @Html.Label("Date", new { @class = "col-md-12 control-label" })
-                                        <div class="col-md-12">
-                                            @Html.TextBoxFor(m => m.CreatedDate, new { @class = " form-control", @readonly = "readonly" })
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6" style="background-color:transparent;">
-                                    <div class="form-group">
-                                        <span style=" float:left">
-                                            @Html.Label("Customer", new { @class = "col-md-12 control-label disabled" })
-                                        </span>
-
-                                        <div class="col-md-12">
-                                            @Html.TextBoxFor(m => m.CustomerName, new { @class = " form-control", @readonly = "readonly" })
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                           @* <div class="row">
-                                <div class="col-md-6" style="background-color:transparent">
-
-                                </div>
-
-                                <div class="col-md-6" style="background-color:transparent;">
-                                    <div class="form-group">
-                                        <span style=" float:left">
-                                            @Html.Label("Customer Location", new { @class = "col-md-12 control-label disabled" })
-                                        </span>
-
-                                        <div class="col-md-12">
-                                            @Html.TextBoxFor(m => m.LocationText, new { @class = " form-control", @readonly = "readonly" })
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>*@
-
-
-                        </div>
-                        <div class="form-group" style="background-color:transparent; margin-top:-15px">
-                            <div class="row">
-                                <div class="col-md-12" style="background-color:transparent;">
-                                    <div class="form-group">
-                                        <span style=" float:left">
-                                            @Html.Label("Description", new { @class = "col-md-12 control-label disabled" })
-                                        </span>
-                                        <div class="col-md-12">
-                                            @Html.TextAreaFor(m => m.Description, new { @class = "form-control ", @readonly = "readonly" })
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                        <input type="reset" value="Delete" class="btn btn-danger" onclick="window.location='/Sale/Delete/@Html.ValueFor(model => model.Id)';" />
                     </div>
-                </div>
-            </div>
-            <div class="row table-responsive" style="padding:0 0 0 20px">
-                <table id="clientlist" class="table table-bordered" width="100%">
-                    <thead>
-                        <tr>
-                            <th>No.</th>
-                            <th>Product Details</th>
-                            @* <th>Color Code</th>*@
-                            @* <td>Unit Type</td>*@
-                            <th>ServiceType</th>
-                            <th>ProductType</th>
-                            <th>Customer Type</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @{
-                            int count = 1;
-                            foreach (var item in Model.GetDetail)
-                            {
-                                <tr>
-                                    <td>@count</td>
-                                   <td>@(item.ProductIdn + " - " + item.Size + " - " + item.Sugar)</td>
-                                   @* <td>@item.color_code</td>*@
-                                    <td></td>
-                                    <td></td>
-                                    <td>@item.UNit</td>
-                                    <td>@item.Quantity</td>
-                                    <td>@item.Price</td>
-                                    <td class="totals">@item.Total</td>
-                                </tr>
-                                count++;
-
-                            }
-                        }
-                    </tbody>
-
-                    <tfoot>
-                        <tr>
-                            <th colspan="7" style="text-align:right !important;">Sub Total($): </th>
-                            <th colspan="1">
-                                @Html.TextBoxFor(m => m.Amount, new { id = "Total", @class = "form-control", @readonly = "readonly" })
-
-                            </th>
-                        </tr>
-@*
-                        <tr>
-                            <th colspan="6" style="text-align:right !important;">Owe($): </th>
-                            <th colspan="1">
-                                @Html.TextBoxFor(m => m.Owe, new { id = "Owe", @class = "form-control", @readonly = "readonly" })
-
-                            </th>
-                        </tr>*@
-
-
-
-                        <tr>
-                            <th colspan="7" style="text-align:right !important;">Discount($):</th>
-                            <th colspan="1">
-                                @*@Html.TextBoxFor(m => m.Discount, new { id = "Discount", @class = "form-control", @readonly = "readonly" })*@
-                                @Html.TextBoxFor(m => m.Discount, new { id = "Discount", @class = "form-control", @type = "number", @min = "0", @step = "0.01", @value = "0" })
-
-                            </th>
-                        </tr>
-
-
-                        <tr>
-                            <th colspan="7" style="text-align:right !important;">Old Received From Customer($):</th>
-                            <th colspan="1">
-                                @Html.TextBoxFor(m => m.RevicedFromCustomer, new { id = "RevicedFromCustomer", @class = "form-control", @readonly = "readonly" })
-                            </th>
-                        </tr>
-                        @if (Convert.ToDecimal(Model.Owe) > 0)
-                        {
-                            <tr>
-                                <th colspan="7" style="text-align:right !important;">New Received From Customer Cash($):</th>
-                                <th colspan="1">
-                                    @Html.TextBoxFor(m => m.RevicedFromCustomer1, new { id = "RevicedFromCustomer1", @class = "form-control", @autocomplete = "off", @type = "number", @step = "0.01", @value = "0" })
-                                </th>
-                            </tr>
-                            <tr>
-                                <th colspan="7" style="text-align:right !important;">New Received From Customer ABA($):</th>
-                                <th colspan="1">
-                                    @Html.TextBoxFor(m => m.NewReceivedByABA, new { id = "RevicedFromCustomerABA", @class = "form-control", @autocomplete = "off", @type = "number", @step = "0.01", @value = "0" })
-                                </th>
-                            </tr>
-                        }
-
-                    </tfoot>
-
-                </table>
-            </div>
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-9">
-                    @if (Convert.ToDecimal(Model.Owe) > 0)
-                    {
-                        <input type="submit" id="save" value="Save" class="btn btn-info" />
-                    }
-
-                    @*<input type="reset" value="Edit" id="kosalid" class="btn btn-info" onclick="window.location='/Sale/EditNew/@Html.ValueFor(model => model.Id)';" />*@
-                    <input type="reset" value="Delete" id="kosalid" class="btn btn-danger" data-toggle="modal" data-target="#myModal" />
-                    <input type="reset" value="Cancel" class="btn btn-secondary" onclick="window.location='/Sale/CustomerHistory';" />
-
                 </div>
             </div>
         </div>
+        <div class="form-group border p-2 shadow-sm rounded">
+            <div class="col-md-8">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="text" class="form-control w-100" readonly value="@Model.CreatedDate" id="date" />
+                            <label for="date" class="control-label">Date</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="text" class="form-control w-100" readonly value="@Model.CustomerName" id="customer" />
+                            <label for="customer" class="control-label">Customer</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="text" class="form-control w-100" readonly value="@Model.OrderType" id="ordertype" />
+                            <label for="ordertype" class="control-label">Customer Type</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="text" class="form-control w-100" readonly value="@Model.InvoiceNo" id="invoice" />
+                            <label for="invoice" class="control-label">Invoice No</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-floating">
+                            <input type="text" class="form-control w-100" readonly value="@Model.InvoiceStatus" id="invoicestatus" />
+                            <label for="invoice" class="control-label">InvoiceStatus</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row table-responsive border p-3 shadow-sm rounded ml-1">
+            <table id="clientlist" class="table table-bordered w-100">
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Product Details</th>
+                        <th>ServiceType</th>
+                        <th>ProductType</th>
+                        <th>Unit</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int count = 1;
+                        foreach (var item in Model.GetDetail)
+                        {
+                            <tr>
+                                <td>@count</td>
+                                <td>@(item.ProductIdn + " - " + item.Size + " - " + item.Sugar)</td>
+                                <td></td>
+                                <td></td>
+                                <td>@item.UNit</td>
+                                <td>@item.Quantity</td>
+                                <td>
+                                    @{
+                                        decimal price = 0;
+                                        if (decimal.TryParse(item.Price, out price))
+                                        {
+                                            @("$" + price.ToString("F2"))
+                                        }
+                                        else
+                                        {
+                                            @:0.00
+                                        }
+                                    }
+                                </td>
+
+                                <td>
+                                    @{
+                                        decimal total = 0;
+                                        if (decimal.TryParse(item.Total, out total))
+                                        {
+                                            @("$" + total.ToString("F2"))
+                                        }
+                                        else
+                                        {
+                                            @:0.00
+                                        }
+                                    }
+                                </td>
+
+                            </tr>
+                            count++;
+                        }
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="7" style="text-align:right !important;">Discount($):</th>
+                        <th colspan="1">
+                            <input type="text" class="form-control" readonly value="@(string.Format("${0:F2}", Model.Discount))" />
+                        </th>
+                    </tr>
+                    <tr>
+                        <th colspan="7" style="text-align:right !important;">Sub Total($): </th>
+                        <th colspan="1">
+                            <input type="text" class="form-control" readonly value="@(string.Format("${0:F2}", Model.Amount))" />
+                        </th>
+                    </tr>
+                    <tr>
+                        <th colspan="7" style="text-align:right !important;">Payment Type: </th>
+                        <th colspan="1">
+                            <input type="text" class="form-control" readonly value="@Model.PaymentType" />
+                        </th>
+                    </tr>
+                    <tr>
+                        <th colspan="7" style="text-align:right !important;">Old Received From Customer($):</th>
+                        <th colspan="1">
+                            <input type="text" class="form-control" readonly value="@(string.Format("${0:F2}", Model.RevicedFromCustomer))" />
+                        </th>
+                    </tr>
+
+                    @if (Convert.ToDecimal(Model.Owe) > 0)
+                    {
+                        <tr>
+                            <th colspan="7" style="text-align:right !important;">New Received From Customer Cash($):</th>
+                            <th colspan="1">
+                                <input type="text" class="form-control" readonly value="@Model.RevicedFromCustomer1" />
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="7" style="text-align:right !important;">New Received From Customer ABA($):</th>
+                            <th colspan="1">
+                                <input type="text" class="form-control" readonly value="@Model.NewReceivedByABA" />
+                            </th>
+                        </tr>
+                    }
+                </tfoot>
+            </table>
+        </div>
+        <div class="form-group mt-2">
+            <div class="col-md-offset-2 col-md-9">
+                <button class="btn btn-secondary" onclick="window.location='/Sale/CustomerHistory';">
+                    <i class="fa fa-arrow-left"></i> Back
+                </button>
+                <button id="kosalid" class="btn btn-danger" data-toggle="modal" data-target="#myModal">
+                    <i class="fa fa-trash"></i> Delete
+                </button>
+            </div>
+        </div>
     </div>
-    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.css" />*@
+</div>
+@section Scripts {
 
-    @section Scripts {
-        @*<script src="~/Scripts/jquery-3.3.1.min.js"></script>
-            <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-            <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-            <link rel="stylesheet" href="/resources/demos/style.css">
-            <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-            <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-            <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.20/sc-2.0.1/datatables.min.js"></script>*@
+    <link rel="stylesheet" href="~/Content/css/site.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>*
 
-
-
-<script>
-            //$('#Owe').val((parseFloat($('#Total').val()) - parseFloat($('#Discount').val()) - parseFloat($('#RevicedFromCustomer').val())).toFixed(2));
-
+    <script>
             $('#subTotal').click(function () {
 
                 var subTotal = 0;
@@ -286,9 +250,36 @@
 
                 }
             });
-</script>
+    </script>
 
-        @Scripts.Render("~/bundles/jqueryval")
-    }
+    @Scripts.Render("~/bundles/jqueryval")
 }
+<style>
+    .form-floating {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
 
+        .form-floating label {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            transition: 0.2s ease-in-out;
+            padding-top: 5px; /* Adjust this for better spacing */
+            border-top: 2px solid transparent; /* Initial top border (transparent) */
+        }
+
+        .form-floating input:focus + label,
+        .form-floating input:not(:placeholder-shown) + label {
+            top: -10px;
+            font-size: 0.85rem;
+            color: #007bff; /* Change label color on focus */
+            border-top: 2px solid #007bff; /* Add border color on focus */
+        }
+
+    #clientlist, #clientlist th, #clientlist td {
+        border: 1px solid gray !important;
+    }
+</style>

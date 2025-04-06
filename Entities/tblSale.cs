@@ -14,9 +14,7 @@ namespace jotun.Entities
     
     public partial class tblSale
     {
-		internal int? Tax;
-
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public tblSale()
         {
             this.tblInvoices = new HashSet<tblInvoice>();
