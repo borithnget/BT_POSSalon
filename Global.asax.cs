@@ -1,5 +1,8 @@
 ﻿using jotun.Entities;
 using jotun.Models;
+using System.Globalization;
+using System.Threading;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
@@ -24,5 +27,6 @@ namespace jotun
 			/*container.RegisterType<ModuleController>(new HierarchicalLifetimeManager());*/
 			DependencyResolver.SetResolver(new UnityDependencyResolver(container));
 		}
-	}
+
+    }
 }

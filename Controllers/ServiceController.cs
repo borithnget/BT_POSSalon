@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
 
@@ -46,7 +48,7 @@ namespace jotun.Controllers
 				return View(services);  
 			}
 		}
-		public ActionResult DetailService(Guid id)
+        public ActionResult DetailService(Guid id)
 		{
 			using (var db = new jotunDBEntities())
 			{

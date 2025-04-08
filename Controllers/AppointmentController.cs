@@ -9,7 +9,7 @@ using System.Web.Mvc;
 
 namespace jotun.Controllers
 {
-    public class AppointmentController : Controller
+    public class AppointmentController : BaseController
     {
         // GET: Appointment
         public ActionResult Index()

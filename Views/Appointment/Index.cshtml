@@ -11,41 +11,28 @@
         background-color: white !important;
     }
 </style>
-
-<h2>Appointment List</h2>
-
+<h2 class="mt-4" lang="km">@HttpContext.GetGlobalResourceObject("Resource", "AppointmentList")</h2>
+<hr />
 <p>
-    @Html.ActionLink("Create New", "Create", new { style = "btn btn-primary" })
+    @Html.ActionLink(
+     @HttpContext.GetGlobalResourceObject("Resource", "CreateNew") as string,
+     "Create",
+     "Appointment",
+     new { }
+ )
 </p>
 <div class="table-responsive">
     <table class="table table-bordered" id="table1">
-        <thead>
+        <thead lang="km">
             <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.AppointmentDate)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CustomerName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.CustomerContact)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.StatTime)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.EndTime)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.PriceFinal)
-                </th>
-
-                <th>
-                    @Html.DisplayNameFor(model => model.AppointmentStatus)
-                </th>
+                <th>@HttpContext.GetGlobalResourceObject("Resource", "AppointmentDate")</th>
+                <th>@HttpContext.GetGlobalResourceObject("Resource", "CustomerName")</th>
+                <th>@HttpContext.GetGlobalResourceObject("Resource", "EmployeeName")</th>
+                <th>@HttpContext.GetGlobalResourceObject("Resource", "CustomerContact")</th>
+                <th>@HttpContext.GetGlobalResourceObject("Resource", "StartTime")</th>
+                <th>@HttpContext.GetGlobalResourceObject("Resource", "EndTime")</th>
+                <th>@HttpContext.GetGlobalResourceObject("Resource", "PriceFinal")</th>
+                <th>@HttpContext.GetGlobalResourceObject("Resource", "AppointmentStatus")</th>
                 <th></th>
             </tr>
         </thead>
@@ -55,89 +42,70 @@
             {
                 string starttime = Convert.ToDateTime(item.StatTime).ToString("HH:mm");
                 <tr>
-
-                    <td>
-                        @Convert.ToDateTime(item.AppointmentDate).ToString("dd/MM/yyyy")
-                    </td>
-
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CustomerName)
-                    </td>
+                    <td>@Convert.ToDateTime(item.AppointmentDate).ToString("dd/MM/yyyy")</td>
+                    <td>@Html.DisplayFor(modelItem => item.CustomerName)</td>
                     <td>
                         <a href="@Url.Action("Detail", "Employee", new { id = item.EmployeeId })">
                             @Html.DisplayFor(modelItem => item.Name)
                         </a>
                     </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.CustomerContact)
-                    </td>
-                    <td>
-                        @starttime
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.EndTime)
+                    <td>@Html.DisplayFor(modelItem => item.CustomerContact)</td>
+                    <td>@starttime</td>
+                    <td>@Html.DisplayFor(modelItem => item.EndTime)</td>
+                    <td>@Html.DisplayFor(modelItem => item.PriceFinal)</td>
+                    <td>@Html.DisplayFor(modelItem => item.AppointmentStatus)</td>
+                    <td lang="km">
+                        <a href="@Url.Action("ReleaseAndRedirectToInvoice", "Appointment", new { appointmentId = item.AppointmentId })">
+                            @HttpContext.GetGlobalResourceObject("Resource", "invoicePrint")
+                        </a> |
+                        <a href="@Url.Action("Edit", "Appointment", new {appointmentId=item.AppointmentId})">
+                            @HttpContext.GetGlobalResourceObject("Resource", "edit")
+                        </a> |
+                        <a href="@Url.Action("Detail", "Appointment", new {appointmentId=item.AppointmentId})">
+                            @HttpContext.GetGlobalResourceObject("Resource", "detailData")
+                        </a> |
+                        <a href="javascript:void(0)" data-id="@item.AppointmentId" class="btn_cancel">
+                            @HttpContext.GetGlobalResourceObject("Resource", "cancel")
+                        </a>
                     </td>
 
-                    <td>
-                        @Html.DisplayFor(modelItem => item.PriceFinal)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.AppointmentStatus)
-                    </td>
-                    <td>                 
-                        <a href="@Url.Action("ReleaseAndRedirectToInvoice", "Appointment", new { appointmentId = item.AppointmentId })">Invoice</a> |
-                        <a href="@Url.Action("Edit", "Appointment", new {appointmentId=item.AppointmentId})">Edit</a> |
-                        <a href="@Url.Action("Detail", "Appointment", new {appointmentId=item.AppointmentId})">Detail</a> |
-                        @*@Html.ActionLink("Delete", "Delete", new { id = item.AppointmentId })*@
-                        <a href="javascript:void(0)" data-id="@item.AppointmentId" class="btn_cancel">Cancel</a>
-                    </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
-<div id="cancelModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cancelModalLabel">Cancel Appointment</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="cancelForm" method="post" action="@Url.Action("CancelAppointment")">
-                    <input type="hidden" id="appointmentId" name="appointmentId" />
-                    <div class="form-group">
-                        <label for="cancelReason">Cancel Reason:</label>
-                        <textarea id="cancelReason" name="cancelReason" class="form-control" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <button type="submit" class="btn btn-danger">Submit</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section scripts{
-    <link rel="stylesheet" href="~/Content/css/site.css">
+@section scripts {
     <script src="~/Content/vendor/jquery/jquery.min.js"></script>
     <script src="~/Content/vendor/datatables/jquery.dataTables.min.js"></script>
     <script src="~/Scripts/jquery-ui.js"></script>
     <script src="~/Scripts/datatables.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript">
-        $(function () {
-            $('#table1').DataTable();
-        })
-        $(document).ready(function () {         
+        $(document).ready(function () {
+            $('#table1').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "lengthMenu": [5, 10, 25, 50, 100],
+                "language": {
+                    "search": "@HttpContext.GetGlobalResourceObject("Resource", "datatableSearch")",
+                    "lengthMenu": "@HttpContext.GetGlobalResourceObject("Resource", "datatableLengthMenu")",
+                    "info": "@HttpContext.GetGlobalResourceObject("Resource", "datatableInfo")",
+                    "infoEmpty": "@HttpContext.GetGlobalResourceObject("Resource", "datatableInfoEmpty")",
+                    "emptyTable": "@HttpContext.GetGlobalResourceObject("Resource", "datatableEmptyTable")",
+                    "zeroRecords": "@HttpContext.GetGlobalResourceObject("Resource", "datatableZeroRecords")",
+                    "paginate": {
+                        "previous": "@HttpContext.GetGlobalResourceObject("Resource", "datatablePrevious")",
+                        "next": "@HttpContext.GetGlobalResourceObject("Resource", "datatableNext")"
+                    }
+                }
+            });
+
             $('.btn_cancel').on('click', function () {
                 var appointmentId = $(this).data('id');
-                $('#appointmentId').val(appointmentId); 
+                $('#appointmentId').val(appointmentId);
                 $('#cancelModal').modal('show');
             });
         });
